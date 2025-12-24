@@ -11,3 +11,4 @@ streamlit-autorefresh
 ta
 scipy
 plotly
+google-generativeai
