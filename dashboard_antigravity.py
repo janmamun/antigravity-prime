@@ -57,12 +57,12 @@ st.markdown("""
     /* PREMIUM GLASS CARDS */
     .sovereign-card {
         background: var(--glass-bg);
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
         border: 1px solid var(--glass-border);
         border-radius: 20px;
         padding: 24px;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.4);
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .sovereign-card:hover {
@@ -100,8 +100,8 @@ st.markdown("""
         scrollbar-width: thin;
     }
 
-    .metric-title { color: rgba(255, 255, 255, 0.5); font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
-    .metric-value { font-size: 32px; font-weight: 700; color: #fff; line-height: 1; }
+    .metric-title { color: rgba(255, 255, 255, 0.7); font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; font-weight: 700; }
+    .metric-value { font-size: 32px; font-weight: 800; color: #fff; line-height: 1; text-shadow: 0 0 15px rgba(255,255,255,0.2); }
     
     /* ANIMATED TABS */
     .stTabs [data-baseweb="tab-list"] {
