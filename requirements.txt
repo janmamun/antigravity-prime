@@ -1,0 +1,13 @@
+ccxt
+streamlit==1.52.1
+pandas
+numpy
+python-dotenv
+joblib
+scikit-learn
+requests
+yfinance
+streamlit-autorefresh
+ta
+scipy
+plotly

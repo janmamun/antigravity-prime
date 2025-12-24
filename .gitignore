@@ -1,0 +1,15 @@
+# Local Environment
+venv/
+.env
+__pycache__/
+*.joblib
+*.log
+*.json
+!sovereign_knowledge.json
+!sim_state.json
+
+# Streamlit
+.streamlit/
+
+# OS
+.DS_Store
