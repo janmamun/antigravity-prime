@@ -43,13 +43,25 @@ class UltimateV17Bot:
             'options': {'defaultType': 'future'}
         }
         
+        # Phase 25: Guardian 2.0 Safeguards
+        self.max_daily_loss_pct = 5.0  # Stop all trading if down 5% today
+        self.emergency_stop = False
+        self.session_start_equity = self.capital
+        
         if self.is_live and self.api_key and self.api_secret:
-            exchange_config.update({
-                'apiKey': self.api_key,
-                'secret': self.api_secret,
-            })
-            self.exchange = ccxt.binance(exchange_config)
-            print(f"🚀 [SYSTEM] ENTRANCE TO LIVE TRADE PROTOCOL: {self.api_key[:5]}... ACTIVE")
+            try:
+                exchange_config.update({
+                    'apiKey': self.api_key,
+                    'secret': self.api_secret,
+                })
+                self.exchange = ccxt.binance(exchange_config)
+                # Verify connection immediately
+                self.exchange.fetch_balance()
+                print(f"🚀 [SYSTEM] ENTRANCE TO LIVE TRADE PROTOCOL: {self.api_key[:5]}... ACTIVE")
+            except Exception as e:
+                print(f"❌ [CORE ERROR] LIVE CONNECTION FAILED: {e}")
+                self.is_live = False
+                self.exchange = ccxt.binance(exchange_config)
         else:
             self.exchange = ccxt.binance(exchange_config)
             print("🪐 [SYSTEM] Simulation Mode Active. No Live Keys Detected.")
@@ -274,26 +286,42 @@ class UltimateV17Bot:
             "whale_bias": whale_bias, "reasons": reasons
         }
 
+    def check_safeguards(self):
+        """Guardian 2.0: Prevent catastrophic loss"""
+        current_equity = self.get_live_balance()
+        drawdown = (self.session_start_equity - current_equity) / (self.session_start_equity + 1e-6) * 100
+        
+        if drawdown >= self.max_daily_loss_pct:
+            print(f"🚨 [GUARDIAN] EMERGENCY STOP: Daily Loss Limit Reached ({drawdown:.2f}%)")
+            self.emergency_stop = True
+            return False
+        return True
+
     def get_live_balance(self):
         """Phase 23: Fetch real USDT Futures balance"""
         if not self.is_live: return self.capital
         try:
             balance = self.exchange.fetch_balance()
-            return float(balance['info']['assets'][0]['walletBalance']) if 'info' in balance else 0.0
+            # Try to find USDT specifically in total
+            return float(balance.get('total', {}).get('USDT', 0))
         except Exception as e:
             print(f"Error fetching live balance: {e}")
-            return 0.0
+            return self.capital # Fallback to last known
 
     def execute_live_order(self, symbol, side, amount_usd, price, tp, sl):
         """Phase 23: Execute real order on Binance Futures"""
         if not self.is_live: return {"status": "ERROR", "msg": "Not in Live Mode"}
         
+        # Guardian 2.0 Check
+        if self.emergency_stop or not self.check_safeguards():
+            return {"status": "ERROR", "msg": "GUARDIAN EMERGENCY STOP ACTIVE"}
+            
         try:
             # 1. Calc quantity based on price and leverage
             leverage = int(os.getenv("CAPITAL_LEVERAGE", 10))
             self.exchange.set_leverage(leverage, symbol)
             
-            # Ensure quantity meets minimums
+            # Ensure quantity meets minimums (Binance Futures specific rounding)
             qty = (amount_usd * leverage) / price
             
             # 2. Main Order
@@ -304,10 +332,14 @@ class UltimateV17Bot:
                 amount=qty
             )
             
-            # 3. TP/SL (Simplified for now - Binance often requires separate trigger orders)
-            # In a real setup, we'd use 'stop_loss_limit' or 'take_profit_limit'
+            # 3. TP/SL: Using Binance 'STOP_MARKET' for secondary protection
+            try:
+                self.exchange.create_order(symbol, 'STOP_MARKET', 'sell' if side == "BUY" else 'buy', qty, params={'stopPrice': sl})
+                self.exchange.create_order(symbol, 'TAKE_PROFIT_MARKET', 'sell' if side == "BUY" else 'buy', qty, params={'stopPrice': tp})
+            except Exception as e:
+                print(f"⚠️ [TRADE CAP] TP/SL Orders failed: {e}")
             
-            return {"status": "SUCCESS", "order_id": order['id'], "msg": f"Live {side} Executed for {symbol}"}
+            return {"status": "SUCCESS", "order_id": order['id'], "msg": f"Live {side} Executed for {symbol} | Safeguard: ACTIVE"}
         except Exception as e:
             return {"status": "ERROR", "msg": f"Live Execution Failed: {str(e)}"}
 
