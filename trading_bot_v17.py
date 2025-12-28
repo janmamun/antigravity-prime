@@ -13,7 +13,7 @@ from sentiment_scanner import SentimentScanner
 warnings.filterwarnings('ignore')
 
 class UltimateV17Bot:
-    def __init__(self, initial_capital=10000):
+    def __init__(self, initial_capital=100):
         self.initial_capital = initial_capital
         self.capital = initial_capital
         self.positions = {}
@@ -42,6 +42,15 @@ class UltimateV17Bot:
             'enableRateLimit': True,
             'options': {'defaultType': 'future'}
         }
+        
+        # Phase 25: Geo-Restriction Fix (Proxy Support)
+        proxy = os.getenv("BINANCE_PROXY")
+        if proxy:
+            exchange_config['proxies'] = {
+                'http': proxy,
+                'https': proxy
+            }
+            print(f"🌐 [SYSTEM] Proxy detected: {proxy[:15]}...")
         
         # Phase 25: Guardian 2.0 Safeguards
         self.max_daily_loss_pct = 5.0  # Stop all trading if down 5% today
@@ -79,7 +88,7 @@ class UltimateV17Bot:
                 "leverage": 3,
                 "dca_enabled": True,
                 "dca_max_entries": 3,
-                "max_open_positions": 5
+                "max_open_positions": 3
             }
 
     def load_hindsight(self):
