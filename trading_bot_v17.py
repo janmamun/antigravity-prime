@@ -78,7 +78,8 @@ class UltimateV17Bot:
                 "risk_factor": 0.1,
                 "leverage": 3,
                 "dca_enabled": True,
-                "dca_max_entries": 3
+                "dca_max_entries": 3,
+                "max_open_positions": 5
             }
 
     def load_hindsight(self):
@@ -309,7 +310,7 @@ class UltimateV17Bot:
             return self.capital # Fallback to last known
 
     def execute_live_order(self, symbol, side, amount_usd, price, tp, sl):
-        """Phase 23: Execute real order on Binance Futures"""
+        """Phase 23/25: Execute real order on Binance Futures with Precision rounding"""
         if not self.is_live: return {"status": "ERROR", "msg": "Not in Live Mode"}
         
         # Guardian 2.0 Check
@@ -317,14 +318,30 @@ class UltimateV17Bot:
             return {"status": "ERROR", "msg": "GUARDIAN EMERGENCY STOP ACTIVE"}
             
         try:
-            # 1. Calc quantity based on price and leverage
+            # 1. Position Count Safeguard
+            open_positions = self.exchange.fetch_balance().get('info', {}).get('positions', [])
+            active_count = len([p for p in open_positions if float(p.get('positionAmt', 0)) != 0])
+            max_pos = self.config.get("max_open_positions", 5)
+            
+            if active_count >= max_pos:
+                return {"status": "ERROR", "msg": f"MAX POSITIONS REACHED ({active_count}/{max_pos})"}
+
+            # 2. Calc quantity based on price and leverage
             leverage = int(os.getenv("CAPITAL_LEVERAGE", 10))
             self.exchange.set_leverage(leverage, symbol)
             
-            # Ensure quantity meets minimums (Binance Futures specific rounding)
-            qty = (amount_usd * leverage) / price
+            # Load markets for precision logic
+            self.exchange.load_markets()
             
-            # 2. Main Order
+            # Ensure quantity meets minimums and precision
+            raw_qty = (amount_usd * leverage) / price
+            qty = float(self.exchange.amount_to_precision(symbol, raw_qty))
+            
+            # Round TP/SL to exchange precision
+            tp_price = float(self.exchange.price_to_precision(symbol, tp))
+            sl_price = float(self.exchange.price_to_precision(symbol, sl))
+            
+            # 3. Main Order
             order = self.exchange.create_order(
                 symbol=symbol,
                 type='MARKET',
@@ -332,10 +349,10 @@ class UltimateV17Bot:
                 amount=qty
             )
             
-            # 3. TP/SL: Using Binance 'STOP_MARKET' for secondary protection
+            # 4. TP/SL: Using Binance 'STOP_MARKET' for secondary protection
             try:
-                self.exchange.create_order(symbol, 'STOP_MARKET', 'sell' if side == "BUY" else 'buy', qty, params={'stopPrice': sl})
-                self.exchange.create_order(symbol, 'TAKE_PROFIT_MARKET', 'sell' if side == "BUY" else 'buy', qty, params={'stopPrice': tp})
+                self.exchange.create_order(symbol, 'STOP_MARKET', 'sell' if side == "BUY" else 'buy', qty, params={'stopPrice': sl_price})
+                self.exchange.create_order(symbol, 'TAKE_PROFIT_MARKET', 'sell' if side == "BUY" else 'buy', qty, params={'stopPrice': tp_price})
             except Exception as e:
                 print(f"⚠️ [TRADE CAP] TP/SL Orders failed: {e}")
             
