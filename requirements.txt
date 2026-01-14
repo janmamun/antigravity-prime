@@ -12,3 +12,4 @@ ta
 scipy
 plotly
 google-generativeai
+httpx
