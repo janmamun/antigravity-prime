@@ -4,6 +4,8 @@ import requests
 import json
 from datetime import datetime
 import traceback
+from dotenv import load_dotenv
+load_dotenv()
 
 try:
     import google.generativeai as genai
@@ -33,9 +35,18 @@ class MetaBrain:
         try:
             with open(self.state_file, 'r') as f:
                 data = json.load(f)
-                return data.get("history", [])
+                history = data.get("history", [])
+                # Ensure each entry is a dict and has PnL
+                return [h for h in history if isinstance(h, dict) and 'PnL' in h]
         except:
             return []
+
+    def get_win_rate(self):
+        history = self.load_history()
+        if not history: return 0.0
+        df = pd.DataFrame(history)
+        wins = df[df['PnL'] > 0]
+        return round(len(wins) / len(df) * 100, 2)
 
     def load_config(self):
         if not os.path.exists(self.config_file):
@@ -129,7 +140,7 @@ class LocalBrain:
         self.api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
         if self.api_key and HAS_GEMINI:
             genai.configure(api_key=self.api_key)
-            self.gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+            self.gemini_model = genai.GenerativeModel("gemini-flash-latest")
         else:
             self.gemini_model = None
 
@@ -204,18 +215,32 @@ Tasks:
 1. Diagnose any issues (low win rate, drawdown, bad entries, bugs)
 2. Suggest immediate fixes (raise/lower min_score, adjust risk, disable signal)
 3. Propose next evolution (new filter, DCA rule, funding arb, etc.)
-4. If code change needed: Output clean, ready-to-apply Python patch
-5. Predict next 24h market behavior and optimal stance
+4. Indicator Sensitivity: Output a JSON block for "indicator_patches" (e.g., {{"rsi_oversold": 25, "ma_period": 21}}) based on current volatility.
+5. If code change needed: Output clean, ready-to-apply Python patch.
+6. Predict next 24h market behavior and optimal stance.
 
 Respond clearly and actionably.
 """
+        # 1. Try Gemini first if available (Phase 24)
+        if self.gemini_model:
+            try:
+                response = self.gemini_model.generate_content(prompt)
+                if response.text:
+                    advice = response.text
+                    with open("brain_log.txt", "a") as f:
+                        f.write(f"\n--- [GEMINI] {datetime.now()} ---\n{advice}\n")
+                    return advice
+            except Exception as e:
+                print(f"Gemini Evolution Error: {e}")
+
+        # 2. Try Ollama (Local)
         try:
             payload = {"model": self.model, "prompt": prompt, "stream": False}
             response = requests.post(self.url, json=payload, timeout=300)
             if response.status_code == 200:
                 advice = response.json()["response"]
                 with open("brain_log.txt", "a") as f:
-                    f.write(f"\n--- {datetime.now()} ---\n{advice}\n")
+                    f.write(f"\n--- [OLLAMA] {datetime.now()} ---\n{advice}\n")
                 return advice
             else:
                 return "Brain offline"

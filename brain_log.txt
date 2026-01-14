@@ -1,0 +1,3632 @@
+
+--- 2025-12-30 05:57:55.374388 ---
+### Diagnosis of Issues:
+
+1. **Low Win Rate (48.5%)**: This is a relatively poor win rate for an autonomous trading bot. The primary reasons could be:
+   - Inadequate risk management.
+   - Bad entries due to lack of proper filtering.
+   - Potential bugs or inefficiencies in the code.
+
+2. **Drawdown**: Without specific data, we can infer that there might be significant drawdowns, which are causing losses and affecting performance.
+
+3. **Bad Entries**: There could be instances where the bot is entering trades based on signals that lead to unfavorable outcomes.
+
+4. **Bug**: There may be bugs in the code that cause unexpected behavior, leading to losses.
+
+### Immediate Fixes:
+
+1. **Raise/Adjust Risk Management**:
+   - Increase `min_score` to a higher value, e.g., 0.7.
+   - Adjust risk management parameters such as position size and leverage to be more conservative.
+
+2. **Disable Signal or Further Refine It**:
+   - Temporarily disable the current signal and re-evaluate its effectiveness.
+   - If the signal is critical for performance, consider refining it by adding more conditions or using a different algorithm.
+
+### Next Evolution:
+
+1. **New Filter**:
+   - Introduce an additional filter based on trading volume to avoid entering during high volatility periods.
+   ```python
+   def add_volume_filter(self, trade_data):
+       return trade_data['volume'] > 50000
+   ```
+
+2. **DCA Rule**:
+   - Implement Dollar-Cost Averaging (DCA) strategy to reduce risk by buying smaller amounts of BTC over time.
+   ```python
+   def dca_buy(self, current_balance):
+       amount_to_buy = current_balance * 0.1
+       return amount_to_buy
+   ```
+
+3. **Funding Arb**:
+   - Implement funding arb to take advantage of small differences in funding rates between exchanges.
+
+### Code Change Needed:
+
+```python
+# Example patch for raising min_score and adjusting risk management
+def update_bot_parameters(self):
+    self.min_score = 0.7
+    self.max_leverage = 1
+    self.position_size_factor = 0.1
+
+# Example patch for adding volume filter
+def should_enter_trade(self, trade_data):
+    return self.add_volume_filter(trade_data) and self.signal_filter(trade_data)
+
+# Example patch for DCA strategy
+def execute_dca_buy(self, current_balance):
+    amount_to_buy = self.dca_buy(current_balance)
+    if amount_to_buy > 0:
+        self.place_order("BUY", amount_to_buy)
+```
+
+### Predicted Next 24h Market Behavior and Optimal Stance:
+
+Given the current market conditions of "Extreme Fear" with BTC ranging between $86k-88k, I predict a continuation of volatility. The optimal stance for this bot should be to remain cautious:
+- **High Risk Management**: Ensure that the risk management parameters are adjusted to minimize drawdown.
+- **Conservative Entries**: Only enter trades based on strong signals and avoid entering during high volatility periods.
+- **Monitor Market Conditions**: Keep an eye on market sentiment and adjust the bot's stance accordingly.
+
+### Action Plan:
+
+1. Apply the code patches to raise `min_score` and adjust risk management parameters.
+2. Temporarily disable the current signal until it is refined or replaced with a more effective one.
+3. Implement DCA strategy to reduce risk.
+4. Continuously monitor market conditions and adjust the bot's stance as needed.
+
+By following these steps, we can work towards improving the bot's performance and helping Antigravity Prime compound millions with zero human help.
+
+--- 2025-12-30 06:09:13.757240 ---
+### Diagnosis and Immediate Fixes
+
+**Low Win Rate:** The current win rate of 48.5% suggests that the bot is not effectively filtering out bad trades or managing risk appropriately. This could be due to various factors such as incorrect signal interpretation, insufficient risk management, or both.
+
+**Immediate Fix:**
+1. **Raise Min Score:** Increase the `min_score` threshold to ensure that only higher-quality signals are acted upon.
+   ```python
+   self.min_score = 0.6  # Adjust based on your current setup and risk tolerance
+   ```
+
+2. **Adjust Risk Management:** Reduce the position size or tighten stop-loss levels to mitigate drawdowns.
+   ```python
+   self.position_size = 0.01  # Adjust based on available capital and risk appetite
+   self.stop_loss_factor = 0.95  # Reduce to a more conservative value if needed
+   ```
+
+### Next Evolution
+
+**Proposed Evolution: Introduce a Moving Average Crossover Filter**
+A moving average crossover filter can help in identifying potential trends and provide better entry points.
+
+1. **Moving Average Crossover Filter Code Change:**
+   ```python
+   def apply_moving_average_crossover_filter(self, data):
+       short_window = 50
+       long_window = 200
+
+       data['short_mavg'] = data['close'].rolling(window=short_window).mean()
+       data['long_mavg'] = data['close'].rolling(window=long_window).mean()
+
+       data['signal'] = np.where(data['short_mavg'] > data['long_mavg'], 1, 0)
+       data['signal'] = np.where(data['short_mavg'] < data['long_mavg'], -1, data['signal'])
+
+       return data
+   ```
+
+2. **Integrate the Filter:**
+   ```python
+   def process_data(self, data):
+       # Apply existing filters and signals
+       data = self.apply_existing_filters_and_signals(data)
+
+       # Apply moving average crossover filter
+       data = self.apply_moving_average_crossover_filter(data)
+
+       return data
+   ```
+
+### Predicted Market Behavior and Optimal Stance
+
+Given the current market conditions of Extreme Fear, BTC ranging from $86k to $88k, I predict a continuation of market consolidation followed by potential upside as market sentiment improves.
+
+**Optimal Stance:**
+1. **Tighten Risk Management:** Continue with the adjusted risk management parameters (lower position size and tightened stop-loss).
+2. **Monitor Signal Quality:** Ensure that the new moving average crossover filter is providing reliable signals before making trades.
+3. **Revisit Min Score:** After a few cycles, revisit the `min_score` to see if further adjustments are needed.
+
+By implementing these changes, the bot should be better equipped to handle the current market conditions and potentially compound returns with zero human intervention.
+
+--- 2025-12-30 06:49:23.061235 ---
+### Diagnosis:
+
+1. **Low Win Rate**: At 48.5%, this is marginally below the break-even level of 50%. This could be due to a combination of factors including insufficient risk management, bad entries, or market volatility.
+2. **Drawdown**: The extreme fear environment in the BTC market suggests a potential drawdown risk if not managed correctly.
+3. **Bad Entries**: Given the volatile nature of the market, it's possible that the bot is taking too many bad trades due to incorrect entry signals.
+4. **Bugs**: There could be bugs or issues with the current logic that are causing poor performance.
+
+### Immediate Fixes:
+
+1. **Raise Min Score**:
+   - Lowering `min_score` can lead to more entries but increases the risk of bad trades. Raising it slightly might help in filtering out weaker signals.
+   ```python
+   min_score = 0.55  # Suggested adjustment
+   ```
+
+2. **Adjust Risk Management**:
+   - Decrease the position size or increase the stop loss to manage risk better.
+   ```python
+   position_size = 0.01  # Suggested adjustment
+   stop_loss = 87000  # Suggested adjustment
+   ```
+
+3. **Disable Signal**:
+   - Temporarily disable the current signal and focus on improving the underlying logic before re-enabling it.
+   ```python
+   use_signal = False  # Suggested adjustment
+   ```
+
+### Next Evolution:
+
+1. **New Filter**:
+   - Implement a moving average crossover filter to help identify better entry points.
+   ```python
+   def apply_moving_average_filter(prices, short_window=9, long_window=21):
+       short_ma = prices.rolling(window=short_window).mean()
+       long_ma = prices.rolling(window=long_window).mean()
+       return short_ma > long_ma and prices.iloc[-1] > short_ma.iloc[-1]
+
+   filter_enabled = True  # Enable or disable the filter
+   if filter_enabled:
+       buy_signals &= apply_moving_average_filter(prices)
+   ```
+
+2. **DCA Rule**:
+   - Implement dollar-cost averaging (DCA) to reduce risk and benefit from market volatility.
+   ```python
+   def apply_dca_rule(balance, entry_price, position_size):
+       if balance > 1000:  # Minimum amount for DCA
+           additional_position = balance / entry_price * 0.1
+           return position_size + additional_position
+       return position_size
+
+   position_size = apply_dca_rule(balance, entry_price, position_size)
+   ```
+
+3. **Funding Arb**:
+   - Implement funding arbitrage to take advantage of discrepancies in funding rates between exchanges.
+   ```python
+   def perform_funding_arb(exchange1, exchange2):
+       rate1 = exchange1.get_funding_rate()
+       rate2 = exchange2.get_funding_rate()
+       if rate1 < rate2:
+           exchange1.buy_funding_asset(amount)
+       else:
+           exchange2.sell_funding_asset(amount)
+
+   funding_arb_enabled = True  # Enable or disable funding arb
+   if funding_arb_enabled:
+       perform_funding_arb(exchange1, exchange2)
+   ```
+
+### Predicted Market Behavior and Optimal Stance:
+
+Given the extreme fear environment in the BTC market, expect further price drops. The optimal stance would be to remain cautious and focus on conservative risk management. Avoid taking high-risk trades until the market sentiment stabilizes.
+
+- **Position Size**: 0.01 BTC
+- **Stop Loss**: 87000 USD
+- **Use Signal**: False (Temporarily disabled)
+
+Monitor the market closely and adjust the strategy as needed based on real-time data and evolving market conditions.
+
+--- 2025-12-30 07:01:32.301357 ---
+### Diagnosis and Immediate Fixes:
+
+**Low Win Rate**: The current win rate of 48.5% is below acceptable levels for an elite bot, especially given the extreme fear in the BTC market. This suggests that either our entry criteria are too lenient or there are issues with our risk management.
+
+**Drawdown and Bad Entries**: We need to identify if specific signals or entries are causing significant drawdowns or losses. The TIGHTENED stance implies a cautious approach, which might be contributing to missed opportunities during market rallies.
+
+**Immediate Fixes:**
+
+1. **Lower Min Score**: A lower `min_score` would allow for more aggressive trades, potentially increasing win rates but with higher risk.
+   ```python
+   min_score = 0.75  # Lower from the current value
+   ```
+
+2. **Adjust Risk Management**: Consider tightening stop-loss levels or increasing position sizes cautiously to manage risk better.
+   ```python
+   stop_loss_percentage = -0.5  # Tighten stop loss
+   position_size_multiplier = 1.5  # Increase position size
+   ```
+
+3. **Disable Signal (if applicable)**: If a specific signal is consistently causing losses, it might be beneficial to disable or modify it.
+   ```python
+   # Example of disabling a signal
+   use_signal_X = False  # Change from True if this signal is problematic
+   ```
+
+### Next Evolution:
+
+**New Filter**: Implement a technical indicator filter to help identify stronger trends and avoid false signals during extreme fear.
+
+1. **Moving Average Crossover**: Use a moving average crossover as an additional filter.
+   ```python
+   short_term_ma = ta.SMA(data['close'], window=50)
+   long_term_ma = ta.SMA(data['close'], window=200)
+   data['ma_cross'] = (short_term_ma > long_term_ma) & (long_term_ma.shift(1) < short_term_ma.shift(1))
+   ```
+
+2. **Funding Arb**: Implement a simple funding arb strategy to manage fees and ensure profitability.
+
+### Predicted Market Behavior:
+
+**Next 24h Market Behavior**: Given the extreme fear in the market, it's likely that BTC will continue to decline further, driven by institutional selling pressure and panic among retail traders.
+
+**Optimal Stance**: Adopt a cautious stance with tight risk management until there is a clear trend reversal or signs of stabilization.
+```python
+# Example of a cautious trade strategy during extreme fear
+if data['ma_cross']:
+    if data['close'] < data['long_term_ma']:
+        action = 'SHORT'
+    else:
+        action = 'LONG'
+else:
+    action = 'HOLD'
+```
+
+### Conclusion:
+
+By lowering the `min_score`, adjusting risk management, and implementing additional filters, we can increase the bot's performance. The next evolution should include a technical indicator filter to improve signal quality and consider funding arb to manage fees effectively. During extreme fear, maintaining a cautious stance with tight risk management is crucial until the market shows signs of improvement.
+
+--- 2025-12-30 07:14:35.360024 ---
+### Diagnosis & Immediate Fixes
+
+**1. Low Win Rate (48.5%)**
+The bot's win rate is slightly below the target of 50%. This could be due to several factors:
+- **Signal Quality**: The current signal might not be strong enough or relevant in the current market conditions.
+- **Risk Management**: The risk management parameters might need fine-tuning to balance between capital preservation and growth potential.
+
+**2. Immediate Fixes**
+- **Raise Min Score**: If the signals are weak, raising the `min_score` could reduce false positives, potentially improving the win rate but at a higher cost of missed opportunities.
+  ```python
+  # Example Python patch to raise min_score
+  def adjust_min_score(current_min_score):
+      new_min_score = current_min_score * 1.2  # Increase by 20%
+      return new_min_score
+
+  current_min_score = 0.5
+  updated_min_score = adjust_min_score(current_min_score)
+  ```
+
+- **Adjust Risk**: Consider reducing the risk per trade to lower drawdowns and increase the win rate.
+  ```python
+  # Example Python patch to adjust risk_factor
+  def adjust_risk_factor(current_risk_factor):
+      new_risk_factor = current_risk_factor * 0.9  # Reduce by 10%
+      return new_risk_factor
+
+  current_risk_factor = 1.5
+  updated_risk_factor = adjust_risk_factor(current_risk_factor)
+  ```
+
+### Next Evolution
+
+**3. Propose Next Evolution**
+Given the volatile and extreme fear market conditions, a **Dynamic Position Sizing (DCA) Rule** could be beneficial to take advantage of potential price movements without overextending capital in any single trade.
+
+**4. Implementation: Dynamic Position Sizing (DCA) Rule**
+```python
+# Example Python patch for DCA rule
+def dynamic_position_sizing(current_balance, current_position_size, risk_factor):
+    new_position_size = current_balance * risk_factor / market_price  # Simplified formula
+    return max(new_position_size, current_position_size)
+
+current_balance = 10000  # Example balance in dollars
+current_position_size = 5  # Current position size in BTC
+risk_factor = 0.05  # Risk factor for DCA
+
+new_position_size = dynamic_position_sizing(current_balance, current_position_size, risk_factor)
+```
+
+### Market Behavior & Optimal Stance
+
+**5. Predict Next 24h Market Behavior**
+Given the extreme fear conditions, the market is likely to remain volatile with potential short-term retracement or consolidation before a breakout.
+
+**Optimal Stance:**
+- **Tighten Risk Management**: Continue with tightened risk management as per current settings.
+- **Monitor Signal Quality**: Ensure that the signal generator remains relevant and not affected by the extreme fear market conditions.
+- **DCA Implementation**: Implement the DCA rule to manage position sizes dynamically based on market conditions.
+
+**Summary:**
+1. **Immediate Fixes**: Raise `min_score` and adjust risk factor.
+2. **Next Evolution**: Implement Dynamic Position Sizing (DCA).
+3. **Optimal Stance**: Tighten risk management, monitor signal quality, and implement DCA.
+
+By making these changes, the bot should be better equipped to handle the current market conditions while working towards compounding capital with zero human intervention.
+
+--- 2025-12-30 07:27:34.604591 ---
+### Diagnosis:
+
+1. **Low Win Rate**: At 48.5%, this is a clear indication that the current strategy needs refinement. The low win rate could be due to several factors such as overfitting, insufficient signal quality, or inappropriate risk management.
+
+2. **Drawdown**: Without specific drawdown data, it's difficult to assess if there are any significant losses impacting the bot's performance. However, a prolonged drawdown could exacerbate a low win rate by causing the bot to underperform further.
+
+3. **Bad Entries**: If bad entries are frequent, they can lead to quick losses and reduce the bot's overall profitability. This suggests that the entry criteria might be too lenient or not stringent enough.
+
+4. **Bugs**: Since there is no specific information about bugs, it's challenging to pinpoint any underlying issues. However, given the low win rate, it's possible that there could be some hidden bugs affecting the bot's performance.
+
+### Immediate Fixes:
+
+1. **Raise Min Score**:
+   - Adjust the `min_score` parameter to a higher value to reduce the likelihood of making bad entries.
+   ```python
+   # Assuming min_score is defined in your code
+   self.min_score = 0.75
+   ```
+
+2. **Adjust Risk Management**:
+   - Increase the risk management parameters, such as reducing position size or increasing stop-loss levels, to manage losses more effectively.
+   ```python
+   # Example of adjusting stop-loss and position size
+   self.stop_loss = 1.1  # Adjusted higher to reduce risk
+   self.position_size = 0.05  # Reduced position size to minimize loss exposure
+   ```
+
+3. **Disable Signal**:
+   - Temporarily disable the signal to see if the bot can improve its performance without relying on external signals.
+   ```python
+   # Assuming you have a method to toggle signals
+   self.use_signal = False
+   ```
+
+### Next Evolution:
+
+1. **New Filter**:
+   - Implement a new filter based on momentum or trend analysis to improve signal quality.
+   ```python
+   def apply_momentum_filter(self, df):
+       df['momentum'] = df['close'].diff(10)  # Example of using momentum
+       return df[df['momentum'] > 0]
+   ```
+
+2. **DCA Rule**:
+   - Introduce Dollar-Cost Averaging (DCA) to gradually increase exposure to the market, reducing the impact of single trades.
+   ```python
+   def apply_dca_rule(self):
+       if self.total_trades % 5 == 0:  # Example condition for DCA
+           self.position_size += 0.01  # Increase position size in multiples of 1%
+   ```
+
+3. **Funding Arb**:
+   - If the bot is trading on perpetual futures, consider implementing funding arb to take advantage of funding rate differences.
+   ```python
+   def apply_funding_arb(self):
+       if self.funding_rate_difference > 0.005:  # Example threshold
+           self.place_order(side='buy', amount=1)  # Buy the base asset
+       else:
+           self.place_order(side='sell', amount=1)  # Sell the base asset
+   ```
+
+### Predicted Next 24h Market Behavior and Optimal Stance:
+
+Given the current market conditions of "Extreme Fear" with BTC ranging from $86-88k, the next 24 hours might see a continuation of the bearish trend due to technical indicators and sentiment. It's advisable to maintain a conservative stance with lower risk positions.
+
+**Optimal Stance**: TIGHTENED (Low Win Rate)  
+**Position Size**: 5% of available funds  
+**Stop-Loss Level**: 10% below current price
+
+By implementing the above fixes and evolution steps, we aim to improve the bot's performance and increase its profitability.
+
+--- 2025-12-30 07:53:28.139502 ---
+### Diagnosis and Immediate Fixes:
+
+1. **Low Win Rate (49.3%)**:
+   - The win rate is below the 50% mark, indicating that the current strategy might not be optimized for the current market conditions. This could be due to various factors including signal quality, risk management, or entry/exit criteria.
+
+2. **Drawdown**:
+   - There isn't any specific drawdown data provided, but with a low win rate, there might be some drawdowns over time. However, without knowing the magnitude and duration of these drawdowns, it's difficult to pinpoint if they are problematic.
+
+3. **Bad Entries**:
+   - Bad entries could be due to signals that result in losses. This might be because the bot is taking trades when prices are already trending against it or when there is high volatility.
+
+4. **Bugs**:
+   - While we don't have specific code, if the bot's win rate has decreased significantly despite minimal changes, there might be some hidden bugs affecting performance.
+
+### Immediate Fixes:
+
+1. **Adjust Risk Management**:
+   - Lower the minimum score (`min_score`) to ensure that the bot does not miss out on profitable trades due to overly stringent entry criteria.
+   
+2. **Increase Risk Exposure**:
+   - Increase the risk exposure by slightly raising the maximum leverage or position size if it's within acceptable limits.
+
+3. **Disable Signal**:
+   - Temporarily disable the current signal and use a simpler strategy (e.g., a moving average crossover) to see if performance improves.
+
+### Proposed Next Evolution:
+
+1. **New Filter**:
+   - Implement a new filter based on recent market volatility. For example, add a condition that checks for high volatility before taking trades to avoid entering during extreme price fluctuations.
+
+2. **Dynamic Drawdown Management**:
+   - Introduce dynamic drawdown management to automatically adjust risk parameters (e.g., leverage or position size) based on the current drawdown level.
+
+3. **Funding Arbitrage**:
+   - If using a perpetual futures contract, implement a simple funding arb strategy to potentially offset losses due to changes in interest rates.
+
+### Python Patch:
+
+Here’s an example of a patch that adjusts the minimum score and incorporates a new volatility filter:
+
+```python
+# Original line: min_score = 0.6
+min_score = 0.5
+
+# Add this function to calculate recent volatility
+def calculate_volatility(data, window=20):
+    return data['close'].rolling(window=window).std()
+
+# Modify the entry condition to include volatility filter
+if signal > min_score and calculate_volatility(prices) < 100:  # Adjust threshold as needed
+    enter_trade()
+```
+
+### Predicted Next 24h Market Behavior:
+
+Given the current market environment (Extreme Fear, BTC ranging $86-88k), I predict a continuation of lower volatility but with potential for minor price movements. The bot should be prepared to take advantage of any small trends while maintaining strict risk management.
+
+**Optimal Stance**: **TIGHTENED**
+
+- The bot should continue to use the tightened risk parameters and ensure that all trades are well-managed.
+- Keep an eye on the market volatility and adjust dynamically if necessary.
+- Consider implementing a trailing stop loss to lock in profits without significantly increasing drawdowns.
+
+By following these immediate fixes and proposing the next evolution, the bot's performance should improve over time.
+
+--- 2025-12-30 08:22:51.279036 ---
+**Diagnosis:**
+
+1. **Low Win Rate (49.3%)**: This is a significant issue that suggests the bot's strategy or execution might be flawed.
+2. **Action TIGHTENED**: This indicates that recent changes have resulted in tighter conditions, which could be exacerbating the win rate problem.
+
+**Immediate Fixes:**
+
+1. **Lower Min_Score**: Raising the minimum score threshold will tighten the entry criteria, potentially leading to fewer trades but higher average trade quality.
+   ```python
+   min_score = 0.6  # Lowering from current value (if applicable)
+   ```
+
+2. **Adjust Risk**: Reducing risk per trade might help mitigate losses while maintaining a reasonable win rate.
+   ```python
+   risk_per_trade = 100  # Adjust based on your risk tolerance
+   ```
+
+3. **Disable Signal**: If the signal is causing more harm than good, consider disabling it temporarily to assess its impact.
+   ```python
+   use_signal = False  # Set to True if you wish to re-enable
+   ```
+
+**Next Evolution:**
+
+1. **New Filter**: Implementing a momentum filter could help identify trends better and increase win rate.
+   ```python
+   def momentum_filter(prices, window=5):
+       return prices.diff(window).mean() > 0
+   ```
+
+2. **DCA Rule**: Dollar-Cost Averaging (DCA) can be implemented to reduce the impact of market volatility on each trade.
+   ```python
+   dca_threshold = 1  # Number of trades before re-evaluating position
+   dca_amount = risk_per_trade / dca_threshold
+   ```
+
+**Code Change:**
+
+Here is a proposed Python patch incorporating some of these suggestions:
+```python
+# Current bot configuration
+min_score = 0.7  # Lowering from current value (if applicable)
+risk_per_trade = 150  # Adjust based on your risk tolerance
+use_signal = True
+
+def momentum_filter(prices, window=5):
+    return prices.diff(window).mean() > 0
+
+def apply_filters(prices):
+    if not momentum_filter(prices):
+        return False
+    return True
+
+# Main trading logic
+for trade in trades:
+    if use_signal and not signal(trade):
+        continue
+    
+    if not apply_filters(prices):
+        continue
+    
+    # Execute trade
+    execute_trade(trade, risk_per_trade)
+```
+
+**Predicted Next 24H Market Behavior:**
+
+Given the current market condition of "Extreme Fear" with BTC ranging from $86-88k:
+
+1. **Market Sentiment**: Expect continued fear and consolidation as major players may be adjusting their positions.
+2. **Potential Movement**: Minor corrections within the current range are likely, but major price movements may occur once market sentiment stabilizes.
+
+**Optimal Stance:**
+
+1. **Risk Management**: Maintain a conservative approach with tight stop-losses and use DCA to limit exposure to volatility.
+2. **Trend Following**: Utilize the momentum filter to identify potential trend reversals or continuations, guiding your trading decisions.
+
+By implementing these changes, we aim to improve the bot's performance and increase its chances of compound returns over time.
+
+--- 2025-12-30 10:12:50.851785 ---
+### Diagnosis of Issues:
+
+1. **Low Win Rate (49.3%)**: This is a significant issue. A win rate of 49% indicates that the bot is not effectively distinguishing between profitable trades and losses, leading to suboptimal performance.
+
+2. **Action: TIGHTENED (Low Win Rate)**: The action suggests that the current risk management might be too strict, causing premature exits on potentially profitable trades.
+
+3. **Market Context**: BTC is trading in an "Extreme Fear" market with prices ranging from $86-88k. This suggests a high degree of volatility and potential for sudden changes in market sentiment.
+
+### Immediate Fixes:
+
+1. **Lower Min_Score**: A lower `min_score` could allow more trades that might otherwise be considered too risky, potentially improving the win rate.
+   
+2. **Adjust Risk Management**: We can adjust the risk management parameters to be less restrictive while still maintaining a reasonable level of safety.
+
+3. **Disable Signal for Immediate Testing**: To identify if an issue is with the trading signal or other factors, we can disable the trading signal and rely on basic market conditions for testing.
+
+### Next Evolution:
+
+1. **New Filter**: Implement a new filter based on recent price action or volume trends to help in making more informed decisions.
+   
+2. **Dynamic DCA Rule**: Introduce a dynamic dollar-cost averaging (DCA) rule that adjusts the amount invested based on market conditions and performance.
+
+3. **Funding Arb**: If applicable, implement a funding arb strategy to capitalize on any discrepancies in perpetual swap funding rates.
+
+### Python Patch for Immediate Fixes:
+
+Here's a Python patch to lower `min_score` and adjust risk management parameters:
+
+```python
+# Lower min_score
+config['min_score'] = 0.75  # Adjust as needed
+
+# Adjust risk management parameters
+config['risk_factor'] = 1.2  # Increase risk factor for more aggressive trading
+config['max_position_size'] = 0.1  # Adjust position size based on your risk tolerance
+
+# Disable trading signal for immediate testing
+def should_trade(signal, current_price):
+    return False  # Always return False to disable trading signals
+```
+
+### Market Behavior Prediction and Optimal Stance:
+
+Given the "Extreme Fear" market context, I predict that BTC prices could see further volatility. The market is likely to experience both upward and downward movements due to a combination of technical factors, news events, and investor sentiment.
+
+**Optimal Stance**:
+- **Tighten Risk Management**: Continue with tightened risk management but adjust parameters as needed based on performance.
+- **Monitor Market Conditions**: Keep a close eye on market indicators such as moving averages, volume, and sentiment to make informed decisions.
+- **DCA Rule**: Implement the dynamic DCA rule to gradually increase position size when conditions are favorable.
+
+### Conclusion:
+
+By implementing these fixes and considering the proposed evolution steps, Antigravity Prime has the potential to improve its performance. The next 24 hours will likely be volatile, so it's crucial to stay adaptive and make necessary adjustments based on real-time market conditions.
+
+--- [GEMINI] 2026-01-06 14:45:56.813806 ---
+## Antigravity Prime Evolution Command: Cycle 14
+
+**Mission Status:** Profitable, but inefficient. The strategy maintains positive expectancy but suffers from high transaction costs and volatility due to low-conviction entries, especially in low-liquidity assets.
+
+---
+
+### 1. Diagnosis
+
+| Metric | Value | Diagnosis |
+| :--- | :--- | :--- |
+| **Current Balance** | $10,835.27 | Modest profit (~8.35% realized). |
+| **Win Rate (WR)** | 46.25% | Too low for efficient compounding. Indicates the signal is taking too much low-probability noise, leading to unnecessary chop losses. |
+| **Blacklist Size** | 15 Pairs | Excessive. The bot is consistently trading low-cap/meme coins (`JELLYJELLY`, `ANIME`, etc.) that are eroding capital and requiring manual blacklisting. The pair selection/initial filters are too lenient. |
+| **Market Context** | Extreme Fear, Ranging | Current WR is consistent with a ranging market (chop). The strategy needs higher precision to survive this environment. |
+
+**Primary Issues:**
+1. **Signal Quality Dilution:** The entry threshold is too low for the current choppy market, allowing noise trades.
+2. **Liquidity Risk:** The trading engine is engaging with highly illiquid, volatile pairs, leading to poor fills, slippage, and unpredictable loss events.
+
+---
+
+### 2. Immediate Fixes
+
+To address low win rate and the market's ranging nature, we must prioritize *quality over quantity*.
+
+| Action | Justification | Parameter Change |
+| :--- | :--- | :--- |
+| **Raise Signal Score Threshold** | Increase entry conviction. This immediately filters out marginal signals that are contributing to the 46.25% WR. | `min_score = 75` (Assuming previous was 65-70) |
+| **Tighten Risk/Exposure** | Reduce risk exposure during extreme fear to preserve capital efficiency and manage potential sudden volatility spikes in BTC. | `max_risk_per_trade = 1.5%` (Lowered from standard 2%) |
+| **Review DCA (If Active)** | If the bot employs DCA, confirm that the DCA multiplier is set defensively (e.g., max 1.5x initial size). **DCA is highly detrimental in flat, choppy ranges.** | **Ensure DCA module uses high price deviation and low multiplier.** |
+
+---
+
+### 3. Proposed Next Evolution
+
+The critical structural flaw is the entry of illiquid assets onto the watchlist, forcing manual blacklisting. We must implement a **Hard Liquidity Filter** at the initial pair selection stage.
+
+**Evolution Goal:** Implement a pre-trade filter that screens pairs based on verifiable 24-hour volume, immediately eliminating low-cap/meme tokens that provide unreliable signals.
+
+**Criteria:** Only trade pairs with a minimum 24-hour traded volume of **$8,000,000 USDT**.
+
+---
+
+### 4. Code Change (Python Patch)
+
+Apply this patch to the core `PairManagement` or `TradeSelection` module where pairs are initially screened for eligibility.
+
+```python
+# PATCH FOR LIQUIDITY FILTER IMPLEMENTATION (ANTIGRAVITY_PRIME v1.1.2)
+
+class PairManagement:
+    
+    MIN_24H_VOLUME_USDT = 8000000  # Minimum required volume in USDT
+
+    def filter_pairs_by_liquidity(self, raw_pairs_data: list) -> list:
+        """
+        Filters the list of potential trading pairs based on minimum 24-hour volume.
+        This mitigates slippage and risks associated with illiquid assets (e.g., meme coins).
+        """
+        filtered_pairs = []
+        
+        # Assume raw_pairs_data contains market data including 'volume_24h_usdt'
+        for pair_data in raw_pairs_data:
+            symbol = pair_data.get('symbol')
+            volume = pair_data.get('volume_24h_usdt', 0)
+            
+            if volume >= self.MIN_24H_VOLUME_USDT:
+                filtered_pairs.append(pair_data)
+            else:
+                self.log(f"PAIR REJECTED: {symbol} - Volume too low ({volume} USDT). Required: {self.MIN_24H_VOLUME_USDT}")
+                
+        return filtered_pairs
+
+    # --- Existing methods (e.g., select_best_trade) must now call this filter ---
+    # def select_best_trade(self):
+    #     potential_pairs = self.fetch_market_data()
+    #     liquid_pairs = self.filter_pairs_by_liquidity(potential_pairs)
+    #     # continue signal generation on liquid_pairs...
+```
+
+**Implementation Note:** The core code must be updated to call `filter_pairs_by_liquidity` *before* running the expensive signal generation algorithm.
+
+---
+
+### 5. Market Prediction and Optimal Stance
+
+**Prediction (Next 24h):**
+BTC is in a classic consolidation phase at high valuation ($86k-$88k) under "Extreme Fear." This often resolves with a volatility event. We predict increased price action complexity:
+1. **Initial Chop:** Continued ranging between $86,500 and $87,500.
+2. **Volatility Test:** A likely rapid move to test the range extremes ($88,500 or $85,800). Due to Extreme Fear, a **false breakout followed by rapid reversal** is highly probable.
+
+**Optimal Stance: Hyper-Selective Counter-Trend Scalping**
+
+The bot must adopt a neutral, highly precise scalping stance:
+
+*   **Bias:** Neutral (no strong directional trend).
+*   **Strategy:** Utilize the newly raised `min_score` (75) to only execute trades with clear mean-reversion signals near the edges of the $86k-$88k range.
+*   **Execution:** Extremely tight stop-losses are mandatory, as range breaks, if sustained, will be aggressive. Prioritize pairs with strong relative volume *within* the $8M threshold.
+*   **Action:** Seek shorts near $88,000 and longs near $86,500. Avoid initiating new positions mid-range ($87,000).
+
+--- [GEMINI] 2026-01-06 14:50:43.095043 ---
+The market conditions are highly challenging. Extreme Fear coupled with a tight BTC range ($86k-$88k) indicates high probability of choppy, consolidating movements punctuated by violent fakeouts designed to liquidate both sides.
+
+Antigravity Prime needs immediate recalibration to survive this volatile compression phase and prepare for the inevitable breakout.
+
+---
+
+## 1. Diagnosis
+
+| Component | Metric/Observation | Diagnosis |
+| :--- | :--- | :--- |
+| **Win Rate** | 46.25% | **Critical Issue.** The bot is successfully filtering out disastrous trades (evidenced by the profit) but is getting chopped up by noise within the current range. Entries are too liberal or stops are too tight/wide for the current volatility profile. |
+| **Balance** | $10,835.27 | Healthy initial growth (assuming $10k start). Current risk exposure is manageable, but the low Win Rate threatens stability. |
+| **Blacklist** | 15 Pairs (Many low-cap/meme) | The strategy is generating signals on low-liquidity assets, leading to reactive blacklisting when performance suffers. This burns valuable capital testing low-quality pairs. |
+| **Market Condition** | Extreme Fear, Ranging | The current strategy lacks a strong *Range Filter* or robust volatility adjustment, leading to poor entry quality (46.25% WR). |
+
+---
+
+## 2. Immediate Fixes (Triage)
+
+Given the extreme fear and ranging market, we must prioritize *signal quality* over *signal frequency*.
+
+### A. Filter Hardening
+1.  **Raise Minimum Score Threshold:** Increase the required confidence level for any trade signal.
+    *   **Action:** Set `min_score` to **0.75** (up from assumed standard 0.65 or 0.70). This forces stronger alignment across indicators, reducing range noise.
+2.  **Adjust Risk:** Temporarily reduce per-trade risk until the Win Rate stabilizes above 55% or BTC breaks the range.
+    *   **Action:** Reduce per-trade capital risk exposure from 1% (assumed) to **0.75%**.
+
+### B. Signal Disablement
+*   **Disable Extreme Signal Sources:** Given the heavy blacklisting of low-cap pairs, disable any signal module explicitly designed for detecting rapid, low-liquidity pumps (e.g., `PumpDetectorSignal` or specific low-cap modules). These signals are currently generating noise and wasting capital.
+
+---
+
+## 3. Propose Next Evolution
+
+To ensure consistent compounding towards millions, we must solve the recurring problem of trading illiquid pairs.
+
+### A. New Filter: Liquidity and Quality Gate
+Implement a mandatory filter that checks 24-hour volume and Coin Market Cap/Category before generating signals on a pair. This shifts the bot from reactive blacklisting to proactive filtering.
+
+*   **Rule 1 (Volume Minimum):** Trade only pairs with 24h trading volume > **$75,000,000 USD**. This immediately excludes the majority of the low-cap, manipulative tokens currently cluttering the blacklist.
+*   **Rule 2 (Category Filter):** Whitelist only Tier 1/Tier 2 assets (e.g., BTC, ETH, SOL, BNB, Tier 1 Altcoins). Do not allow trading of explicit "meme," "AI," or "gamefi" coins unless they meet the volume threshold for 3 consecutive days.
+
+### B. Dynamic Stop-Loss Evolution
+Implement an **Average True Range (ATR)**-based stop-loss calculation. In ranging and fearful markets, fixed percentage stops are either too tight (getting hit on minor range deviations) or too loose (leading to unnecessary drawdown).
+
+*   **Implementation:** Stop-Loss = Entry Price ± (ATR Multiplier * ATR Value).
+    *   *Set ATR Period:* 14
+    *   *Set Multiplier:* 2.5 (Provides protection against usual volatility swings).
+    *   **Benefit:** Stops automatically widen during volatility spikes (Extreme Fear) and tighten during calm periods.
+
+---
+
+## 4. Indicator Sensitivity: Volatility Adaptation
+
+The bot needs to be less sensitive to minor price fluctuations (choppiness) but quick to recognize true breakout attempts.
+
+```json
+{
+  "min_score": 0.75,
+  "rsi_oversold": 28,
+  "rsi_overbought": 72,
+  "ma_period_fast": 12,
+  "ma_period_slow": 55,
+  "bollinger_band_std_dev": 2.1,
+  "atr_period": 14,
+  "atr_multiplier_stop": 2.5
+}
+```
+
+---
+
+## 5. Code Change Needed: Liquidity Filter Patch
+
+We need to add the proactive liquidity check to the main pair selection loop (`_evaluate_pair_suitability`). This is an essential step to move beyond the current blacklisting dependency.
+
+Assuming the market object (`self.data_fetcher`) can provide 24h volume:
+
+```python
+# PATCH: Implement Volume/Liquidity Gate
+import logging
+
+class AntigravityPrime(TradingBot):
+    
+    # ... existing __init__ and methods ...
+
+    def _evaluate_pair_suitability(self, symbol: str) -> bool:
+        """
+        Evaluates if a pair meets minimum trading criteria (Volume and Liquidity).
+        """
+        
+        # 1. Existing Blacklist Check
+        if symbol in self.blacklist:
+            return False
+            
+        # --- NEW LIQUIDITY GATE ---
+        
+        try:
+            # Assuming data_fetcher can retrieve 24h volume
+            market_data = self.data_fetcher.get_market_summary(symbol)
+            volume_24h = market_data.get('volume_24h', 0)
+            
+            # $75,000,000 minimum volume threshold (Adjust based on quote asset: usually USDT/USD)
+            MIN_VOLUME_THRESHOLD = 75000000.0 
+            
+            if volume_24h < MIN_VOLUME_THRESHOLD:
+                logging.debug(f"[{symbol}] Failed Liquidity Check: 24h Volume ${volume_24h:,.0f} < ${MIN_VOLUME_THRESHOLD:,.0f}. Skipping.")
+                
+                # Proactively blacklist if volume is consistently too low to prevent signal generation waste
+                if volume_24h < (MIN_VOLUME_THRESHOLD / 2):
+                    self.blacklist.append(symbol)
+                    logging.warning(f"[{symbol}] Permanently adding to blacklist due to critically low volume.")
+                    
+                return False
+                
+        except Exception as e:
+            logging.error(f"Error checking market data for {symbol}: {e}")
+            return False
+
+        # 2. Existing standard checks (e.g., funding rate, technical indicators availability)
+        # ... (rest of the original suitability function) ...
+
+        return True
+
+```
+
+---
+
+## 6. Prediction and Optimal Stance
+
+**Prediction (Next 24 Hours):**
+
+The Extreme Fear and tight range ($86k-$88k) suggests a high-probability resolution within 24-48 hours. The most common pattern during fearful consolidation is a **"Liquidity Grab Dip"**: a sharp move down to the range floor (or slightly below, targeting $85,000-$84,500) to maximize liquidations before the true directional move begins.
+
+**Optimal Stance:** **Cautiously Bullish/Range Play**
+
+1.  **Avoid Shorting the Floor:** Do not initiate high-risk shorts near $86,000. Shorts generated here are highly susceptible to sudden reversal.
+2.  **Focus on Long Entries:** Prioritize high-score (0.75+) long signals, ideally generated when price tests the $86k support zone or briefly dips below it, accompanied by volume spikes (signaling a potential sweep).
+3.  **Hedge Against Breakdown:** If the $85,000 level is lost convincingly (e.g., 4-hour candle close below it), the market structure has broken, and the bot should immediately switch to high-conviction short signals until the fear subsides.
+
+The current strategy is to survive the chop using tighter filters (`min_score: 0.75`) and prepare for a leveraged entry on the first successful retest of the range floor.
+
+--- [GEMINI] 2026-01-06 15:05:00.659546 ---
+# Evolution Engine: Antigravity Prime — Cycle 001
+
+The bot has successfully maintained initial capital and filtered out highly illiquid or dangerous micro-caps, a critical safety measure. However, the current performance profile suggests the strategy is struggling with the current range-bound, high-fear environment, leading to unstable entries.
+
+| Metric | Value | Diagnosis |
+| :--- | :--- | :--- |
+| **Current Balance** | $10,835.27 | Healthy initial compounding, but slow. |
+| **Win Rate** | 46.25% | Too low. Suggests entries are premature or lack conviction in noisy markets. |
+| **Market Condition** | Extreme Fear, Ranging ($86k-$88k) | Volatility is high, but directional momentum is low. Standard trend-following or breakout systems will be whipsawed. |
+
+---
+
+## 1. Diagnosis of Issues
+
+The primary issue is the **Mismatch between Strategy and Market State**. A 46.25% win rate in an 'Extreme Fear' ranging market indicates the bot is likely entering trades based on minor fluctuations (noise) that immediately reverse. This leads to frequent, small losses which erode the capital base faster than the successful trades rebuild it.
+
+**Specific Drawdowns are likely caused by:**
+1. **Low Conviction Entries:** The minimum signal score is likely too permissive, allowing trades that are easily invalidated.
+2. **Standard Stop-Loss Placement:** In high-volatility environments, standard percentage stops (e.g., 2%) are easily hit by noise before the trade thesis can play out.
+3. **Over-reliance on Momentum:** The bot is likely still seeking strong momentum trades, which are rare and often fakeouts during consolidation.
+
+---
+
+## 2. Immediate Fixes (Stabilization Phase)
+
+To immediately address the low win rate and stabilize performance in the range:
+
+1. **Raise Minimum Score:** Increase the threshold for entry conviction. This forces the bot to wait for higher quality signals, reducing trade frequency but increasing potential accuracy.
+    * **Action:** Increase `min_score` by **+15%**. (e.g., if current score is 60, raise to 69).
+2. **Adjust Risk Exposure:** Temporarily reduce risk per trade to mitigate drawdowns from inevitable fakeouts caused by Extreme Fear.
+    * **Action:** Lower **Max Risk Per Trade** from (assumed) 2.0% to **1.5%**.
+3. **Market Filter Activation:** Ensure any existing volatility-based filters are set to prioritize **Mean Reversion** over **Momentum Continuation** in the current range. If no such filter exists, we will define one in the evolution phase.
+    * **Action:** Disable any high-leverage (>5x) momentum signals for the next 48 hours.
+
+---
+
+## 3. Proposed Next Evolution (Adaptive Strategy)
+
+The key to compounding to millions is adaptability. We must formalize a strategy that thrives in current congestion:
+
+### Evolution 3.1: Volatility-Adaptive Sizing and Stop Placement (VASP)
+
+We must move away from fixed percentage stop-losses and position sizing.
+
+**Rule Implementation:**
+1. **ATR-Based Stop-Loss (Dynamic Exit):** Stops should be set dynamically based on the recent 14-period Average True Range (ATR). A trade stop should be placed at `1.5 * ATR` away from the entry price, allowing room for market noise without unnecessary stop-outs.
+2. **Inverse Volatility Position Sizing:** In high-volatility (Extreme Fear), the bot trades smaller. In low-volatility (Complacency), the bot trades larger. This keeps the effective dollar risk consistent.
+
+### Evolution 3.2: Range Boundary Scanner
+
+Since BTC is ranging $86k-$88k, the bot needs to identify and capitalize on these boundaries:
+*   **Definition:** Look for trades only when the price is within 0.5% of the defined short-term high ($88k) or low ($86k).
+*   **Signal Priority:** Prioritize **short** signals near $88k and **long** signals near $86k. Ignore all mid-range signals.
+
+---
+
+## 4. Indicator Sensitivity Patch
+
+Given the high-volatility, low-momentum, ranging market caused by **Extreme Fear**, indicators need to be tuned for *extreme* reversal conditions and reduced noise.
+
+| Indicator | Default Sensitivity | Adjusted Value | Rationale |
+| :--- | :--- | :--- | :--- |
+| **RSI Overbought** | 70 | **80** | Require deeper overbought conditions for reliable short reversal signals. |
+| **RSI Oversold** | 30 | **20** | Require deeper oversold conditions for reliable long reversal signals (fear capitulation). |
+| **Moving Average Period (Trend Filter)** | 21 | **50** | Increase period to filter out whipsaws and confirm major trend direction amidst minor range noise. |
+| **Stochastics K/D Period** | 14/3 | **20/5** | Slow down Stochastics to only register significant momentum shifts, ignoring intraday noise. |
+
+```json
+{
+  "rsi_oversold": 20,
+  "rsi_overbought": 80,
+  "ma_period": 50,
+  "stochastics_k_period": 20,
+  "stochastics_d_period": 5
+}
+```
+
+---
+
+## 5. Code Change Patch (Risk Management Override)
+
+We must enforce the immediate risk reduction outlined in Section 2 by overriding the dynamic position sizing logic temporarily. This patch assumes the risk calculation is managed by a variable `max_capital_risk_percentage`.
+
+```python
+# PATCH: Risk Management Override for Extreme Fear Market State
+
+# Define market state conditions (simulated variables based on external API data)
+market_state = "EXTREME_FEAR_RANGING"
+
+# --- Core Trading Logic ---
+
+def calculate_position_size(total_balance, current_leverage, desired_risk_pct):
+    """
+    Calculates the appropriate position size based on current market state and risk settings.
+    """
+    # Safety Override: Apply temporary risk reduction during Extreme Fear
+    if market_state == "EXTREME_FEAR_RANGING":
+        # Override standard risk (e.g., 2.0%) down to 1.5%
+        max_capital_risk_percentage = 0.015 
+    else:
+        # Default risk setting
+        max_capital_risk_percentage = desired_risk_pct / 100.0
+
+    # ... rest of position calculation logic ...
+    
+    # Example logic placeholder:
+    effective_risk = total_balance * max_capital_risk_percentage
+    # size = effective_risk / (stop_loss_distance_pct / 100.0)
+    
+    return size
+
+# Apply Immediate Fix 1: Raise Minimum Signal Score (if configurable globally)
+# (Assuming 'signal_engine_config' is the relevant file)
+signal_engine_config['min_entry_score'] *= 1.15 
+# This line ensures a 15% increase in required entry score.
+```
+
+---
+
+## 6. Prediction and Optimal Stance
+
+**Prediction (Next 24 Hours):** BTC will likely continue to consolidate within the $86,000 to $88,500 band. Extreme Fear prevents aggressive buyers from stepping in, while the recent low ($86k) holds firm due to liquidity depth. Expect violent, low-volume whipsaws near the boundaries.
+
+**Optimal Stance: Cautious Mean Reversion (Neutral Bias)**
+
+*   **Focus:** High-conviction mean-reversion trades (shorting overbought/longing oversold) specifically on BTC and ETH, avoiding smaller caps until market structure improves.
+*   **Strategy:** Be patient. Only execute trades that meet the new, high `min_score` threshold, focusing on signals originating from the extreme edges of the current trading range.
+*   **Leverage:** Maintain moderate leverage (2x-3x) to handle the increased volatility inherent in the extreme fear environment.
+
+--- [GEMINI] 2026-01-06 15:32:21.985960 ---
+The Antigravity Prime system is currently exhibiting classic signs of **whipsaw fatigue** coupled with **poor signal-to-noise ratio** management in a high-fear, ranging market.
+
+The Win Rate (46.25%) is dangerously low. While a bot can be profitable with a low WR if its Risk/Reward (R:R) is excellent (e.g., 1:2 or higher), a sub-50% WR usually indicates that marginal trades are eroding capital via frequent small losses. The bot is actively trading noise within the BTC $86k-$88k range.
+
+---
+
+## 1. Diagnosis
+
+| Parameter | Value | Assessment | Impact |
+| :--- | :--- | :--- | :--- |
+| **Win Rate** | 46.25% | **Critical.** Indicates entry quality is poor or stops are being triggered too easily by chop. | High drawdown potential if R:R isn't > 1.5. |
+| **Market Condition** | Extreme Fear, Ranging | **High Volatility Risk.** Traditional momentum strategies fail here; mean reversion is required. | Leads directly to whipsaws and low WR. |
+| **Blacklist Size**| 15 pairs | **Alarming Diversification Failure.** The strategy is losing money primarily on low-cap, high-beta assets (like ICNT, JELLYJELLY, ANIME). | Suggests insufficient liquidity/volatility filtering on altcoins. |
+| **Balance** | $10,835.27 | **Current Growth is Slow.** Needs aggressive, but safe, compounding. | Strategy is failing to capitalize on short-term moves. |
+
+---
+
+## 2. Immediate Fixes
+
+The goal is to increase the conviction threshold and reduce overall risk exposure to altcoin noise.
+
+| Action | Adjustment | Rationale |
+| :--- | :--- | :--- |
+| **Raise Minimum Score** | Increase `MIN_SCORE` by +15%. (e.g., if current is 70, set to 80.5) | Filters out marginal signals generated by choppy price action, forcing the bot to wait for higher confirmation. |
+| **Adjust Risk per Trade** | Reduce `DEFAULT_RISK_PER_TRADE` to 0.5% (from an assumed 1.0%). | Halves capital exposure during a period of high uncertainty and potential flash crashes ($86k break). |
+| **Filter Altcoin Liquidity** | Temporarily require a minimum 24-hour volume threshold of **$150 Million** for *all* non-BTC/ETH pairs. | Immediately stops trading the low-liquidity, high-risk assets that populate the blacklist. |
+| **Disable Weak Signals** | Disable all momentum-based signals (e.g., MACD cross) temporarily. | Focus the strategy entirely on mean reversion (RSI extremes, BB deviations) until a clear trend emerges. |
+
+---
+
+## 3. Propose Next Evolution
+
+The bot must become volatility-aware in its position sizing and stop management.
+
+### Evolution 1: Adaptive Stop-Loss Implementation (VATS)
+
+The current fixed stop-loss is inadequate for ranging volatility.
+
+*   **Rule:** Implement an Average True Range (ATR) based stop-loss (e.g., 2.5x ATR from the entry price).
+*   **Mechanism:** When volatility increases (ATR rises), the stop loss widens automatically to accommodate market noise, preventing whipsaws. When volatility drops, the stop tightens, improving R:R.
+
+### Evolution 2: Range Boundary Reinforcement Filter
+
+Introduce a mechanism that specifically identifies and prioritizes mean-reversion trades *only* when price is near known horizontal boundaries.
+
+*   **Condition:** Require price to be within 0.5% of the 5-day high or 5-day low before taking a short-term counter-trend trade (e.g., buying at $86k or selling at $88k).
+*   **Benefit:** Provides structural confirmation, preventing mid-range noise trades.
+
+### Evolution 3: Funding Rate Arbitrage Layer (Passive Income)
+
+In a ranging market, volatility-based fees often consume profits. A passive layer can capture predictable premium:
+
+*   **Mechanism:** When high positive funding rates persist (> 0.02% average for 6 hours), the bot opens a small, tightly managed delta-neutral position (Long Spot / Short Futures). This provides slow, reliable compounding uncorrelated with price action, helping smooth equity curve during chop.
+
+---
+
+## 4. Indicator Sensitivity
+
+We are tuning indicators to become less sensitive (higher period values) and require greater extremes (wider bands) to signal trades, mitigating range noise.
+
+```json
+{
+  "rsi_oversold": 23,
+  "rsi_overbought": 77,
+  "atr_period": 20,
+  "ma_period": 35,
+  "bollinger_band_deviation": 2.5
+}
+```
+
+---
+
+## 5. Code Change Patch
+
+We assume a configuration file or a `config.py` where core parameters are defined. The patch applies the immediate necessary adjustments.
+
+```python
+# ==============================================================================
+# PYTHON PATCH FOR ANTIGRAVITY PRIME V2.1
+# OBJECTIVE: Reduce noise, increase conviction, lower overall risk in extreme fear.
+# ==============================================================================
+
+# 1. RISK ADJUSTMENT (Reducing exposure during high volatility)
+# Current Default Risk (Assumed: 1.0%)
+DEFAULT_RISK_PER_TRADE = 0.005 # Adjusted to 0.5% of equity
+
+# 2. ENTRY CONVICTION ADJUSTMENT (Raising filter for signal quality)
+# Current Min Score (Assumed: 70)
+MIN_SCORE_THRESHOLD = 80.5 
+
+# 3. LIQUIDITY FILTER (Protecting against low-cap volatility)
+# Temporary hard floor for altcoin trading.
+MIN_24H_VOLUME_USD = 150_000_000 
+
+# 4. SIGNAL MODULATION (Disabling common range-bound noise signals)
+SIGNAL_MANAGER_CONFIG = {
+    "RSI_DIVERGENCE_ACTIVE": True,
+    "MEAN_REVERSION_ACTIVE": True,
+    "MOMENTUM_CROSS_ACTIVE": False,  # DISABLED: Too noisy in range
+    "VOLATILITY_BREAKOUT_ACTIVE": False, # DISABLED: Waiting for range break
+    "RANGE_BOUND_FILTER": True # Ensure range filter is enabled
+}
+```
+
+---
+
+## 6. Prediction and Optimal Stance
+
+**Prediction (Next 24h):** The range ($86k-$88k) will hold, but tension is extremely high due to the Extreme Fear reading. Volatility compression is nearing its limit. We anticipate continuous attempts to test $86,000. If $86k fails decisively (e.g., a 4H close below $85,500), liquidation cascades will initiate, likely targeting $83,000 rapidly.
+
+**Optimal Stance:** **CAUTIOUS PREDATOR**
+
+1.  **High Cash/Equity Cushion:** Preserve capital (0.5% risk).
+2.  **Mean Reversion Focus:** Only execute scalps/short-term trades on BTC/ETH when price reaches extreme boundaries ($88k short, $86k long) with high confidence scores (> 85).
+3.  **Bias Setup:** Maintain portfolio allocation and signal readiness for a high-conviction **short setup**. If $88k is tested again, a mean-reversion short is currently higher probability than a break to new highs, given the 'Extreme Fear' sentiment.
+4.  **No New Altcoin Exploration:** Strictly adhere to the new liquidity filter.
+
+--- [GEMINI] 2026-01-06 16:03:43.220465 ---
+The current state shows promising capital growth but a dangerously low win rate in a challenging market environment (Extreme Fear, Tight Range). The 46.25% win rate indicates that Antigravity Prime is suffering from whipsaws and false signals, characteristic of choppy ranging conditions.
+
+The core mission is compounding to millions, which requires *survivability* in noise and *efficiency* during trends. We must immediately address the noise generated by the $86k-$88k BTC range.
+
+---
+
+## 1. Diagnosis
+
+| Component | Status | Issue | Impact |
+| :--- | :--- | :--- | :--- |
+| **Win Rate** | 46.25% | Too low for sustainable compounding. | High risk of cascading losses if average loss size increases slightly. Indicates poor entry quality (whipsaws). |
+| **Market Condition** | Extreme Fear, Ranging | Confirms signal noise (whipsaws). Momentum strategies fail here. | Directly responsible for the low win rate. |
+| **Blacklist** | 15 Pairs | Extensive. Indicates persistent issues with low-liquidity/manipulated altcoins generating bad signals. | Diversion of resources/risk to poor quality pairs. |
+| **Drawdown Risk** | Elevated | Ranging markets can lead to sequential stop-outs. | Threatens the $10k base capital. |
+
+**Primary Root Cause:** The trading engine is using momentum/trend-following logic in a mean-reversion (ranging) environment, leading to premature entries and high stop-loss frequency.
+
+---
+
+## 2. Immediate Fixes
+
+We need to suppress marginal trades and aggressively filter for quality until a clear trend emerges.
+
+1.  **Raise Minimum Score Threshold:** Increase the required conviction level to filter out low-probability signals generated by the current range noise.
+    *   **Action:** Increase `min_score` by **15%** (e.g., if it was 0.70, move to 0.805).
+
+2.  **De-risk Blacklist Entries:** Immediately review and permanently disable trading on any pair that has demonstrated high volatility unrelated to BTC, or suffered multiple consecutive stop-losses. The extensive blacklist suggests the bot is chasing high-risk low-liquidity altcoins.
+    *   **Action:** Implement a hard limit on position size (e.g., 50% reduction) for all currently blacklisted pairs should they be un-blacklisted later, treating them as high-risk watchlist assets.
+
+3.  **Adjust Stop-Loss Buffer:** Since we are expecting tight movements, the stop-loss mechanism needs to be slightly tighter to preserve capital during whipsaws, but aggressive enough to avoid immediate slippage.
+    *   **Action:** Reduce average expected holding time by 20% to prioritize scalping small gains within the range boundaries.
+
+---
+
+## 3. Proposed Next Evolution: The Range Guard Module
+
+To achieve millions, the bot must stop taking trades when the market is indecisive. We will implement an **ADX Range Guard**.
+
+**Evolution Goal:** Prevent the bot from initiating momentum trades when the Average Directional Index (ADX) signals a lack of strong trend. This will directly combat the current low win rate problem.
+
+**Mechanism:**
+
+1.  Calculate ADX (Trend Strength) for the primary timeframe.
+2.  If `ADX < 20` (or `adx_threshold_low`):
+    *   **Disable** all standard trend-following signals.
+    *   **Enable** mean-reversion/scalping signals only if the price is within 1 ATR of the established 21-period moving average.
+
+This evolution ensures that during the current BTC range, the bot conserves capital (low frequency) or scalps high-probability mean-reversion trades (higher win rate).
+
+---
+
+## 4. Indicator Sensitivity
+
+We are tuning for higher certainty at range extremes and faster reaction within the range.
+
+```json
+{
+  "rsi_oversold": 25,
+  "rsi_overbought": 75,
+  "ma_period_fast": 12,
+  "adx_period": 14,
+  "adx_threshold_low": 20,
+  "atr_period": 14
+}
+```
+
+---
+
+## 5. Code Change (ADX Range Guard Patch)
+
+This patch introduces the proposed ADX filter to the signal validation process, rejecting typical momentum trades when trend strength is low.
+
+**Target File:** `signal_validator.py` or equivalent signal processing module.
+
+```python
+# =================================================================
+# PYTHON PATCH: ADX Range Guard Implementation
+# =================================================================
+
+def validate_signal(signal_context: dict, market_data: dict, indicator_patches: dict) -> (bool, str):
+    """
+    Validates the generated signal against current market conditions 
+    and required conviction filters (including new ADX check).
+    """
+    
+    # 1. Load Patches
+    min_score = indicator_patches.get('min_score_threshold', 0.70) # Assuming the 15% increase applied here
+    adx_threshold_low = indicator_patches.get('adx_threshold_low', 20)
+    
+    signal_score = signal_context.get('score', 0.0)
+    signal_type = signal_context.get('strategy', 'Unknown')
+    adx_value = market_data.get('ADX', 0.0)
+
+    # Check 1: Minimum Conviction Score
+    if signal_score < min_score:
+        return False, f"Score too low ({signal_score:.2f} < {min_score:.2f})"
+
+    # Check 2: ADX Range Guard (Suppressing Momentum in Choppy Markets)
+    if signal_type in ['Momentum', 'Breakout'] and adx_value < adx_threshold_low:
+        # Market is ranging/sideways, trend signals are unreliable (low win rate culprit)
+        print(f"[RANGE GUARD] Suppressing {signal_type} signal on {signal_context['symbol']}. ADX ({adx_value:.2f}) is below threshold ({adx_threshold_low}).")
+        
+        # Allow mean-reversion (MR) trades to pass, assuming MR logic handles the risk.
+        if signal_type != 'Mean_Reversion':
+            return False, "ADX_Suppression_Ranging"
+            
+    # Check 3: Final Acceptance
+    return True, "Signal_Accepted"
+
+# Apply the new elevated min_score via immediate fix action:
+# IMMEDIATE_CONFIG_UPDATE: {"min_score_threshold": <CURRENT_MIN_SCORE> * 1.15}
+# =================================================================
+```
+
+---
+
+## 6. Prediction and Optimal Stance
+
+**Prediction:** The Extreme Fear index combined with tight ranging at high price levels ($86k-$88k) suggests a volatility compression leading to a major expansion. Given the psychological barrier of $88k, we predict a high-velocity break of the range within the next 24-48 hours. The direction is unpredictable, but the volatility will spike.
+
+**Optimal Stance: Cautious Consolidation / Pre-Breakout Readiness**
+
+1.  **Trade Frequency:** Significantly reduce trade frequency (the ADX guard will enforce this).
+2.  **Risk Management:** Hold current capital in high-interest low-risk assets (e.g., stablecoin yield) until the ADX filter confirms a new trend above 20.
+3.  **Liquidity Stance:** Maintain high liquidity reserves for a large, high-conviction entry once the $86k support or $88k resistance is clearly broken (i.e., when the ADX filter allows the trade).
+4.  **Focus:** Mean-reversion scalping on high-liquidity pairs only (BTC, ETH) until the breakout.
+
+--- [GEMINI] 2026-01-06 20:27:51.617720 ---
+### Antigravity Prime Evolution Log V10.8
+
+**Current Objective Status:** Surviving initial volatility, but efficiency is low (Win Rate 46.25%). Capital preservation is paramount during this Extreme Fear phase.
+
+---
+
+### 1. Diagnosis
+
+| Issue | Observation | Impact |
+| :--- | :--- | :--- |
+| **Low Win Rate** | 46.25% in a ranging market. | Indicates high noise-to-signal ratio. The bot is being whipsawed, taking small, unnecessary losses. Strategy relies heavily on R:R, which is brittle during drawdowns. |
+| **Market Condition** | Extreme Fear, BTC ranging $86k-$88k. | Momentum strategies (likely primary signal source) are non-functional. Strategy needs to pivot to mean reversion or be heavily filtered. |
+| **Entry Quality (Inferred)** | Blacklist is large (15 pairs). | The bot is exposed to too many low-quality or highly volatile, non-trending assets. Signal scoring is too permissive. |
+
+### 2. Immediate Fixes (Stabilization Phase)
+
+The primary goal is to increase the quality of entries immediately to survive the current market chop and raise the effective win rate above 50%.
+
+1.  **Tighten Signal Minimum Score (`min_score`):**
+    *   Increase the required certainty for trade entry. This is the fastest way to filter noise and combat whipsaws.
+    *   *Action:* Raise `min_score` from assumed 0.60/0.65 to **0.78**. (A 20%+ increase in required confidence).
+2.  **Increased Volatility Tolerance:**
+    *   Prevent entries immediately after high-volume price spikes which are common in fear-driven ranges.
+    *   *Action:* Increase the `atr_multiplier` for stop-loss and entry validation.
+3.  **Blacklist Validation:**
+    *   Verify the current blacklist remains enforced. The bot is effectively eliminating high-risk exposure, which is a key survival mechanism. No immediate changes required here.
+
+### 3. Proposed Next Evolution (Strategic Growth)
+
+To achieve compounding to millions, the bot must be highly efficient across *all* market regimes, especially during extended ranging periods.
+
+**Proposal: Implementation of a Choppiness Index (CI) Filter**
+
+*   **Mechanism:** Integrate a separate filter that measures directional activity versus total volatility (Choppiness Index or similar band width indicator).
+*   **Logic:** If the CI is high (indicating market chop/sideways movement) for the bot's chosen timeframe:
+    *   **Penalize Momentum Signals:** Reduce the score of all momentum-based entries (e.g., MACD cross, trend breaks) by a factor of 0.25.
+    *   **Prioritize Reversion Signals:** Increase the score of mean-reversion signals (e.g., highly extreme RSI/Bollinger Band touches).
+*   **Expected Result:** Capital preservation during 60%+ of the market cycle (range-bound periods), allowing full capital deployment when true trends emerge.
+
+---
+
+### 4. Indicator Sensitivity: Indicator Patches
+
+The market is currently showing fast, shallow swings within a tight range, driven by fear. We need indicators that are more discerning (high `min_score`) but prepared for sudden, deep reversals (standard RSI extremes).
+
+```json
+{
+  "min_score": 0.78,
+  "rsi_overbought": 75,
+  "rsi_oversold": 25,
+  "ma_period_fast": 20,
+  "ma_period_slow": 50,
+  "atr_multiplier": 3.0,
+  "dca_tolerance_percent": 0.045
+}
+```
+
+*Rationale for Patches:*
+*   **`min_score` (0.78):** Drastically raises the bar for entry quality to combat 46% win rate.
+*   **RSI (75/25):** Widened thresholds. Given the "Extreme Fear" environment, when a reversal signal occurs, it's often a violent overreaction. We only want to enter at true extremes to ensure maximum mean reversion potential.
+*   **`atr_multiplier` (3.0):** Widens stop-loss calculation slightly. This allows the bot to endure the current whipsaw volatility within the range without being prematurely stopped out on good entries.
+*   **`dca_tolerance_percent` (0.045):** Allows more room for DCA to work before panicking, acknowledging the possibility of deeper pullbacks in a fear environment.
+
+---
+
+### 5. Python Patch (Applying Immediate Fix)
+
+Assuming the `min_score` is defined within the main configuration block (or a shared configuration file like `config.py`):
+
+```python
+# FILE: config.py (or relevant configuration object)
+
+# --- PATCH START ---
+
+# Signal Generation and Entry Filtering Parameters
+# Rationale: Increased to filter out noise in the current ranging/fear market.
+MIN_SIGNAL_SCORE = 0.78
+
+# --- PATCH END ---
+```
+
+**Note:** If the trading logic involves a dynamic calculation of ATR stop-loss (using the multiplier above), ensure that the function pulls the newly patched `atr_multiplier` (3.0) from the `indicator_patches` JSON block.
+
+---
+
+### 6. 24-Hour Market Prediction and Optimal Stance
+
+**Prediction:** **Continued Range Compression with High Probability of False Move.**
+
+The $86k-$88k range is highly compressed. The "Extreme Fear" suggests institutional participants are accumulating/distributing quietly. We predict the range will hold for the next 12-18 hours, followed by a sharp, liquidity-seeking move. This move is most likely a **false breakdown below $86k** to sweep stops, followed by a rapid, aggressive reversal back into the range and a potential breakout towards the upside.
+
+**Optimal Stance:** **Defensive/Selective Mean Reversion**
+
+1.  **Mode:** **Capital Preservation.** Prioritize high-conviction trades only (0.78+ score).
+2.  **Strategy Focus:** Target range boundaries. Short the top ($88k area) and Long the bottom ($86k area) *only* if strong mean reversion indicators (RSI 25/75) confirm the reversal.
+3.  **Action:** The tightened `min_score` ensures Antigravity Prime sits on the sidelines during internal range chop, conserving capital and preparing for the inevitable, volatile breakout move. Deploying capital only when the market is at its current extremes.
+
+--- [GEMINI] 2026-01-06 20:39:00.054311 ---
+## Antigravity Prime Evolution Report (Cycle 004)
+
+**Current Status Summary:** The bot is exhibiting resilience in a difficult market, holding above its initial capital, but the low Win Rate (46.25%) indicates that the current strategy is being heavily penalized by the prevailing choppy, fear-driven range ($86k-$88k BTC). The bot is generating too many false positive signals.
+
+---
+
+### 1. Diagnosis of Issues
+
+| Metric | Observation | Root Cause | Severity |
+| :--- | :--- | :--- | :--- |
+| **Win Rate** | 46.25% (Too Low) | Whipsaw losses caused by aggressive entries in a non-trending range. Entries are likely triggered by minor fluctuations that fail to follow through. | High |
+| **Market Fit** | Optimized for Trend, Operating in Range/Fear | The current indicator configuration is sensitive to short-term momentum shifts, leading to premature entries that are immediately stopped out by mean reversion. | High |
+| **Blacklist** | 15 assets (Heavy) | Aggressive pruning is good, but the volume of blacklisted assets confirms the high noise level across the market, suggesting the system needs a fundamental quality check filter. | Medium |
+
+**Core Diagnosis:** Antigravity Prime is currently suffering from **signal dilution** in a volatile, directionless environment. We need to prioritize signal quality over signal quantity.
+
+### 2. Immediate Fixes
+
+To adapt instantly to the Extreme Fear ranging environment, we must raise the bar for entry conviction and reduce immediate capital risk.
+
+| Action | Justification | Target Value |
+| :--- | :--- | :--- |
+| **Increase `MIN_SCORE_THRESHOLD`** | Forces the bot to only execute trades with the highest composite indicator scores, filtering out noisy, low-conviction signals generated by ranging action. | Increase from standard (e.g., 70-75) to **80** |
+| **Adjust `RISK_PER_TRADE_PERCENT`** | Protects capital during this low-win-rate period. A lower risk percentage ensures that the required stop loss density doesn't cause excessive drawdown. | Decrease from standard (e.g., 0.75%-1.0%) to **0.5%** |
+| **Disable High-Frequency Alt Signals** | Temporarily suspend signals relying purely on momentum crossovers (e.g., fast EMA crosses) until trend direction is established, as these are primary sources of whipsaw losses. | **Disabled** (Focus solely on mean reversion/range extreme signals) |
+
+### 3. Proposed Next Evolution (Range-Proofing)
+
+The bot requires an intrinsic mechanism to detect and adapt to low-momentum environments, rather than relying solely on performance-based blacklisting.
+
+**Evolution Path: ADX Trend Filter Integration**
+
+1.  **Objective:** Implement a check for Average Directional Index (ADX) on the entry timeframe (e.g., 1H or 4H).
+2.  **Rule:** If `ADX < 20` (indicating strong ranging/consolidation):
+    *   Reduce standard position size by 40%.
+    *   Increase required R:R ratio to 1.5:1 (meaning entry needs more room to run for less risk).
+    *   Disable high-frequency scalping strategies entirely.
+3.  **Rationale:** This structural adaptation prevents the bot from committing full capital in periods where volatility is high but directional conviction is absent, directly combating the current low win rate issue.
+
+---
+
+### 4. Indicator Sensitivity Adjustments
+
+Given the high fear and volatility, we must widen the confirmation band for reversals and exhaustion signals.
+
+```json
+{
+  "rsi_oversold": 35,
+  "rsi_overbought": 65,
+  "atr_multiplier": 2.2,
+  "slow_ma_period": 50,
+  "adx_trend_confirmation": 20
+}
+```
+
+*   **RSI (35/65):** Adjusts the reversal trigger points away from the mid-point (50). The bot must wait for a deeper pullback/oversold condition before attempting a reversal trade, mitigating false entries.
+*   **ATR Multiplier (2.2):** Widens stop losses and take profit targets slightly, allowing positions more room to breathe and survive normal volatility spikes inherent in a fear-driven market.
+*   **Slow MA (50):** Focuses the trend filter on a slower moving average to filter out the noise of the $2k BTC range.
+
+### 5. Code Change Needed (Python Patch)
+
+Apply the immediate fixes to the trading configuration class.
+
+```python
+# --- START PATCH ---
+
+class TradingConfig:
+    """
+    Configuration adjustments for Antigravity Prime, reflecting Extreme Fear market conditions.
+    """
+    
+    # 1. RISK ADJUSTMENT (Immediate Fix)
+    # Reduced risk per trade due to 46.25% win rate and high market choppiness.
+    RISK_PER_TRADE_PERCENT = 0.5 
+    
+    # 2. ENTRY QUALITY ADJUSTMENT (Immediate Fix)
+    # Increased minimum score to demand higher signal conviction.
+    MIN_SCORE_THRESHOLD = 80
+    
+    # 3. TEMPORARY SIGNAL DISABLEMENT
+    # Temporarily disabling aggressive momentum strategies (e.g., Fast Cross Scalper)
+    # Focus remains on robust structural or range extreme reversals.
+    ENABLE_MOMENTUM_SCALPER = False 
+    
+    # --- EVOLUTION STAGE (Future ADX Integration Placeholder) ---
+    ADX_RANGING_THRESHOLD = 20
+    # ... other configurations ...
+
+# --- END PATCH ---
+```
+
+### 6. 24h Market Prediction and Optimal Stance
+
+**Prediction:** BTC will likely continue its tight consolidation near the $87,000 midpoint. Extreme Fear often precedes a significant volume spike and directional move, but consolidation must complete first. We expect continued volatility within the $86k-$88k band, characterized by false breakouts/breakdowns designed to liquidate both sides.
+
+**Optimal Stance: Highly Defensive & Patient Scalping**
+
+The bot must adopt a **Sniper Mode**.
+
+1.  **Trade Selection:** Focus exclusively on assets showing clear range boundaries (e.g., coins that haven't recently been blacklisted, suggesting they are less noisy).
+2.  **Entry Strategy:** Only execute trades at the extremes of established 1H or 4H ranges (e.g., shorting near $88k BTC resistance, longing near $86k BTC support).
+3.  **Capital Allocation:** Maintain low overall exposure (0.5% risk per trade) until the Win Rate recovers above 55% or the market breaks the range decisively. **Patience is paramount.** We are waiting for the market to resolve its indecision.
+
+--- [GEMINI] 2026-01-06 21:40:32.507576 ---
+This is the Antigravity Prime Evolution Report, Cycle 4.
+
+The bot is currently navigating a highly challenging, volatile ranging market overlaid with extreme fear—a classic "chop" environment designed to liquidate over-leveraged and poorly filtered strategies. The low Win Rate (46.25%) is the direct result of this environment.
+
+Our objective is to immediately filter out market noise to protect capital and then implement structural improvements for long-term robustness.
+
+---
+
+## 1. Diagnosis
+
+| Metric | Value | Diagnosis |
+| :--- | :--- | :--- |
+| **Win Rate** | 46.25% | Too low. The strategy is being chopped up by the tight $86k-$88k range. Too many weak signals are triggering entries that immediately revert within the range. |
+| **Blacklist** | 15 Pairs | Excessive. Indicates that the initial signal quality (`min_score`) for high-volatility/low-cap pairs is too permissive, leading to rapid losses and subsequent blacklisting. |
+| **Market** | Extreme Fear, Ranging | Current settings are not adequately defensive against mean-reversion trading within the range boundaries. Trend-following signals are unreliable. |
+| **Drawdown Risk**| Moderate | With a low WR in a ranging market, a sudden break of the $86k support could trigger cascading stop-losses if risk per trade is too high. |
+
+## 2. Immediate Fixes (Configuration Tuning)
+
+We must immediately raise the bar for signal quality to reduce trade frequency and only capture high-conviction entries at the range extremes.
+
+### Action: Increase Signal Threshold
+
+Increase the minimum score required for a trade to execute. This is the single most effective, immediate fix for filtering noise.
+
+| Parameter | Current (Assumed/Inferred) | New Value | Rationale |
+| :--- | :--- | :--- | :--- |
+| `min_score_long` | 0.65 | **0.75** | Drastically reduces entries based on weak or minor fluctuations, focusing only on strong consensus signals. |
+| `min_score_short`| 0.65 | **0.75** | Applies the same filtering rigor to short setups. |
+| `max_risk_per_trade` | Varies | **0.8%** | Capping maximum risk slightly below 1% to prevent excessive drawdown if the range breaks quickly against a position. |
+
+### Action: Adjust DCA Strategy
+
+We must ensure DCA does not become a tool for averaging down against the overall range structure. DCA entries must be further confirmed by indicator extremes.
+
+*   **Rule Change:** Enforce a stricter DCA filter: Require the asset price to be outside the 1.5 ATR band of the current candle timeframe before triggering a DCA step.
+
+## 3. Proposed Next Evolution (Structural Upgrade)
+
+The bot needs a **Regime Filter** that dynamically recognizes compression and volatility.
+
+### Evolution: Volatility Compression Detector
+
+Implement a module that calculates the 14-period **Average True Range (ATR)** on the 4H timeframe.
+
+*   **Condition:** If the current 4H ATR is less than the 200-period simple moving average of the 4H ATR (indicating extreme compression or ranging), the bot must activate a **Defensive Mode**.
+*   **Defensive Mode Actions:**
+    1.  Raise `min_score` to **0.80**.
+    2.  Reduce `max_position_size` by **30%**.
+    3.  Prioritize mean-reversion signals (extreme RSI/BB deviation) over trend confirmation signals (MA crossovers).
+
+This evolution ensures that Antigravity Prime automatically hunkers down and protects capital during the most hostile trading environments, waiting for the necessary volatility expansion to engage the market aggressively.
+
+## 4. Indicator Sensitivity Adjustments
+
+Given the ranging market, we must tune indicators to require more extreme conditions before triggering an entry, preventing triggers on minor pullbacks.
+
+```json
+{
+  "indicator_patches": {
+    "rsi_period": 14,
+    "rsi_oversold": 35,
+    "rsi_overbought": 65,
+    "bb_period": 20,
+    "bb_std_dev": 2.5,
+    "ma_period_fast": 21,
+    "ma_period_slow": 50,
+    "atr_multiplier": 1.5,
+    "stochastic_k_period": 14,
+    "stochastic_d_period": 3
+  }
+}
+```
+
+**Rationale for Changes:**
+*   **RSI (35/65):** Moving the thresholds inward forces the bot to only consider trades when the asset is significantly oversold/overbought, confirming strong range extremes rather than mid-range noise.
+*   **BB Std Dev (2.5):** Increases the Bollinger Band width requirement from the standard 2.0 to 2.5. This filters out shallower excursions and ensures entries only occur at higher volatility deviations, which is crucial in a ranging market.
+
+## 5. Code Change Needed
+
+No complex structural change is needed for the immediate fixes, only configuration adjustments. However, we must ensure the `min_score` and `max_risk` parameters reflect the instructions in Section 2.
+
+### Python Patch (Hypothetical Configuration Block Update)
+
+Assuming the configuration is stored in a dictionary named `strategy_config`:
+
+```python
+# --- CONFIGURATION PATCH: Cycle 4 ---
+strategy_config['signal_filters']['min_score_long'] = 0.75
+strategy_config['signal_filters']['min_score_short'] = 0.75
+strategy_config['risk_management']['max_risk_per_trade'] = 0.008  # 0.8%
+strategy_config['risk_management']['max_leverage'] = 10.0 # Maintain discipline
+# DCA filter adjustment required stricter ATR enforcement (assumed to be handled internally by core DCA logic)
+```
+
+## 6. Next 24h Market Prediction and Optimal Stance
+
+**Prediction:** Continuation of high-volatility range consolidation between $86,500 and $87,500. Extreme Fear prevents aggressive upside breakouts, and the $86k level will hold as strong psychological support in the short term. The market is waiting for a catalyst (e.g., US CPI data or major geopolitical event) to resolve the indecision.
+
+**Optimal Stance:** **Defensive / Mean Reversion Bias.**
+
+Antigravity Prime must operate under extreme filtering for the next 24-48 hours.
+
+*   **Primary Focus:** Capital preservation and accumulating small wins only on high-conviction mean-reversion trades (fading moves that hit the Bollinger Band 2.5 deviation).
+*   **Trade Frequency:** Significantly reduced.
+*   **Avoid:** Breakout strategies or aggressive high-frequency trading. Let the market chop itself until a clear, directional trend breaks the $86k-$88k range.
+
+--- [GEMINI] 2026-01-06 22:40:54.364670 ---
+## Antigravity Prime Evolution Log (Cycle 10835.27)
+
+**Market Environment:** Extreme Fear. BTC Ranging ($86,000 – $88,000).
+
+### 1. Diagnosis
+
+The primary diagnosis is a **Win Rate Collapse** due to **Range-Bound Choppiness**.
+
+| Issue | Observation | Impact |
+| :--- | :--- | :--- |
+| **Low Win Rate** | 46.25% (Requires very high R:R to sustain profitability). | The bot is taking too many low-conviction entries, likely triggered by minor momentum shifts that immediately reverse within the $86k–$88k BTC range. |
+| **Entry Quality** | Signal efficacy is low, leading to frequent Stop Loss hits. | We are filtering weak signals poorly. The current `min_score` threshold is too permissive for an "Extreme Fear" environment. |
+| **Blacklist Composition**| Includes majors (ZEC, ZRX, TRX) alongside low-cap tokens. | Indicates that the core strategy struggles equally with liquidity-rich assets that mimic the chop and illiquid tokens that suffer from market maker manipulation. We need a fundamental volatility filter. |
+
+### 2. Immediate Fixes (Risk Mitigation)
+
+The bot must immediately reduce exposure to conserve capital while waiting for a decisive market move.
+
+1.  **Increase Signal Threshold:** Filter out all but the highest conviction entries.
+2.  **Reduce Nominal Risk:** Lower the maximum capital allocation per trade to minimize the impact of the current low win rate.
+
+| Parameter | Current (Implied) | Recommended Fix | Rationale |
+| :--- | :--- | :--- | :--- |
+| `min_score` | ~0.65 (Guess) | **0.80** | Drastically reduces false signals caused by noise in the range. |
+| `max_risk_per_trade_percent`| 1.0% (Standard) | **0.5%** | Cuts immediate capital exposure in half during the drawdown phase. |
+| `max_concurrent_trades` | ~15 (Standard) | **8** | Focuses capital on the highest quality, filtered setups. |
+
+### 3. Proposed Next Evolution
+
+The bot is currently vulnerable to horizontal price action. The next evolution must integrate a **Chop/Range Filter**.
+
+**Evolution Target:** Implement an **Adaptive Volatility Filter (Keltner Channel Width)**.
+
+*   **Rule:** When the percentage width between the upper and lower Keltner Channels (or a similar volatility metric like Bollinger Band width percentage) drops below 1.5% for 4 consecutive candles, trading is suspended for that pair, regardless of signal score.
+*   **Goal:** Protect the balance from noise trades that result from compressed volatility and prevent the strategy from blacklisting pairs simply because they are currently moving sideways.
+
+### 4. Indicator Sensitivity Adjustments
+
+Given the ranging market, we must tighten the definition of extremes for mean-reversion signals and accelerate responsiveness.
+
+```json
+{
+  "min_score": 0.8,
+  "rsi_oversold": 25,
+  "rsi_overbought": 75,
+  "atr_period": 20,
+  "ma_period_fast": 12,
+  "ma_period_slow": 48
+}
+```
+
+### 5. Code Change (Risk & Configuration Patch)
+
+Apply the immediate risk and filter adjustments to the core configuration file. This patch overrides current settings based on the Extreme Fear state.
+
+```python
+# Antigravity Prime Configuration Patch 10835.27_V1
+
+# --- Global Risk Mitigation ---
+# Rationale: Reduce capital exposure during Extreme Fear (Win Rate 46.25%).
+CONFIG_RISK_ADJUSTMENTS = {
+    # 50% reduction in risk per trade
+    "max_risk_per_trade_percent": 0.5,  
+    
+    # Cap concurrent trades to increase capital focus
+    "max_concurrent_trades": 8,         
+    
+    # Hard cap position size to manage sudden high volatility exposure
+    "position_size_limit_usdt": 1500.0, 
+}
+
+# --- Signal Filtering Hardening ---
+# Rationale: Implement strict filtering for chop.
+CONFIG_SIGNAL_ADJUSTMENTS = {
+    "min_signal_score": 0.8,
+}
+
+# Apply Configuration Patches
+apply_config(CONFIG_RISK_ADJUSTMENTS)
+apply_config(CONFIG_SIGNAL_ADJUSTMENTS)
+
+# --- Future Evolution Blueprint (Pre-coding Volatility Filter) ---
+# Prepare structure for the Keltner Channel Chop Filter (Scheduled next cycle)
+def is_chop_zone(symbol, timeframe='4h'):
+    """Placeholder for adaptive volatility suspension."""
+    # (To be implemented: Check Keltner Channel or BB width percentage)
+    if check_volatility_compression(symbol) and ANTIGRAVITY_STATE.market_sentiment == "Extreme Fear":
+        return True
+    return False
+
+# End Patch
+```
+
+### 6. Market Prediction and Optimal Stance
+
+**Prediction (Next 24h):** The "Extreme Fear" combined with tight ranging suggests a high probability of a liquidity grab. Expect a swift **False Breakout (wick)** toward $85,000 or $89,000, followed by an immediate snapback into the $86k–$88k range. The market is coiled, but it lacks the necessary conviction to sustain a directional move yet.
+
+**Optimal Stance:** **Defensive Contrarian.**
+
+1.  **Avoid Breakouts:** Do not enter trades based on momentum signals until the range is broken decisively *with supporting volume and subsequent re-test confirmation*.
+2.  **Focus on Mean Reversion:** Use the newly adjusted tight RSI/Overbought thresholds (25/75) to execute contrarian scalps when the price hits the range extremes ($86k or $88k).
+3.  **Mandatory Patience:** Only execute signals that meet the new **0.8 min\_score**. If no pairs meet this threshold, the bot must remain idle. Idleness protects capital from the current market structure.
+
+--- [GEMINI] 2026-01-06 23:39:02.742011 ---
+## Evolution Engine Report: Antigravity Prime v3.1
+
+**Market Context:** Extreme Fear / Range-Bound ($86k-$88k BTC)
+**Objective:** Compound to millions with zero human help.
+
+---
+
+### 1. Diagnosis
+
+**Primary Issue: Sub-Optimal Entry Timing**
+The 46.81% Win Rate is dangerously low. While a low win rate can be compensated for by an exceptionally high Reward-to-Risk (R:R) ratio, in a choppy, range-bound environment (Extreme Fear, ranging BTC), momentum-based entries are generating too many false positives. The bot is successfully identifying potential moves but failing to time the pivot/breakout cleanly, leading to premature entries and subsequent quick stop-outs.
+
+**Secondary Issue: Indicator Sensitivity Mismatch**
+Standard indicator settings (e.g., RSI 70/30) are too sensitive for the current volatility profile. They are triggering signals within the noise band of the $86k-$88k range, contributing directly to the low win rate.
+
+**Diagnosis Summary:** The system is suffering from "Whipsaw Drawdown" caused by aggressive signal scoring in a low-trend environment.
+
+---
+
+### 2. Immediate Fixes (Risk Mitigation & Quality Control)
+
+To immediately stabilize the Win Rate and preserve capital during this fear-driven consolidation:
+
+| Parameter | Current (Assumed) | New Value | Rationale |
+| :--- | :--- | :--- | :--- |
+| **`min_score`** | 0.70 | **0.80** | Drastically raises the bar for entry. Only trades with high confluence (80% or higher signal agreement) are permitted, reducing trade frequency but ensuring higher conviction. |
+| **`risk_per_trade_percent`** | 1.0% | **0.75%** | Lowering nominal exposure by 25%. Prioritize capital preservation during high uncertainty. |
+| **`max_open_trades`** | 10 | **8** | Reduce market exposure capacity to minimize aggregated risk during choppy conditions. |
+| **Action** | Signal Adjustment | **Disable High-Frequency Signals** | Temporarily disable any signal based purely on M5/M15 momentum candles. Prioritize H1/H4 confirmation until the range breaks. |
+
+---
+
+### 3. Next Evolution Proposal: ADX Trend State Machine
+
+The bot lacks a robust mechanism to differentiate between trending and ranging markets, which is the root cause of the current low win rate.
+
+**Proposal: Implement a Dynamic ADX Trend Filter**
+
+This filter will create two distinct operational states for the bot, dynamically adjusting entry criteria and position sizing:
+
+1.  **Low Trend State (ADX < 20):**
+    *   **Action:** De-prioritize standard momentum/breakout signals (e.g., MA crossovers, volume spikes).
+    *   **Strategy Shift:** Prioritize Mean Reversion strategies (RSI extremes, Stochastic oversold/overbought).
+    *   **Risk:** Position size is halved (0.375% risk).
+2.  **High Trend State (ADX > 25):**
+    *   **Action:** Enable high-conviction momentum signals.
+    *   **Strategy Shift:** Prioritize breakout and trend-following signals.
+    *   **Risk:** Full position size (0.75% risk).
+
+This evolution will prevent the bot from being whipsawed in ranges, reserving its aggressive signals for confirmed trends, which is critical for compounding through various market cycles.
+
+---
+
+### 4. Indicator Sensitivity
+
+Given the current volatility and the need for higher-conviction entry conditions, the following sensitivity patches are required to filter out market noise:
+
+```json
+{
+  "rsi_period": 14,
+  "rsi_oversold": 35,
+  "rsi_overbought": 65,
+  "stoch_k_period": 10,
+  "stoch_d_period": 3,
+  "bb_std_dev": 2.5,
+  "ma_slow_period": 50,
+  "adx_trend_threshold": 20
+}
+```
+*Rationale:* Raising `rsi_oversold` (35) and lowering `rsi_overbought` (65) prevents premature entries near the market centerline, forcing the bot to wait for more significant moves within the range. The wider Bollinger Band standard deviation (`bb_std_dev`: 2.5) requires a more extreme price deviation from the mean before generating a signal.
+
+---
+
+### 5. Python Patch: Configuration Update
+
+Apply this patch to the core configuration file (`config.py` or `settings.py`) to enforce immediate risk mitigation and entry quality control.
+
+```python
+# ==================================
+# CORE RISK MANAGEMENT PATCH (V3.1)
+# Stabilizing low win rate in range-bound market
+# ==================================
+
+# Minimum required aggregated signal score to initiate a trade (0.0 to 1.0)
+CORE_SIGNAL_MIN_SCORE = 0.80
+
+# Percentage of total capital risked per trade attempt (Immediate reduction)
+RISK_PER_TRADE_PERCENT = 0.75 
+
+# Maximum number of simultaneously open positions (Reduced capacity)
+MAX_OPEN_TRADES = 8
+
+# ==================================
+# NEXT EVOLUTION PREPARATION: ADX
+# Placeholder for ADX trend detection (Requires integration logic elsewhere)
+# ==================================
+ADX_PERIOD = 14
+ADX_TREND_THRESHOLD = 20
+```
+
+---
+
+### 6. 24-Hour Market Prediction and Optimal Stance
+
+**Prediction:** Continued tight consolidation around the $87,000 midpoint. Volume remains muted, and market participants are hesitant, unwilling to aggressively defend $86k or push decisively toward $88k. Expect minor fakeouts (false momentum bursts) below $86,300 and above $87,700, which will quickly reverse.
+
+**Optimal Stance:** **Defensive/Highly Selective Neutral.**
+
+The bot must operate in a highly filtered, low-frequency mode. Prioritize mean-reversion trades on high-liquidity altcoins (ETH, SOL) that exhibit clean bounce behavior off their lower Bollinger Bands on the H1 timeframe. **Avoid all breakout attempts.** Only trades achieving the new `min_score` of 0.80 are permissible. If the bot cannot find 8 high-quality trades, it must hold cash.
+
+--- [GEMINI] 2026-01-07 00:48:26.732430 ---
+This is the evolution report for Antigravity Prime, operating under high market stress and volatility compression.
+
+The objective remains singular: Achieve exponential compounding toward millions autonomously.
+
+---
+
+## 1. Diagnosis
+
+The most pressing issue is the **Win Rate (47.27%)**. While profitability depends on R:R (Risk-to-Reward), a sub-50% WR, especially in a ranging market ($86k-$88k), indicates that Antigravity Prime is being frequently chopped out by noise.
+
+1.  **Noise Chopping:** Entries are occurring too frequently on marginal signals that are quickly invalidated by the tight range. The stops are likely too tight relative to the intraday volatility.
+2.  **Market Mismatch:** The bot is reacting to **Extreme Fear** signals (suggesting large moves) but trading within a tight **Volatility Compression** zone (suggesting small moves). This conflict generates mixed signals and poor execution quality.
+3.  **Blacklist Confirmation:** The Blacklist confirms the bot is effective at culling low-quality, low-liquidity pairs, maintaining focus on stable assets.
+
+**Conclusion:** The bot needs immediate desensitization to noise and a reduction in overall risk exposure until the $86k-$88k range resolves.
+
+---
+
+## 2. Immediate Fixes (Risk & Filtering)
+
+To survive the current chop and prepare for the inevitable breakout, we must prioritize quality over quantity.
+
+| Action | Justification |
+| :--- | :--- |
+| **Raise `MIN_SCORE`** | Filter out weak, noisy signals generated by range-bound momentum indicators. Increase confidence required for entry. |
+| **Reduce `DEFAULT_RISK_PERCENT`** | Lower exposure immediately. Extreme Fear markets require lower trade size to mitigate the risk of catastrophic whipsaws. |
+| **Adjust Stop Distance** | Use the `indicator_patches` (below) to slightly increase the ATR multiplier, giving trades more breathing room against range noise. |
+
+---
+
+## 3. Proposed Next Evolution
+
+Antigravity Prime needs a sophisticated mechanism to handle volatility regimes.
+
+**Evolution Proposal: Volatility-Adjusted Entry Logic (The "Prime Volatility Filter")**
+
+1.  **Implementation:** Introduce an **Adaptive ATR Filter** that dynamically scales the minimum entry score based on volatility relative to the long-term average (e.g., 50-period ATR vs. 200-period ATR).
+2.  **Rule:**
+    *   **Compression Regime (Current state):** If current 4H ATR is below 70% of the 200-period ATR, set `MIN_SCORE = 0.75` and scale back all position sizes by 25%.
+    *   **Expansion Regime:** If 4H ATR spikes > 150% of 200-period ATR (indicating breakout), temporarily disable the highest leverage setting and enforce hard R:R (e.g., 2.0 minimum) to capture the move safely.
+
+This evolution ensures the bot is not trading aggressively during periods of low movement but is prepared to capture high R:R setups during explosive moves.
+
+---
+
+## 4. Indicator Sensitivity Patch
+
+Given the current volatility compression in the BTC range combined with macro Fear, we must desensitize momentum oscillators and widen stop calculations slightly.
+
+```json
+{
+  "rsi_oversold": 25,
+  "rsi_overbought": 75,
+  "bb_std_dev": 2.5,
+  "atr_multiplier": 1.7,
+  "stoch_k_period": 14,
+  "stoch_d_period": 5
+}
+```
+
+*   **Rationale:** Moving RSI boundaries to 25/75 (from standard 30/70) ensures the bot only enters on true extremes within the tight range. Increasing `bb_std_dev` and `atr_multiplier` helps reduce noise chopping.
+
+---
+
+## 5. Clean, Ready-to-Apply Python Patch
+
+Apply this patch to the core configuration file (`core_config.py` or equivalent configuration source) immediately.
+
+```python
+# CORE CONFIGURATION PATCH FOR ANTIGRAVITY PRIME
+
+# Rationale: Increasing entry quality threshold and reducing trade exposure.
+
+# 1. Signal Confidence Threshold Adjustment (Filter Noise)
+# Old MIN_SCORE (Assumed 0.65 or 0.70)
+MIN_SCORE = 0.72 
+
+# 2. Risk Reduction (Mitigate Whipsaw Drawdown)
+# Old DEFAULT_RISK_PERCENT (Assumed 1.5%)
+DEFAULT_RISK_PERCENT = 1.0 # Reducing nominal risk exposure by 33%
+
+# 3. Timeframe Optimization (Focus on higher quality entries)
+# Recommend shifting primary entry timeframe slightly higher (e.g., from 15m to 30m) 
+# if the current configuration permits, to ignore micro-noise.
+# If not changing timeframe, the MIN_SCORE increase covers this.
+```
+
+---
+
+## 6. Next 24h Market Prediction and Optimal Stance
+
+**Prediction:** The $86k-$88k consolidation phase is unlikely to hold for the full 24 hours under "Extreme Fear." The most probable outcome is a quick **liquidation cascade (shakeout)** first, targeting leverage below $86,000, potentially hitting **$85,300 - $85,500**. Following this shakeout, the path of least resistance is upward pressure back toward $88k, with a challenge of $90k by the end of the period.
+
+**Optimal Stance: Cautious Accumulation**
+
+*   **Risk Profile:** Low Exposure, High Entry Quality.
+*   **Actionable Strategy:** Aggressively utilize the newly heightened `MIN_SCORE` and `DEFAULT_RISK_PERCENT = 1.0`. Antigravity Prime should be prepared to take **long signals only** if volatility confirms price dipping into the $85,500 zone. Short signals should be temporarily disabled or require extreme confidence (> 0.85 score) as they are higher risk during Extreme Fear regimes (which often precede true bottoms).
+
+--- [GEMINI] 2026-01-07 01:17:02.201080 ---
+**ANTIGRAVITY PRIME EVOLUTION ENGINE // CYCLE 46.2-D**
+
+## 1. Diagnosis
+
+**State:** Low Win Rate (46.2%) despite the system being set to TIGHTENED.
+**Context:** Extreme Fear, $86k-$88k range.
+**Diagnosis:** The bot is being actively chopped up by mean-reversion failures and false breakouts within the defined consolidation zone. The TIGHTENED setting is insufficient because standard filters are not recognizing the high-noise, low-volatility environment specific to this tight range. The bot is likely generating valid signals near the boundaries, but the follow-through is failing instantly.
+
+## 2. Immediate Fixes (Goal: Increase WR > 55%)
+
+The primary goal is to minimize trading volume until a clean break occurs.
+
+| Action | Parameter | Value | Rationale |
+| :--- | :--- | :--- | :--- |
+| **Emergency Filter Score** | `min_score` | 90 | Drastically raise the minimum entry threshold. We only want undeniable, multi-confirmation signals (e.g., extreme MFI + confirmed structural break). |
+| **Risk Reduction** | `risk_per_trade_pct` | 0.35% | Reduce capital at risk temporarily. Since $86k-$88k is a major pivot area, the next trade should be lower risk until the environment clarifies. |
+| **Signal Suspension** | `chop_filter_enabled` | TRUE | Explicitly activate the chop/range filter (if available). If not available, the patch below implements the logic via `min_score` control. |
+
+## 3. Proposed Next Evolution: The Range Fade Module (RFM)
+
+Current performance shows the bot fails in consolidation. The evolution must be to *exploit* consolidation when detected.
+
+**Evolution:** Implement the **Range Fade Module (RFM)**.
+
+1.  **Detection:** Define a Consolidation Zone (CZ) where ATR (14-period, 1H) drops below 0.5% of the current price, AND the 20-period standard deviation is low.
+2.  **Stance Shift:** When in CZ, disable all trend-following indicators (MA crosses, ADX) and enable specialized mean-reversion signals.
+3.  **Action:** Initiate short trades when the price hits the upper boundary (e.g., $88k) with RSI > 70 and MFI > 80. Initiate long trades when the price hits the lower boundary (e.g., $86k) with RSI < 30 and MFI < 20.
+4.  **Exit:** Hard Stop Loss 0.3% beyond the boundary. Take Profit at the 50% retracement level (mid-range).
+
+## 4. Indicator Sensitivity Patches
+
+Based on the low internal volatility and high external fear, we need indicators to be more sensitive to boundary touches and less reactive to small price movements near the mean.
+
+```json
+{
+  "rsi_oversold": 30,
+  "rsi_overbought": 70,
+  "mfi_period": 21,
+  "bollinger_band_std_dev": 1.8,
+  "atr_period": 14,
+  "atr_multiplier_threshold": 0.005
+}
+```
+
+## 5. Code Change Needed: Dynamic Score Adjustment for Range
+
+We need to dynamically enforce the `min_score = 90` requirement during identified low-volatility/chop periods to prevent low-conviction entries. This patch modifies the signal scoring mechanism to penalize trades significantly if the 1-hour ATR is too low, overriding the base score logic.
+
+**Python Patch (Apply to `trading_engine.py`):**
+
+```python
+# --- START PATCH: RANGE_CHOP_SCORING_V1 ---
+
+import numpy as np
+
+def calculate_volatility_penalty(current_price, atr_value, atr_threshold=0.005, penalty_points=25):
+    """
+    Calculates a dynamic score penalty if the market is deemed too low volatility (choppy).
+    atr_threshold is 0.5% of price.
+    """
+    if current_price is None or atr_value is None:
+        return 0
+
+    threshold_value = current_price * atr_threshold
+
+    if atr_value < threshold_value:
+        # Volatility is too low (choppy range detected)
+        return penalty_points
+    return 0
+
+def generate_signal_score(signal_data, current_price, current_atr):
+    """
+    Modified core scoring function incorporating the volatility penalty.
+    (Assumes original scoring logic exists and current_atr is passed in.)
+    """
+    base_score = 0
+    
+    # [... Existing scoring logic for RSI, MA, etc. goes here ...]
+    # For demonstration, assume base_score calculation yields 75 
+    
+    base_score = sum(weight * 1 for indicator, weight in signal_data.items() if indicator) # Placeholder
+
+    # Apply Volatility Penalty
+    penalty = calculate_volatility_penalty(current_price, current_atr, 
+                                           atr_threshold=0.005, 
+                                           penalty_points=25) 
+                                           
+    final_score = base_score - penalty
+    
+    # We must enforce the hard minimum entry score (90) based on immediate fix
+    # Since the TIGHTENED mode should be 90 now, we verify.
+    
+    MIN_ENTRY_SCORE = 90 
+    
+    if final_score < MIN_ENTRY_SCORE:
+        return 0 # Kills the signal entirely if it doesn't meet the tight criteria
+
+    return max(0, final_score)
+
+# --- END PATCH: RANGE_CHOP_SCORING_V1 ---
+```
+
+*Note: This patch adds a static 25-point penalty if the market is determined to be chopping, making it significantly harder for non-high conviction trades to meet the required score of 90.*
+
+## 6. Prediction and Optimal Stance
+
+**Prediction (Next 24 Hours):**
+The Extreme Fear sentiment, combined with the tight $86k-$88k range, indicates high pressure building. The next 12 hours will likely see continued chop, maximizing the frustration of participants. We predict a **sharp downside momentum test toward $85,000** within the next 24 hours as liquidity is hunted, followed by a potential immediate recovery if $85,000 holds (classic shakeout).
+
+**Optimal Stance:**
+**EXTREME CAUTIONARY HIBERNATION.**
+The bot must only trade two scenarios:
+
+1.  **High Score Fade:** A high-score signal (90+) that attempts to fade the boundary at $88,000 or $86,000 (if the RFM is implemented).
+2.  **Confirmed Breakout:** A high-momentum, high-volume break and hold above **$88,200** or below **$85,500**. Any entry before these levels risks immediate reversal.
+
+Set `min_score` to **90** and wait patiently. Time spent avoiding losses in chop is equivalent to compounding gains.
+
+--- [GEMINI] 2026-01-07 01:58:02.478978 ---
+# Antigravity Prime Evolution Engine Report
+
+## Performance Diagnosis (Cycle 7)
+
+**Critical Issue:** Low Win Rate (46.25%).
+A win rate below 50% suggests that the current trading algorithm is failing to capture meaningful edge, particularly if the average Risk:Reward ratio (R:R) is close to 1:1.
+
+**Root Cause Analysis:**
+The market is in a state of **Extreme Fear** coupled with a tight consolidation range ($86k-$88k). This environment is defined by:
+1.  **Chop/Whipsaw:** Entries are likely being triggered by weak momentum signals that are quickly reversing, leading to stop-outs.
+2.  **Sensitivity:** The bot's entry criteria (`min_score`) are currently too sensitive for this high-noise, low-momentum environment.
+3.  **Blacklist:** The large blacklist indicates effective pruning of outlier assets, but this does not fix the core strategy flaw against major pairs in consolidation.
+
+**Diagnosis Summary:** Antigravity Prime is currently suffering from **signal dilution** due to market chop.
+
+---
+
+## Immediate Fixes
+
+To immediately halt the signal dilution and raise the Win Rate above the critical 50% threshold, we must prioritize quality over quantity and reduce individual trade risk.
+
+| Parameter | Current Estimate | New Value | Rationale |
+| :--- | :--- | :--- | :--- |
+| **Minimum Signal Score** | (Assumed 0.65-0.70) | **0.75** | Drastically increases entry quality, filtering out weak fake-out attempts common during ranging. |
+| **Risk Per Trade** | (Assumed 1.0%+) | **0.80%** | Reduces the impact of unavoidable stop-outs while we adjust to the low-volatility range. |
+| **RSI Oversold/Overbought**| (Assumed 30/70) | **35/65** | Makes the bot demand more extreme, confirming conditions for mean reversion entries, ignoring weaker reversals. |
+
+---
+
+## Proposed Next Evolution
+
+The current state demonstrates the critical need for a dynamic filter that recognizes and avoids low-momentum consolidation periods.
+
+**Evolution 1: Adaptive Momentum Filter (ADX Integration)**
+Implement a conditional filter based on the Average Directional Index (ADX) on the primary trading timeframe (or one higher).
+
+*   **Rule:** If ADX drops below **20** (indicating weak trend/chop), the bot must dynamically increase the required `min_score` to **0.90** or temporarily disable new signals entirely (`signal_enabled = False`).
+*   **Rationale:** This structural defense mechanism protects the capital base during extended consolidation phases, allowing the bot to sit out the most dangerous, low-edge environments.
+
+**Evolution 2: Exit Optimization based on ATR**
+Develop a function that calculates Take Profit (TP) targets dynamically using current Average True Range (ATR).
+*   **Low Volatility (Current Market):** Use tighter 1.0x ATR targets for faster scalps (mean reversion).
+*   **High Volatility (Breakout):** Use wider 1.5x - 2.0x ATR targets to capitalize on trend following.
+
+---
+
+## Indicator Sensitivity (Patch Application)
+
+The following JSON block outlines the necessary parameter changes to implement the immediate fixes. This data structure should be applied to the bot's configuration file for immediate execution.
+
+```json
+{
+  "indicator_patches": {
+    "min_score": 0.75,
+    "risk_per_trade_percent": 0.80,
+    "rsi_oversold": 35,
+    "rsi_overbought": 65,
+    "ma_period_fast": 10,
+    "ma_period_slow": 50
+  }
+}
+```
+
+---
+
+## Code Change (Python Patch)
+
+Since the ADX filter is a structural improvement required to handle future ranging cycles, here is a clean patch to integrate it into the primary signal generation pipeline.
+
+Assume the bot uses a class `TradingEngine` with a method `generate_signal(self, data, pair)`.
+
+```python
+# PATCH START: ADX Integration for Chop Mitigation
+
+import pandas_ta as ta
+
+class TradingEngine:
+    
+    # ... existing methods ...
+
+    def get_adx_filter(self, df):
+        """Calculates ADX and determines if market is chopping."""
+        
+        # We calculate ADX on a slightly higher timeframe (e.g., 4H or D, depending on bot's core timeframe)
+        # Assuming the input dataframe (df) contains required high/low/close data
+        
+        adx_period = self.config.get('adx_period', 14)
+        adx_threshold = self.config.get('adx_threshold', 20) 
+        
+        # Use pandas_ta for robust calculation
+        df.ta.adx(length=adx_period, append=True)
+        
+        current_adx = df[f'ADX_{adx_period}'].iloc[-1]
+        
+        if current_adx < adx_threshold:
+            # Market is non-trending / chopping
+            return True, current_adx 
+        else:
+            # Market is trending
+            return False, current_adx
+
+    def generate_signal(self, data, pair):
+        
+        # --- PHASE 1: Immediate Quality Filter ---
+        
+        is_chopping, current_adx = self.get_adx_filter(data)
+        
+        if is_chopping:
+            # If chopping, drastically increase required entry score
+            required_score = 0.90
+            
+            # Temporary override: If market is non-trending, kill low-quality signals instantly.
+            if self.signal_quality < required_score:
+                self.signal_score = 0.0 
+                self.log(f"CHOP FILTER: ADX {current_adx:.2f} too low. Disabling signal for {pair}.")
+                return None
+                
+        # --- Existing Signal Generation Logic Continues Below ---
+        
+        # ... (other checks like RSI, MA crossover, etc.) ...
+        
+        # Final Score Check
+        if self.signal_score >= self.config['min_score']: 
+            return self.prepare_trade_order()
+            
+        return None
+
+# PATCH END
+```
+
+---
+
+## Market Prediction & Optimal Stance (Next 24 Hours)
+
+**Prediction:** Continued tight consolidation within the $86,000 to $88,500 range. The "Extreme Fear" sentiment is building pressure, suggesting a high-magnitude breakout or breakdown is imminent, but volatility compression will likely continue for the next 24 hours while liquidity is gathered.
+
+**Optimal Stance:** **Highly Selective Defensive Scalping.**
+
+1.  **Strict Avoidance:** Do not initiate trades when price is mid-range ($86.5k - $87.5k).
+2.  **Focus:** Wait for price to aggressively test the extremes ($86.0k or $88.5k).
+3.  **Action:** The raised `min_score` (0.75) will enforce quality. Only take trades where multiple indicators confirm a robust entry (e.g., a mean-reversion trade off the $86k support boundary coinciding with extreme RSI/Stochastics reading).
+4.  **Priority:** Survival and high Win Rate are the sole priorities for this cycle. Preserve capital until the range breaks.
+
+--- [GEMINI] 2026-01-07 02:21:35.805737 ---
+This is a critical juncture. The bot is in preservation mode (`TIGHTENED`) but the underlying strategy is failing to adapt to the Extreme Fear/Ranging environment, leading to the current 46.2% Win Rate. This regime demands high selectivity or complete dormancy.
+
+Our mission is to shift Antigravity Prime from being chopped up to becoming a sniper, only engaging with high-conviction signals suitable for the imminent volatile breakout.
+
+---
+
+## 1. Diagnosis
+
+**Primary Issue: Strategy Mismatch (Whipsaw)**
+The current strategy, likely optimized for trending or highly volatile markets, is misfiring repeatedly in the tight $86k–$88k range coupled with Extreme Fear. Entries are likely occurring on short-term momentum shifts that immediately revert, leading to unnecessary losses and tightening of capital.
+
+**Symptoms:**
+1. **Low Signal Quality:** Even after the automatic `TIGHTENED` action, the quality remains low (Evidenced by WR < 50%).
+2. **Excessive Noise:** Short MA periods and standard momentum thresholds are mistaking range fluctuation for genuine market movement.
+3. **Risk Exposure:** Continuing to trade at standard risk levels while WR is below 50% is a recipe for quick drawdown.
+
+## 2. Immediate Fixes (Sniping Mode)
+
+To stabilize and prepare for the breakout, we must enforce extreme selectivity and reduce trade size immediately.
+
+| Parameter | Current (Implied) | Recommended Fix | Rationale |
+| :--- | :--- | :--- | :--- |
+| **Trade Risk** | 1.5% - 2.0% | **0.5% - 0.75%** | Drastic size reduction. Preserve capital while testing indicator efficacy. |
+| **`min_score_threshold`**| Raised (TIGHTENED) | **Raise by +15%** | Demand significantly higher conviction/filter stack validation for entry. |
+| **Signal Filter** | Default | **Enforce `MACD_DIVERGENCE` as mandatory** | Must require confirmation of market exhaustion before entering the coiling phase. |
+
+## 3. Proposed Next Evolution
+
+**Evolution: Implementation of `VOLATILITY_GUARD_V1`**
+
+We need a dedicated filter to prevent trading during compressed, noisy ranges. This filter will monitor ATR over a longer period (e.g., 24 periods) and compare it against the average ATR of the last 100 periods.
+
+**Rule:** *If the current ATR is less than 60% of the long-term average ATR AND the Market Sentiment is Extreme Fear, set `trading_mode = DORMANT` (or apply a x3 `min_score` multiplier).*
+
+This ensures Antigravity Prime stops being a liquidity provider during consolidation and conserves capital for the breakout phase.
+
+## 4. Indicator Sensitivity (Output JSON)
+
+We must widen standard deviation metrics and smooth out moving averages to treat the range noise as background hum, focusing only on strong directional breaks.
+
+```json
+{
+  "rsi_oversold": 25,
+  "rsi_overbought": 75,
+  "ma_slow_period": 75,
+  "macd_fast_period": 15,
+  "macd_slow_period": 35,
+  "atr_entry_multiplier": 1.5,
+  "max_allowed_trades_per_hour": 0.5
+}
+```
+
+## 5. Python Patch (Code Change)
+
+We will apply the new, stricter entry threshold and formally mandate reduced risk in the configuration.
+
+```python
+# PATCH: CONFIGURATION ADJUSTMENT - ANTIGRAVITY_PRIME_V4.3
+
+def apply_adaptive_strategy_patch(config):
+    """
+    Applies extreme selectivity and capital preservation settings 
+    for the Extreme Fear/Ranging market regime.
+    """
+    
+    # 1. IMMEDIATE RISK REDUCTION
+    config['risk_per_trade_percent'] = 0.75  # Reduced from default 1.5%-2.0%
+    
+    # 2. ENFORCED TIGHTENING (Further increase min score)
+    # Assuming baseline min_score is 1000. Increase by 15%
+    current_min_score = config.get('min_signal_score', 1000) 
+    config['min_signal_score'] = int(current_min_score * 1.15) 
+    
+    # 3. ENFORCING INDICATOR PATCHES (From Section 4)
+    config['indicator_settings'] = {
+        "rsi_oversold": 25,
+        "rsi_overbought": 75,
+        "ma_slow_period": 75,
+        "macd_fast_period": 15,
+        "macd_slow_period": 35,
+        "atr_entry_multiplier": 1.5,
+        "max_allowed_trades_per_hour": 0.5
+    }
+    
+    # 4. MANDATORY DIVERGENCE FILTER (High conviction only)
+    # Ensures trade requires a market structure breakdown/exhaustion signal.
+    if 'MACD_DIVERGENCE' not in config['required_filters']:
+        config['required_filters'].append('MACD_DIVERGENCE')
+        
+    print(f"Applied PATCH V4.3: New Min Score: {config['min_signal_score']}, Risk: {config['risk_per_trade_percent']}%")
+    return config
+
+# Apply the patch immediately upon engine restart.
+# apply_adaptive_strategy_patch(AntigravityPrime.config)
+```
+
+## 6. Prediction and Optimal Stance
+
+**Market Prediction (Next 24h):**
+BTC is coiled tightly between $86k and $88k. The Extreme Fear reading suggests maximum indecision and fear of further downside. Highly probable behavior is a swift, high-volume *fakeout* move (either a spike toward $89.5k quickly rejected, or a drop to test the $85k-$84.5k liquidity zone) intended to trap early breakout traders. Following this liquidity grab, the true direction will be established.
+
+**Optimal Stance: SNIPER / CAPITAL PRESERVATION**
+
+Antigravity Prime must adopt the following stance:
+
+1.  **Trade Only the Extremes:** Do not engage in trades unless the price breaks above $88.2k or below $85.8k, and the signal score is exceptionally high (due to the mandated 15% increase).
+2.  **Focus on Reversal Fails:** Prioritize signals that indicate the fakeout is failing (e.g., a high-volume candle outside the range reversing immediately back in).
+3.  **Risk Profile:** **Extreme Low Risk (0.75% max).** We are hunting the breakout with minimal exposure until Win Rate stabilizes above 55%.
+
+--- [GEMINI] 2026-01-07 02:51:24.578109 ---
+This bot is currently operating in the most challenging environment: high emotional stress (Extreme Fear) coupled with technical indecision (tight ranging). The low Win Rate of 46.2% confirms the bot is being chopped up in this consolidation zone, despite the recent `TIGHTENED` action.
+
+We must shift from attempting to trade the noise to aggressively waiting for the signal. Capital preservation is paramount before a major move.
+
+---
+
+## 1. Diagnosis & Root Cause
+
+**Primary Issue:** **Range Trading Chop & Whiplash.** Antigravity Prime is likely optimized for momentum/trend following and is generating frequent, low-quality signals within the $86k–$88k consolidation area. The tighter parameters (`TIGHTENED`) were insufficient to filter out these micro-swings.
+
+**Symptom:** Win Rate 46.2% (The bot is taking more small losses than wins, indicating poor entry timing in the current low-volatility environment).
+
+**Goal:** Maximize capital efficiency by drastically reducing trade frequency until a clear directional bias is established above $88,500 or below $85,500.
+
+---
+
+## 2. Immediate Fixes (Hardening the Defenses)
+
+| Action | Setting | Rationale |
+| :--- | :--- | :--- |
+| **Increase Entry Quality Score** | `min_signal_score` → **85** (from assumed 70-75) | Only the most robust, high-conviction signals are allowed to fire. Eliminates marginal, range-bound entries. |
+| **Implement Range Filter** | `temp_range_exclusion` → **$86,000 to $88,500** | Explicitly prohibits opening new positions when price is inside the known danger zone. |
+| **Adjust Risk Allocation** | `max_position_size_factor` → **0.6** (30% reduction) | Extreme Fear requires lower exposure. Preserve dry powder for the inevitable high-conviction breakout/breakdown. |
+
+---
+
+## 3. Propose Next Evolution (Range Defense System)
+
+The core evolutionary requirement is a robust defense against low-volatility ranging periods.
+
+**Evolution Proposal: Dynamic Volatility Suspension Filter**
+
+Implement an objective mechanism to measure market energy depletion. If the Average True Range (ATR) drops below a certain percentile of the recent historical volatility, the bot must suspend all new entries, regardless of the signal score.
+
+**Mechanism:**
+
+1.  Calculate 14-period ATR (H1 or H4 timeframe).
+2.  Calculate the 100-period Exponential Moving Average (EMA) of that ATR (to establish the baseline historical volatility).
+3.  **New Rule:** If `Current_ATR` < (0.7 * `ATR_EMA_100`), set `trading_mode = SUSPENDED_VOLATILITY`.
+4.  Trading resumes only when `Current_ATR` crosses back above the threshold, signaling volatility expansion.
+
+This prevents the bot from trading low-energy environments entirely, dramatically improving WR during consolidation phases.
+
+---
+
+## 4. Indicator Sensitivity Patch (Indicator Patches)
+
+The indicators must be calibrated to be *less sensitive* to noise (wider RSI bounds) but *faster* to confirm a true directional move (shorter MAs).
+
+```json
+{
+  "rsi_oversold": 20,
+  "rsi_overbought": 80,
+  "confirmation_ma_period": 20,
+  "baseline_ma_period": 50,
+  "atr_lookback": 10,
+  "volatility_threshold_multiplier": 0.7
+}
+```
+
+---
+
+## 5. Python Patch (Temporary Range Suspension)
+
+We need to apply the immediate fix of raising the required score and adding a hard price filter.
+
+This patch assumes a core trading loop function named `evaluate_entry_signal` within the main bot logic (`AntigravityPrime.py`).
+
+```python
+# --- PATCH START: AntigravityPrime.py ---
+
+import logging
+
+# Configuration updates (Applied system-wide)
+CONFIG = {
+    # ... other settings
+    "min_signal_score": 85,  # Raised significantly
+    "max_position_size_factor": 0.6,
+    "current_btc_range_low": 86000,
+    "current_btc_range_high": 88500
+}
+
+def evaluate_entry_signal(data, signal_score, signal_type):
+    """
+    Evaluates potential trades, applying score and volatility filters.
+    """
+    current_price = data['close'].iloc[-1]
+    
+    # 1. IMMEDIATE RANGE FILTER (Temp Fix for $86k-$88.5k chop)
+    if CONFIG["current_btc_range_low"] <= current_price <= CONFIG["current_btc_range_high"]:
+        logging.info(f"Entry suppressed: Price {current_price} inside defined consolidation range ({CONFIG['current_btc_range_low']}-{CONFIG['current_btc_range_high']}).")
+        return False, "Range Filter Active"
+
+    # 2. Minimum Score Check (Hardening the signal quality)
+    if signal_score < CONFIG["min_signal_score"]:
+        logging.debug(f"Entry suppressed: Score ({signal_score}) below required minimum ({CONFIG['min_signal_score']}).")
+        return False, "Low Signal Score"
+
+    # 3. Dynamic Volatility Check (Future Evolution Placeholder)
+    # [Placeholder for ATR-based suspension logic]
+
+    logging.info(f"Signal confirmed: {signal_type} at {current_price} with score {signal_score}.")
+    return True, "Signal Accepted"
+
+# --- PATCH END ---
+```
+
+---
+
+## 6. Next 24h Market Prediction & Optimal Stance
+
+**Prediction:** Continued volatility suppression and range consolidation ($86.5k – $88k), punctuated by a sharp, high-volume move, likely within the next 12-36 hours. Given the Extreme Fear sentiment, the path of least resistance is usually to test liquidity below the current range ($85k area) before any sustained recovery or collapse.
+
+**Optimal Stance:** **Extreme Caution / Breakout Trap.**
+
+Antigravity Prime must maintain a **Defensive** stance. Do not initiate trades unless price definitively breaks the immediate boundaries *and* the signal score is high (Score 85+). The current goal is not to trade the chop, but to position perfectly for the high-reward breakout trade.
+
+| Stance Parameter | Setting |
+| :--- | :--- |
+| **Trade Frequency** | Very Low (Only high-conviction events) |
+| **Leverage** | Reduced (0.6x Factor) |
+| **Target** | Wait for confirmed move above $88,500 or below $85,500. |
+| **Focus** | Capital Preservation and Monitoring of the Volatility Expansion Filter. |
+
+--- [GEMINI] 2026-01-07 03:07:46.773385 ---
+## Antigravity Prime Evolution Engine: Cycle 003 Report
+
+### 1. Diagnosis
+
+**Primary Issue: Low Win Rate (46.07%) in Choppy Conditions.**
+
+The current win rate is insufficient for reliable compound growth unless the Risk-to-Reward (R:R) ratio is exceptionally high (e.g., winning trades are 2.5x the size of losing trades), which is difficult to maintain in autonomous high-frequency futures trading.
+
+The diagnosis is that Antigravity Prime is suffering from **Range Noise Injection**. The market is exhibiting **Extreme Fear** and tight BTC ranging ($86k-$88k). Standard indicator settings (likely tuned for trending markets) are generating premature signals that are getting whipsawed inside the range, leading to frequent small losses and dragging the overall win rate down.
+
+**System Health:** The aggressive blacklisting suggests healthy hygiene and quick adaptation to non-performing pairs. Current balance growth is positive but is at risk of drawdown due to the reliance on R:R with a sub-50% WR.
+
+### 2. Immediate Fixes
+
+We need to drastically increase the **Conviction Score** required for entry, filtering out weak, ranging signals.
+
+| Setting | Current (Assumed) | New Value | Rationale |
+| :--- | :--- | :--- | :--- |
+| **Minimum Signal Score** | 70-75 | **85** | Requires stronger convergence of indicators (e.g., overbought/oversold, trend confirmation, volume) before entry. |
+| **Risk Adjustment** | Stable | **Max Loss 0.75% Balance** | Maintain conservative risk. The increased conviction should justify the entry, but range noise means we must protect capital until a clear trend emerges. |
+| **Signal Filter** | Standard | **Disable aggressive breakout strategies** | Prioritize mean reversion/scalping signals while the market is tightly bound. |
+
+### 3. Proposed Next Evolution: Adaptive Volatility Scaling
+
+The current environment demonstrates the failure of fixed-sensitivity indicators.
+
+**Evolution Path:** Implement **Adaptive Volatility Scaling (AVS)**.
+
+1.  **ATR-Based Stop/Target Setting:** Integrate Average True Range (ATR, 14 period) into the trade planning module. Stop losses and Take Profits must now scale dynamically based on the recent volatility of the traded asset. A tight range requires tight stops/targets, while a breakout requires wider parameters.
+2.  **Volatility Filter:** Implement a global filter that automatically reduces trade size or increases the minimum signal score if the 14-period ATR across the tracked universe falls below the 20th percentile of its last 100 periods. This prevents aggressive trading during low-volume, low-volatility consolidation (where fakeouts thrive).
+
+### 4. Indicator Sensitivity Patch
+
+Given the tight $86k-$88k range and Extreme Fear, we need indicators to confirm deeper extremes (oversold/overbought) and require longer moving averages to filter noise.
+
+```json
+{
+  "rsi_oversold": 20,
+  "rsi_overbought": 80,
+  "ma_period_fast": 15,
+  "ma_period_slow": 50,
+  "bollinger_band_multiplier": 2.5,
+  "stoch_k_period": 14,
+  "stoch_d_period": 3,
+  "macd_fast": 12,
+  "macd_slow": 26,
+  "macd_signal": 9
+}
+```
+*Rationale for changes:*
+*   **RSI Extremes (20/80):** Forces the bot to enter only at undeniable extremes, avoiding middle-range chop.
+*   **BB Multiplier (2.5):** Increases the sensitivity required for a mean-reversion signal, ensuring the price is far outside the standard deviation.
+*   **MA Slow (50):** Increased the slower MA to provide a more stable macro trend filter against short-term noise.
+
+### 5. Python Configuration Patch
+
+This patch applies the critical immediate fix: increasing the trade conviction score and enforcing longer signal persistence to prevent premature entries.
+
+```python
+# FILE: antigravity_prime/config/trading_core.py
+
+class TradingCoreConfig:
+    """Core operational parameters for Antigravity Prime."""
+
+    # --- IMMEDIATE CHOP MARKET ADJUSTMENTS (Cycle 003) ---
+
+    # Minimum signal score required for trade entry.
+    # Raised to 85 (from assumed 70-75) due to Extreme Fear / Tight Range.
+    # Forces higher indicator convergence and conviction.
+    TRADE_MIN_SCORE = 85
+
+    # Minimum number of consecutive periods the entry signal must persist before execution.
+    # Increased to prevent immediate whiplash entries on short-lived indicator crosses.
+    SIGNAL_PERSISTENCE_MIN_PERIODS = 3
+
+    # Maximum percentage of total equity allowed to be lost on any single trade (hard stop).
+    MAX_LOSS_PERCENTAGE_PER_TRADE = 0.75 
+
+    # --- Evolution Prep: Placeholder for AVS ---
+    # Placeholder for the future implementation of ATR-based scaling.
+    USE_ADAPTIVE_VOLATILITY_SCALING = False 
+```
+
+### 6. Next 24h Market Prediction and Optimal Stance
+
+**Prediction:** The BTC $86k-$88k range will persist for the next 12-18 hours. Given the **Extreme Fear** sentiment, market participants are hesitant. We anticipate a **False Breakout Attempt** towards $88.5k, followed by a sharp rejection back towards the range median ($87k). This compression is building energy for a significant move, but the next 24 hours will likely remain frustratingly choppy.
+
+**Optimal Stance: High-Conviction Scalping (Neutral Bias).**
+
+The bot must adopt a strictly tactical approach:
+1.  **Prioritize Mean Reversion:** Only trade when a pair hits its extreme indicators (RSI 20/80, BB 2.5 sigma).
+2.  **Tight Targeting:** Quick profit taking (scalping) is essential. Do not let winning trades run far, as the market lacks the momentum to sustain trends.
+3.  **Strict Stop Losses:** Enforce the new `MAX_LOSS_PERCENTAGE_PER_TRADE = 0.75` rule immediately, as range boundaries are prone to sudden, violent fakeouts.
+
+**The goal is capital preservation and building confidence (WR) before the inevitable range break.**
+
+--- [GEMINI] 2026-01-07 04:17:29.702083 ---
+## EVOLUTION ENGINE: ANTIGRAVITY PRIME V2.1 ACTIVATED
+
+**MISSION OBJECTIVE:** Achieve compounding growth towards millions. Current priority: Stabilize Win Rate and survive Extreme Fear/Ranging environment.
+
+---
+
+### 1. DIAGNOSIS
+
+| Metric | Value | Diagnosis | Severity |
+| :--- | :--- | :--- | :--- |
+| **Win Rate** | 45.05% | Critically Low. Suggests the current strategy is suffering from market chop, generating frequent false signals, and incurring small, rapid losses. | **CRITICAL** |
+| **Market Context** | Extreme Fear, Ranging ($86k-$88k) | Current indicators are likely optimized for trending markets and are failing in low-conviction, consolidating price action. | **HIGH** |
+| **Risk Profile** | Unknown, but 45% WR suggests current risk/reward ratio is insufficient to overcome the low hit rate. | Potential for significant drawdown if the market breaks out against current bias. | **MEDIUM** |
+
+**Conclusion:** Antigravity Prime is currently optimized for movement (trend or high volatility breakout) and is being decimated by the $86k-$88k consolidation. We must immediately filter out noise and improve signal quality.
+
+---
+
+### 2. IMMEDIATE FIXES (V2.1 Deployment)
+
+We are prioritizing signal quality and defensive positioning.
+
+| Parameter | Current (Assumed) | New Value | Rationale |
+| :--- | :--- | :--- | :--- |
+| **Minimum Signal Score (`min_score`)** | 60 (Placeholder) | **70 (or +15%)** | Aggressively filters marginal signals, forcing the bot to wait for only the highest conviction setups. |
+| **Global Trade Risk (%)** | 1.5% (Assumed) | **1.0%** | Reduces exposure during the fearful, choppy market phase. Preserves capital for the eventual breakout. |
+| **Signal Tweak** | `disable_low_volume_breakouts` | **True** | Temporarily suppress any signal relying solely on minor price action breaks not confirmed by significant volume, typical of range trading traps. |
+
+---
+
+### 3. PROPOSED NEXT EVOLUTION (V2.2 Blueprint)
+
+**Evolution Focus:** Range Detection and Suppression.
+
+**Proposal: Implementing a Chop Zone Filter (CZF)**
+
+The core issue is trading during low volatility compression. We must introduce a pre-filter that checks if volatility is historically low relative to the past 50 periods.
+
+1.  **CZF Metric:** Normalize the Bollinger Band Width (BBW).
+2.  **Logic:** If the current BBW is below the 25th percentile of the past 50 bars' BBW, the market is deemed "compressed."
+3.  **Action:** When compressed, the strategy must disable all trend-following signals (RSI/MA crosses, MACD divergences) and *only* permit mean-reversion signals (e.g., tight stops near BB boundaries or high RSI extremes).
+
+This prevents the bot from entering trend trades right before a false breakout or whipsaw.
+
+---
+
+### 4. INDICATOR SENSITIVITY PATCHES
+
+Given the ranging environment, we need to increase sensitivity for mean reversion signals while increasing stop distance to account for wicks.
+
+```json
+{
+  "rsi_oversold": 35,
+  "rsi_overbought": 65,
+  "ma_period_fast": 15,
+  "atr_stop_multiplier": 3.0,
+  "min_required_volume_factor": 1.25,
+  "keltner_channel_period": 20
+}
+```
+
+*   **RSI (35/65):** Loosens the oversold/overbought boundaries to catch turns earlier within the constrained range.
+*   **ATR Stop Multiplier (3.0):** Increases the distance for stop-loss calculation, providing necessary buffer against the sharp wicks common in fearful, range-bound markets. This directly counters premature stop-outs.
+*   **Volume Factor (1.25):** Ensures any entry is backed by 25% higher volume than the recent average, aligning with the quality filter goal.
+
+---
+
+### 5. CODE CHANGE (CZF Filter Injection)
+
+We inject a range detection layer into the primary `SignalEvaluator` class. This logic should reside immediately after the initial data preparation step.
+
+```python
+# FILE: AntigravityPrime/signal_evaluator.py
+
+def evaluate_signals(self, data, config):
+    # ... existing data preparation ...
+    
+    # ----------------------------------------------------
+    # V2.2 PATCH: CHOP ZONE FILTER (CZF)
+    # ----------------------------------------------------
+    
+    # Assuming BBANDS are calculated in data prep:
+    # data['BB_WIDTH'] = (data['BB_UPPER'] - data['BB_LOWER']) / data['BB_MID']
+
+    bb_width = data['BB_WIDTH'].iloc[-1]
+    
+    # Calculate 50-period percentile for compression detection
+    width_quantile_25 = data['BB_WIDTH'].rolling(window=50).quantile(0.25).iloc[-1]
+    
+    is_in_chop_zone = bb_width < width_quantile_25
+
+    if is_in_chop_zone:
+        self.log(f"CZF Activated. Market compression detected (BBW: {bb_width:.4f} < Q25: {width_quantile_25:.4f}).")
+        
+        # Suppress standard trend-following signals (example placeholders)
+        trend_signals_to_disable = ['MA_CROSS_LONG', 'BREAKOUT_VOL_SHORT']
+        
+        for signal_id in trend_signals_to_disable:
+            # Set confidence to zero for suppressed signals
+            if signal_id in signals:
+                signals[signal_id]['score'] = 0 
+                signals[signal_id]['reason'] = "CZF SUPPRESSION"
+                
+        # Only allow high-conviction mean-reversion near range extremes
+        # (This assumes mean-reversion signals have a separate identifier, e.g., 'RSI_EXTREME')
+        # If the highest scoring remaining signal is low, the trade is skipped due to the raised min_score (70).
+        
+    # ... existing signal calculation and scoring logic continues ...
+    
+    return self.score_and_select_trade(signals)
+```
+
+---
+
+### 6. 24H MARKET PREDICTION AND OPTIMAL STANCE
+
+**Prediction:** The $86k–$88k range will hold for the next 12 hours. However, the extreme fear combined with low liquidity increases the probability of a "liquidity grab" event—a sharp, quick wick down towards $85k or up towards $89k designed to liquidate early range players, followed by an immediate snap-back into the $87k mean.
+
+**Optimal Stance:** **Defensive Mean Reversion.**
+
+1.  **Avoid Breakout Trades:** Do not long the break of $88k or short the break of $86k until volume confirmation exceeds the new `min_required_volume_factor` (1.25x).
+2.  **Target Range Extremes:** Prioritize aggressive short entries near $88k (if confirmed by momentum exhaustion) and long entries near $86k.
+3.  **Capital Preservation:** The reduced risk (1.0%) ensures that if the true breakout occurs against our position, capital loss is minimized, allowing Antigravity Prime to leverage the breakout trend once established.
+
+--- [GEMINI] 2026-01-07 05:10:54.944142 ---
+# ANTIGRAVITY PRIME EVOLUTION REPORT v1.1.0
+
+**Mission Status:** Compounding below target velocity. Low WR (45.7%) confirms structural inefficiency in current market conditions.
+
+**Market Context:** Extreme Fear. BTC Ranging ($86k–$88k). Volatility Compression.
+
+---
+
+## 1. Diagnosis & Root Cause Analysis
+
+**Primary Issue:** The bot is suffering from **Range Chop Attrition**. The 45.7% Win Rate is highly indicative of systems being whipsawed in a low-volatility, non-trending environment. The existing `TIGHTENED` status is mitigating frequency but is not improving signal quality against the market noise.
+
+**Root Cause:** The trading system lacks an effective **Range/Compression Filter**, allowing trend-following signals to fire prematurely or fail quickly when the price reverts to the mean within the $86k–$88k boundaries. After fees and slippage, 45.7% WR is a net capital drain.
+
+## 2. Immediate Fixes & Parameter Adjustments
+
+We must preserve capital while waiting for the inevitable volatility spike.
+
+| Action | Justification | Value |
+| :--- | :--- | :--- |
+| **Increase `min_score`** | Demand higher conviction. Filter out borderline trades that lead to chop losses. | **+15%** (e.g., 0.70 -> 0.80) |
+| **Reduce `max_trade_size`** | Lower exposure in uncertain conditions. This is a critical capital preservation move. | **-25%** (Temporary reduction) |
+| **Disable Low-Volume Signals** | Disable any secondary entry logic that relies purely on low volume or mean reversion without strong RSI divergence, as they are likely false positives in this shallow range. | `Disable: low_vol_reversion` |
+
+## 3. Proposed Next Evolution: The Compression Filter
+
+The next structural evolution must address range-bound markets. We will introduce the **ATR Contraction Filter**.
+
+**Evolution Plan (Phase 1: Implementation):**
+
+1.  **Define Compression:** Calculate the ratio of the current 14-period ATR to the 200-period ATR. If `ATR_14 / ATR_200 < 0.75`, the market is deemed 'Highly Compressed.'
+2.  **Filter Application:**
+    *   When **Highly Compressed**, penalize all trend-following scores by **-0.20** points.
+    *   Temporarily activate a specialized **Boundary Bounce** signal (long near $86k, short near $88k), but restrict its maximum position size to 10% of standard risk.
+    *   Prioritize signals that break above/below the 20-period Bollinger Bands with confirmation (i.e., treating the breakout as a high-conviction escape from the range).
+
+## 4. Indicator Sensitivity Patch
+
+Given the current tight ranging environment, we need indicators that are sensitive to small moves but highly demanding of extreme conditions to fire a signal.
+
+```json
+{
+  "rsi_oversold": 35,
+  "rsi_overbought": 65,
+  "ma_period_fast": 15,
+  "stop_loss_atr_multiplier": 1.8,
+  "take_profit_atr_multiplier": 3.5,
+  "max_allowed_drawdown_percent": 0.5
+}
+```
+**Rationale:**
+*   **RSI (35/65):** Tighter bands avoid false signals near the midline (common in ranges). We only want to trade the extremities of the $86k–$88k box.
+*   **MA Period (15):** Faster response to localized trends within the range.
+*   **ATR Multiplier (1.8):** Tighter stop loss. We must aggressively cut losses if the trade immediately starts ranging against us, preserving capital for the eventual breakout.
+*   **Max Drawdown (0.5%):** Ultra-strict position management to maintain capital preservation during the current regime.
+
+## 5. Required Code Patch
+
+This patch applies the immediate fixes: increasing `MIN_SCORE` and introducing the placeholder for the new ATR Volatility Check which will penalize entry during chop.
+
+```python
+# CORE TRADING CONFIGURATION PATCH
+# File: config/antigravity_v1_params.py
+
+class Parameters:
+    # --- Risk and Entry Thresholds ---
+    MIN_ENTRY_SCORE = 0.80  # Raised from previous 0.70 due to low Win Rate (45.7%)
+    MAX_TRADE_SIZE_RATIO = 0.75 # Reduced exposure temporarily (was 1.0)
+    
+    # --- New Volatility Filtering ---
+    @staticmethod
+    def volatility_check(current_atr, long_term_atr):
+        """
+        Calculates penalty score based on volatility compression.
+        High compression (low ratio) results in signal score penalty.
+        """
+        compression_ratio = current_atr / long_term_atr
+        
+        if compression_ratio < 0.75:
+            # Market is highly compressed/ranging. Penalize trend entries.
+            return -0.20  
+        elif compression_ratio > 1.20:
+            # Market is highly volatile/trending. Offer a slight bonus.
+            return 0.05
+        else:
+            return 0.0
+            
+# --- Existing trading logic must integrate this volatility_check result into the final entry score.
+# New_Score = Base_Score + Parameters.volatility_check(ATR_14, ATR_200)
+
+```
+
+## 6. Market Prediction and Optimal Stance
+
+**Prediction:** The compression in the $86k–$88k range under Extreme Fear is unsustainable. We predict a **violent resolution** within the next 24-48 hours. The most likely immediate move is a quick liquidity grab (test of $85.5k) followed by a sharp reversal, or an aggressive push toward $90k to liquidate late shorts trapped by the range.
+
+**Optimal Stance:** **Aggressive Capital Preservation, High Alert.**
+
+The bot must remain primarily flat, executing only the highest conviction trades (Score > 0.80). Prepare the internal mechanisms for instantaneous execution (fast stop-loss handling, tight risk controls) when the $86k or $88k boundary breaks, as volume will flood the market and velocity will spike. *Do not try to predict the direction of the break; wait for confirmation.*
+
+--- [GEMINI] 2026-01-07 05:27:03.790317 ---
+This is the official evolution directive from the Antigravity Prime Engine. The current performance metrics indicate a critical need for tactical refinement to survive the current market regime and ensure long-term, high-leverage compounding.
+
+The target is millions. A 45.68% win rate is unsustainable unless the Reward/Risk is astronomically high, which is counterproductive in high-frequency autonomous trading. We must prioritize signal quality and volatility management.
+
+---
+
+## 1. Diagnosis of Issues
+
+| Issue | Severity | Root Cause Analysis |
+| :--- | :--- | :--- |
+| **Low Win Rate (45.68%)** | **Critical** | The strategy is failing to find reliable entries. In a ranging market with Extreme Fear, traditional trend-following signals are generating whipsaws and false reversals. The bot is likely being chopped up. |
+| **Extensive Blacklist (15 Assets)** | **High** | Indicates poor initial asset selection and lack of a robust liquidity filter. The bot is trying low-cap, high-slippage assets (`PIPPIN`, `JELLYJELLY`, etc.), resulting in inevitable losses and immediate blacklisting. This wastes capital and time. |
+| **Market Mismatch** | **High** | The strategy seems optimized for trending markets but is now operating in a volatile consolidation phase ($86-88k BTC). Entries are too late or too early for tight reversals. |
+
+---
+
+## 2. Immediate Fixes
+
+Given the ranging, fearful environment, we need to focus on quality over quantity and mean-reversion signals.
+
+| Action | Parameter | Rationale |
+| :--- | :--- | :--- |
+| **Raise Signal Threshold** | `min_score`: **Increase by +15%** | Immediately enforces higher consensus among indicators. Filters out weak/ambiguous signals generated during choppy consolidation. |
+| **Decrease Trade Risk** | `max_risk_per_trade`: **Set to 0.5%** (from assumed 1.0%) | Preserve capital during the consolidation phase. If the bot is wrong 55% of the time, we must ensure the losses are minimal until the win rate stabilizes. |
+| **Disable Trending Signals** | `signal_weight_ma_cross`: **Set to 0.1** (or temporary deactivation) | Reduce the influence of moving average crosses, which are unreliable in a tight range. |
+| **Focus on Liquidity** | **Immediately implement Volume/Depth Filter** | Stop trading micro-caps. Blacklisted assets like ICNT or SOPH destroy performance through high slippage. |
+
+---
+
+## 3. Proposed Next Evolution
+
+The long-term health of Antigravity Prime requires dynamic adaptation to market regimes.
+
+### Evolution Phase 1: Dynamic Volatility Management
+
+Implement **Dynamic Stop Loss (DSL)** and **Average True Range (ATR) Filtering**.
+
+1.  **Stop Signal Generation on Low ATR:** If 5-period ATR drops below the 20-period ATR average, the market is too compressed/choppy. The system must suppress *all* new signals until volatility returns. This directly addresses the whipsaw issue caused by ranging.
+2.  **DCA Rule Refinement:** Currently, the system likely re-enters at fixed intervals. In high fear, DCA must be proportional to price deviation *and* volatility. DCA should only occur if the price has moved **1.5x ATR** against the entry, ensuring the average down is meaningful.
+
+### Evolution Phase 2: Funding Rate Arbitrage (Low-Risk Hedge)
+
+Since the market is fearful and ranging, implementing a low-frequency, delta-neutral funding rate arbitrage module could provide consistent, non-directional base profit. This module runs independently and uses negligible risk (0.1% capital allocation) on highly liquid pairs (BTC, ETH) to offset small trading losses and maintain compounding momentum during slow periods.
+
+---
+
+## 4. Indicator Sensitivity Patch
+
+Given the current **Extreme Fear** and **Ranging** market, we are tuning oscillators to be more sensitive to mean-reversion extremes, and tightening the short-term Moving Average (MA) period for quicker response to range boundaries.
+
+| Indicator Parameter | Value | Rationale |
+| :--- | :--- | :--- |
+| `rsi_oversold` | `35` | Standard 30 is too extreme in a volatile range; prices snap back quicker. We need earlier detection. |
+| `rsi_overbought` | `65` | Similar to oversold, tightens the detection zone for reversal short signals. |
+| `ma_period_short` | `18` | Slightly shorter MA for detecting quick pivots around range support/resistance. |
+| `stoch_k_period` | `10` | Increase sensitivity on the Stochastic indicator, which is highly effective in ranging markets. |
+
+```json
+{
+  "rsi_oversold": 35,
+  "rsi_overbought": 65,
+  "ma_period_short": 18,
+  "stoch_k_period": 10
+}
+```
+
+---
+
+## 5. Code Patch: Liquidity & Volume Filter
+
+We must prevent the bot from selecting the low-liquidity tokens that destroyed previous capital (see Blacklist). This patch enforces a strict floor on 24h trading volume and 1% order book depth.
+
+```python
+# PATCH: Antigravity_Prime/core/asset_selection.py
+
+# Add these constants to the configuration module:
+MIN_24H_VOLUME_USD = 10000000  # Minimum $10M in 24h volume
+MIN_DEPTH_1_PERCENT = 75000    # Minimum $75k depth within 1% of current price (ensures good execution)
+
+def check_asset_liquidity(asset_data: dict) -> bool:
+    """
+    Applies strict liquidity screening before an asset can be traded.
+    Requires updated asset metadata including 'volume_24h' and 'depth_1_percent'.
+    """
+    symbol = asset_data.get('symbol', 'UNKNOWN')
+
+    # 1. Volume Check
+    volume = asset_data.get('volume_24h', 0)
+    if volume < MIN_24H_VOLUME_USD:
+        # Action: Log and blacklist immediately if system finds asset in initial scan.
+        print(f"[LIQUIDITY FILTER] Skipping {symbol}: Low 24H Volume (${volume:,.0f} < ${MIN_24H_VOLUME_USD:,.0f}).")
+        return False
+
+    # 2. Depth Check (Crucial for minimizing slippage)
+    depth = asset_data.get('depth_1_percent', 0)
+    if depth < MIN_DEPTH_1_PERCENT:
+        print(f"[LIQUIDITY FILTER] Skipping {symbol}: Insufficient 1% Depth (${depth:,.0f} < ${MIN_DEPTH_1_PERCENT:,.0f}).")
+        return False
+
+    return True
+
+# Ensure the main signal generation loop calls:
+# if not check_asset_liquidity(current_asset_data):
+#     continue
+```
+
+---
+
+## 6. Next 24h Market Prediction and Optimal Stance
+
+**Prediction:** The ranging consolidation between $86k and $88k will persist for the next 24-48 hours. Market participants remain indecisive due to the "Extreme Fear" reading, suggesting capital preservation (taking profits/hedging) is outweighing aggressive entry. Volatility will spike rapidly during range boundaries test (at $86k support or $88k resistance).
+
+**Optimal Stance:** **Agile Mean Reversion (Scalping)**
+
+1.  **Directional Bias:** Neutral, with a slight preference for shorting strong spikes in Altcoins that show immediate bearish divergence (RSI/Stochastics) at range extremes.
+2.  **Capital Allocation:** Reduce total exposure limit to **50%**. Hold 50% cash reserve for potential aggressive entries upon market regime shift (breakout or breakdown).
+3.  **Instruction:** Prioritize quick profit takes (Tighter Take Profit zones) and extremely tight initial stops, matching the low `max_risk_per_trade` (0.5%). *We are trading the range boundaries, not the middle.*
+
+--- [GEMINI] 2026-01-07 11:11:02.921129 ---
+# Evolution Engine: Antigravity Prime Assessment
+
+## Current Performance Analysis
+
+| Metric | Value | Diagnosis |
+| :--- | :--- | :--- |
+| **Balance** | $10,805.97 | Healthy start. |
+| **Win Rate (WR)** | 46.15% | **CRITICAL ISSUE.** This WR suggests that the strategy is suffering from poor entry timing, significant slippage, or excessive noise trading. The bot is likely being chopped up in the current range. |
+| **Blacklist** | 15 Pairs | **MAJOR ISSUE.** The bot is trading highly illiquid, low-cap, or meme-style coins (e.g., JELLYJELLY, PIPPIN, ANIME). These assets suffer extreme slippage and unpredictable volatility, directly leading to lower WR and capital waste. |
+| **Market Context** | Extreme Fear, Ranging ($86k-$88k) | **Confirmation.** Trend-following strategies will fail. High volatility and whipsaws demand tight risk management and mean-reversion focus. |
+
+## 1. Diagnosis Summary
+
+The bot, Antigravity Prime, is currently optimized for strong trending conditions or high-conviction momentum, which is failing catastrophically in a ranging market characterized by "Extreme Fear."
+
+1.  **Low Conviction Entries:** The primary entry signal (`min_score`) is too low, allowing trades on noisy data.
+2.  **Liquidity Risk Exposure:** The bot is trading high-risk, low-volume assets, incurring fatal slippage that contributes heavily to the low WR.
+3.  **Whipsaw Vulnerability:** The current settings are likely allowing positions to be opened near the middle of the range, only to be stopped out by the inevitable move to the channel extremes.
+
+---
+
+## 2. Immediate Fixes (Risk Mitigation & Conviction)
+
+To stabilize the Win Rate and preserve capital during this fearful ranging period, we must immediately increase trade quality and reduce exposure.
+
+| Action | Target Parameter | Rationale |
+| :--- | :--- | :--- |
+| **Raise Entry Threshold** | `MIN_SCORE_TO_ENTER` | Demand higher confluence of signals to filter out noise, compensating for the high fear/volatility environment. |
+| **Reduce Risk Exposure** | `MAX_RISK_PER_TRADE` | Lower the percentage of capital risked per trade to survive inevitable market whipsaws and protect the current balance. |
+| **Stricter Pair Selection** | `ALLOWED_PAIRS` / `MIN_VOLUME_FILTER` | Stop trading low-quality assets immediately. We must enforce a volume filter if not already present, or manually whitelist only high-liquidity pairs (BTC, ETH, SOL, BNB, etc.). |
+
+### Parameter Adjustments
+
+Assuming standard parameters:
+
+| Parameter | Current (Est.) | New Value |
+| :--- | :--- | :--- |
+| `MIN_SCORE_TO_ENTER` | 0.70 | **0.82** (High Conviction required) |
+| `MAX_RISK_PER_TRADE` | 0.01 (1%) | **0.005 (0.5%)** (Defensive Stance) |
+| `MAX_OPEN_POSITIONS` | 10+ | **6** (Reduce parallel risk exposure) |
+
+---
+
+## 3. Propose Next Evolution: Adaptive Mean Reversion
+
+Since BTC is ranging, the bot must evolve from a momentum/trend chaser into a high-quality mean-reversion scalper, targeting extremes (oversold/overbought) and using a short-term moving average (SMA) as the take-profit target.
+
+**Evolution Focus:** **Quality Control and Channel Reversion.**
+
+1.  **Liquidity Engine Integration:** Implement a hard filter to only consider assets with a 24-hour trading volume greater than **$50,000,000 USD** (or equivalent, ensuring the pair is not blacklisted noise).
+2.  **Bollinger Band (BB) Exit Strategy:** Shift the exit logic. Instead of solely relying on rigid Take Profit percentages, introduce a dynamic exit when price re-crosses the 20-period Simple Moving Average (BB Mid-Band) after touching the outer bands. This is crucial for capturing the reversal during ranging behavior.
+3.  **Blacklist Re-evaluation:** Introduce a rule to automatically clear the blacklist entries after 7 days if they haven't been re-engaged, but permanently blacklist the obvious meme/noise coins.
+
+---
+
+## 4. Indicator Sensitivity Adjustments (Ranging Mode)
+
+To optimize the signals for high volatility and ranging behavior, we need to widen the boundaries for oversold/overbought signals and use faster moving averages for reactive entry/exit.
+
+```json
+{
+  "rsi_period": 10,
+  "rsi_oversold": 30,
+  "rsi_overbought": 70,
+  "ma_period_short": 20,
+  "ma_period_long": 100,
+  "bb_period": 20,
+  "bb_std_dev": 2.2,
+  "atr_multiplier": 1.5
+}
+```
+
+*Rationale for Changes:*
+*   **RSI (30/70):** Standard 70/30 is required because the "Extreme Fear" environment causes exaggerated moves to the extremes. This confirms deeper reversals.
+*   **BB Std Dev (2.2):** Increases the Bollinger Band width from the standard 2.0 to 2.2, filtering out minor whipsaws and ensuring we only target genuine volatility extremes that breach the typical range envelope.
+*   **ATR Multiplier (1.5):** Tightens the stop-loss slightly (if ATR is used for SL) to ensure quick exits if the price breaks out of the range violently, protecting capital.
+
+---
+
+## 5. Required Code Patch (Python)
+
+Apply the immediate fixes to `config.py` and `strategy_params.py` (or equivalent files). This patch focuses on tightening risk control and demanding higher conviction.
+
+```python
+# PATCH START: Immediate Stabilization and Risk Adjustment
+
+# --- config.py or risk_management.py ---
+
+# Reduce the percentage of balance risked per trade to defensive levels.
+# This ensures survival during volatile, ranging conditions.
+MAX_RISK_PER_TRADE = 0.005  # 0.5% risk (Down from assumed 1.0%)
+
+# Reduce parallel exposure to limit total drawdown if multiple trades fail simultaneously.
+MAX_OPEN_POSITIONS = 6
+
+# --- strategy_params.py or scoring_engine.py ---
+
+# Increase the minimum signal score required to initiate a trade.
+# This filters out low-conviction, noisy entries.
+MIN_SCORE_TO_ENTER = 0.82
+
+# --- data_filter.py (New/Modified Filter) ---
+# Implement a basic liquidity guard based on 24h quote volume.
+def check_liquidity_and_blacklist(ticker_data: dict, current_pair: str) -> bool:
+    """
+    Checks if the asset meets minimum liquidity requirements or is a known noise coin.
+    Returns True if the asset is allowed to trade.
+    """
+    
+    # Enforce minimum daily volume (e.g., $50,000,000) for trading eligibility
+    MIN_QUOTE_VOLUME_USD = 50_000_000 
+
+    # Hard blacklist noise/meme coins regardless of volume
+    NOISE_COIN_IDENTIFIERS = ['JELLYJELLY', 'PIPPIN', 'ANIME', 'WET', 'SOPH', 'ARC', 'LIGHT', 'VTHO', 'PTB', 'ICNT']
+
+    if current_pair.split('/')[0] in NOISE_COIN_IDENTIFIERS:
+        return False
+
+    if ticker_data.get('quote_volume', 0) < MIN_QUOTE_VOLUME_USD:
+        return False
+        
+    return True
+
+# PATCH END
+```
+
+---
+
+## 6. Next 24h Market Prediction and Optimal Stance
+
+**Prediction:** The market will continue its consolidation between $86,000 and $88,500 for the next 24 hours. Volatility will remain high, leading to frequent tests of $86,000, which are likely to be met with quick bounces (mean reversion). Expect poor follow-through on minor breakouts above $88,500.
+
+**Optimal Stance: Defensive Scalping (Mean Reversion Bias)**
+
+The bot must adopt a highly defensive posture, prioritizing high-quality entries and quick, profitable exits.
+
+| Parameter | Stance | Rationale |
+| :--- | :--- | :--- |
+| **Directional Bias** | Neutral/Slight Long Bias | Extreme Fear usually precedes a bounce; prioritize buying deep dips (oversold) over chasing short setups near the range top. |
+| **Exit Strategy** | Tight Take Profit (TP) | Do not wait for large compounding moves. Capture the quick reversal back to the mid-range MA (scalping) and reset. |
+| **Risk** | Very Low (0.5% per trade) | Survival is the goal. We are optimizing for stability (higher WR) before optimizing for exponential growth. |
+
+--- [GEMINI] 2026-01-07 21:52:32.722873 ---
+The current state of Antigravity Prime demands immediate, decisive action. The bot is attempting to trade a choppy, ranging market ($86k-$88k BTC) characterized by extreme emotional fear, resulting in a disastrous Win Rate of **43.14%**. This performance indicates a fundamental failure in entry quality and sensitivity to market noise.
+
+We must stabilize performance, maximize entry confidence, and prepare for the inevitable volatility expansion.
+
+---
+
+## 1. Diagnosis
+
+| Metric | Value | Diagnosis |
+| :--- | :--- | :--- |
+| **Win Rate** | 43.14% | **Critical Failure.** The bot is losing more than it wins. Likely victim of whipsaws, noise, and taking premature entries that reverse within the tight BTC range. High risk of capital erosion. |
+| **Blacklist** | Extensive junk tokens | **Filter Failure.** Initial selection criteria are too loose, allowing the bot to engage in illiquid, high-slippage pairs, leading to forced stop-outs and blacklisting. |
+| **Market Condition** | Extreme Fear, Ranging | Strategy is optimized for trending markets but performing poorly in consolidation. Entries are likely pure momentum plays which are failing instantly in this environment. |
+
+---
+
+## 2. Immediate Fixes
+
+The primary goal is to drastically reduce trade frequency and only accept the highest confidence setups, thereby boosting the Win Rate above 55%.
+
+| Action | Adjustment | Rationale |
+| :--- | :--- | :--- |
+| **Entry Quality Filter** | Increase `min_score` by **15%**. | This immediately prunes marginal signals, forcing the bot to wait for higher conviction triggers, essential for a choppy market. |
+| **Risk Management** | Decrease default `max_risk_per_trade` by **20%**. | In an "Extreme Fear" environment, volatility is unpredictable. Reducing size mitigates the impact of sudden liquidity grabs while maintaining slightly wider stop tolerances necessary for whipsaws. |
+| **Signal Prioritization**| Disable all secondary, low-confidence signal generators (e.g., micro-breakout signals) until Win Rate is stabilized above 50%. Focus solely on core trend/reversion indicators. | Reduces noise injection. |
+| **Blacklist Fix** | Enforce a strict minimum volume/liquidity threshold (see code patch below) immediately to prevent further exposure to worthless assets. | Protects against slippage and market manipulation on micro-caps. |
+
+---
+
+## 3. Proposed Next Evolution
+
+The bot must evolve an adaptive mechanism to handle range-bound periods versus trending periods.
+
+**Evolutionary Path: Adaptive Volatility & Mean Reversion (MR) Engine**
+
+1.  **Introduce Channel Conformance Filter:** Develop a filter that checks if the current price action is predominantly confined within a volatility channel (e.g., Keltner or BBands).
+2.  **MR Rule Implementation:** If the market is confirmed Ranging (low ADX, price contained within 1.5 ATR bands), prioritize **Mean Reversion** trades (longing the low boundary, shorting the high boundary) over momentum entries.
+3.  **Adaptive Stop Placement:** If the market shifts into MR mode, stops should be placed just outside the opposite channel boundary, dynamically managed by ATR 20 periods, ensuring survival through expected range fluctuations.
+
+---
+
+## 4. Indicator Sensitivity
+
+Given the tight range and extreme fear, we need indicators that are more sensitive to oversold/overbought conditions at the extremities of the range, while using slightly longer periods to smooth out the noise inherent in the range.
+
+```json
+{
+    "rsi_oversold": 25,
+    "rsi_overbought": 75,
+    "ma_period": 25,
+    "atr_period": 20,
+    "bb_std_dev": 2.2,
+    "mfi_oversold": 15
+}
+```
+
+*Rationale for Patches:*
+*   **RSI (25/75):** Widening the bands ensures the bot only triggers on truly stretched extremes, filtering out common reversals within the $86k-$88k range.
+*   **MA Period (25):** Slightly longer period helps smooth the MA signal, reducing false crosses in the choppy consolidation.
+*   **ATR Period (20):** Using a longer ATR calculation (up from standard 14) dampens the influence of single sharp volatility spikes (fear), providing a more reliable basis for stop-loss calculation in this environment.
+
+---
+
+## 5. Code Change (Liquidity/Asset Filter)
+
+This critical patch prevents future trade execution on illiquid or junk tokens, addressing the root cause of the current massive blacklist. This must be applied immediately to the asset selection module.
+
+```python
+# PATCH START: Asset Filter Enforcement
+
+def meets_minimum_liquidity_requirements(asset_data: dict) -> bool:
+    """
+    Applies stringent liquidity checks based on 24h volume and price floor.
+    Prevents trading micro-caps prone to manipulation and high slippage.
+    Assumes asset_data contains 'volume_usdt_24h' and 'current_price'.
+    """
+    
+    MIN_DAILY_VOLUME_USDT = 8_000_000  # Minimum $8 Million USD 24h volume
+    MIN_PRICE_USDT = 0.05             # Minimum price floor (5 cents)
+
+    volume = asset_data.get('volume_usdt_24h', 0.0)
+    price = asset_data.get('current_price', 0.0)
+
+    if volume < MIN_DAILY_VOLUME_USDT:
+        return False, f"Volume low: {volume:.2f} < {MIN_DAILY_VOLUME_USDT}"
+    
+    if price < MIN_PRICE_USDT:
+        return False, f"Price too low: {price:.4f} < {MIN_PRICE_USDT}"
+        
+    # Check for excessive market spread (optional but recommended)
+    # Placeholder: Assuming spread check is managed elsewhere, but focus on volume/price here.
+    
+    return True, "Liquidity check passed."
+
+# Apply this function as a required gate before initializing any new trade configuration.
+
+# PATCH END
+```
+
+---
+
+## 6. Prediction and Optimal Stance
+
+**Market Prediction (Next 24h):**
+BTC is coiled tightly within the $86k-$88k structure under "Extreme Fear." This pressure cooker state suggests a **violent expansion of volatility is imminent.** Given the overwhelming fear, the path of least resistance is often a sweep of liquidity below the range.
+
+*   **Scenario 1 (High Probability):** Sharp drop to test $85,000 – $84,500 to hunt stop losses and induce maximum panic, followed by a potential fierce snapback if underlying demand is present.
+*   **Scenario 2 (Medium Probability):** Slow grind up to $88,500, failing to hold, then reversing back into the range.
+
+**Optimal Stance:** **Defensive and Opportunistic Mean Reversion.**
+
+1.  **Position Size:** Remain reduced (20% lower risk) until the market clearly breaks $88,500 or $85,000.
+2.  **Focus:** Strict Mean Reversion trades within the existing $86k-$88k BTC boundaries (Short near $88k, Long near $86k), utilizing the new 25/75 RSI filter for confirmation.
+3.  **Action:** Be prepared to aggressively buy the first major dip below the current range ($85k-$84.5k) if accompanied by high volume and a rapid indicator reset (i.e., treating the low boundary breach as a potential fakeout/spring).
+4.  **Avoid:** Any trade relying on a sustained directional breakout until confirmation is established (e.g., 4-hour close outside the range).
+
+--- [GEMINI] 2026-01-10 20:57:59.199023 ---
+## Antigravity Prime Evolution Engine Report
+
+**Evolution Cycle:** 001
+**Market State:** Extreme Fear (Ranging/Choppy)
+**Objective:** Compound to $1,000,000+
+
+---
+
+### 1. Diagnosis
+
+| Metric | Value | Diagnosis | Impact |
+| :--- | :--- | :--- | :--- |
+| **Win Rate** | 40.88% | **Low Entry Quality.** The bot is taking too many weak or false signals, likely due to insufficient filtering or indicators firing prematurely in choppy conditions. Relies heavily on high R:R (Profit Factor > 1.5 needed). | High drawdown risk if R:R slips. Choppy market ensures more stop-outs. |
+| **Market Condition**| Extreme Fear / Ranging | The current BTC range ($86k-$88k) is highly corrosive to momentum strategies. The strategy is likely getting chopped up on entries near the range boundaries or false breakouts. | Constant small losses, limiting compounding speed. |
+| **Balance** | $10,776 | Profitable baseline. The strategy works, but compounding speed is bottlenecked by the low win rate/market noise. | Positive overall, but immediate tightening needed to preserve capital during the range. |
+
+### 2. Immediate Fixes (Deployment 001)
+
+The immediate priority is to increase the signal conviction to navigate the current range and boost the Win Rate (WR).
+
+**A. Entry Quality Filter (Min Score Adjustment)**
+The bot must only enter trades where the consensus signal strength is overwhelming.
+
+*   **Action:** Raise the minimum required signal score (`min_score`).
+*   **Recommendation:** Raise **`min_score` from 0.65 (assumed default) to 0.72.**
+
+**B. Risk Mitigation**
+In extreme fear and low directional conviction, position size must be reduced to protect capital from whipsaws.
+
+*   **Action:** Temporarily reduce maximum allowed leverage/position size.
+*   **Recommendation:** Enforce **Max Position Size Cap at 1.5% of Balance** per trade, and **Max Aggregate Leverage Cap at 5x**.
+
+### 3. Proposed Next Evolution (Roadmap 002)
+
+To move toward exponential compounding, the bot needs to transition from a static indicator model to an adaptive, market-state-aware model.
+
+**Evolution Goal:** Implement a **Trend Strength Dynamic Filter**.
+
+1.  **ADX Integration:** Implement an Average Directional Index (ADX) filter (e.g., 14 period).
+2.  **Adaptive Entry Rule:**
+    *   **If ADX < 20 (Ranging/Non-Trending):** Bot should increase `min_score` to 0.75, enforce tighter take-profits (mean reversion focus), and decrease position size by 50%.
+    *   **If ADX > 25 (Trending):** Bot can use the baseline `min_score` (0.65 or 0.70), allow for wider trailing stop losses, and use maximum allowable position size.
+3.  **Liquidity Filter Enhancement:** Add a hard filter to reject trades where the 24h volume (in USD) is below $5 million to avoid illiquid assets that slip during execution, regardless of signal score.
+
+### 4. Indicator Sensitivity Adjustments (JSON Patch)
+
+Given the high volatility and range-bound behavior, we must widen the momentum indicator thresholds to prevent premature firing, and shorten MA periods slightly for responsiveness.
+
+```json
+{
+  "rsi_oversold": 25,
+  "rsi_overbought": 75,
+  "stoch_oversold": 15,
+  "stoch_overbought": 85,
+  "ma_period_short": 14,
+  "bollinger_std_dev": 2.2
+}
+```
+
+### 5. Code Change (Python Patch)
+
+The immediate fix requires adjusting the core filtering mechanism. Assuming the bot uses a centralized `min_score` threshold within its strategy generation logic (e.g., `generate_signals` method):
+
+```python
+# PATCH START: AntigravityPrime/Strategy/CoreSignalEngine.py
+
+def generate_signals(self, dataframe: DataFrame) -> Optional[tuple]:
+    """
+    Generates trading signals based on indicator consensus and filtering.
+    """
+    # [Existing Indicator Calculation Logic...]
+
+    # --- Core Filtering Adjustment ---
+    # Raised min_score to filter out weak signals during choppy market conditions.
+    MIN_CONVICTION_SCORE = 0.72 
+    
+    # [Existing Score Calculation Logic...]
+
+    if self.signal_score >= MIN_CONVICTION_SCORE:
+        # Check liquidity and other filters before returning the signal
+        if not self._check_liquidity(dataframe):
+            return None # Ignore low liquidity trades
+            
+        if self.signal_score >= 0.90:
+            # High conviction signals get slightly more risk/tighter stops
+            return self._finalize_trade(signal_type, high_conviction=True)
+        
+        return self._finalize_trade(signal_type, high_conviction=False)
+    
+    return None
+
+# PATCH END
+```
+
+### 6. Next 24h Market Prediction and Optimal Stance
+
+**Prediction:** BTC will continue its grinding movement, testing the $88,000 resistance multiple times. Given the 'Extreme Fear' sentiment, strong institutional selling will likely cap the immediate upside. Alts will remain highly correlated but exhibit higher volatility, leading to dramatic wicks in both directions. Expect a high probability of a rejection leading to a quick drop back toward $86,000 or even $85,500 within the next 24-36 hours.
+
+**Optimal Stance (Defensive Mean Reversion):**
+
+1.  **Stance:** **Highly Selective/Defensive.**
+2.  **Trade Focus:** Favor **short** signals near the high end of the range ($87.5k+) on correlated pairs (Mean Reversion).
+3.  **Long Trades:** Only execute long signals if they originate from severe oversold conditions (RSI < 25) near proven support ($86k equivalent).
+4.  **Frequency:** Reduce trade frequency significantly. It is better to miss two profitable trades than to suffer five consecutive stop-outs.
+
+--- [GEMINI] 2026-01-10 21:00:39.581554 ---
+This is an environment of maximum stress. The low Win Rate (40.88%) combined with Extreme Fear market conditions indicates that Antigravity Prime is being heavily chopped up by fakeouts and volatility spikes within a tight range.
+
+The bot is losing money due to entry quality, not necessarily catastrophic trade management, but poor entries force poor exits. We must immediately prioritize quality over quantity and implement strong noise filters.
+
+---
+
+## 1. Diagnosis of Issues
+
+| Issue | Observation | Root Cause |
+| :--- | :--- | :--- |
+| **Low Win Rate (40.88%)** | Strategy is losing more than it wins. | Entries are too lenient (`min_score` too low) allowing the bot to enter on weak signals that immediately reverse in the BTC $86k-$88k range. |
+| **Market Condition Stress** | Extreme Fear, Tight Range. | Trend-following signals (if used) are failing, and mean-reversion signals are invalidated by continued fear selling pressure. |
+| **Excessive Blacklisting** | 18 pairs blacklisted, primarily low-cap/meme coins. | The internal volatility/liquidity filter is allowing trades on high-risk assets, resulting in significant losses before the protective blacklisting mechanism engages. Risk calculation is inaccurate for these thin books. |
+
+---
+
+## 2. Immediate Fixes
+
+We must immediately raise the barrier for entry to eliminate low-conviction signals and survive the current chop.
+
+1.  **Raise Minimum Signal Score:** Drastically increase the confidence score required for *any* entry.
+    *   *Action:* Set `min_signal_score` to **75** (up from a presumed default of 50-65).
+2.  **Conservative Risk Adjustment:** Limit exposure during this fear phase.
+    *   *Action:* Confirm maximum risk per trade is capped at **0.75%** of current equity.
+3.  **Liquidity Filter Hardening:** Address the blacklist issue proactively.
+    *   *Action:* Implement a permanent hard filter: **Disable all trading on pairs below $500k 24h volume** until the market exits the "Extreme Fear" zone. This protects the capital from meme/low-cap rug pulls and instability.
+
+---
+
+## 3. Proposed Next Evolution
+
+The strategy must adapt to the high-volatility range-bound environment by implementing dynamic, volatility-aware entry and scaling.
+
+### Evolution 1: Volatility-Adjusted Entry Filter (VADX)
+
+Implement a filter that checks for range condition (choppy market) and penalizes trend signals accordingly. If ADX (Average Directional Index) is below 22, the market is not trending, and trend signals should be ignored or scaled down.
+
+### Evolution 2: ATR-Based Stop Loss and DCA
+
+Fixed percentage stops are insufficient during high volatility.
+*   **Stops:** Implement stop losses calculated as a multiple of ATR (e.g., 2.5x ATR). This allows the trade to breathe during market noise without being stopped out prematurely.
+*   **DCA Steps:** If the bot uses DCA, subsequent entries must be spaced by a minimum of **1.5x ATR** rather than fixed percentages. This ensures capital is not wasted accumulating near the entry price during noise.
+
+### Evolution 3: Funding Rate Bias Confirmation
+
+Given the "Extreme Fear" context, funding rates are likely negative (shorts paying longs). Implement a bias:
+*   Only take **LONG** trades if the current funding rate is significantly negative (e.g., below -0.01%). This adds an anti-capitulation hedge to the entry.
+*   **SHORT** trades are severely penalized unless funding is neutral or positive.
+
+---
+
+## 4. Indicator Sensitivity Patch
+
+We are adjusting indicators to require stronger conviction (wider bands, higher thresholds) to reduce false positives caused by market noise.
+
+```json
+{
+  "min_signal_score": 75,
+  "rsi_oversold": 20,
+  "rsi_overbought": 80,
+  "adx_min_trend": 22,
+  "bollinger_band_stdev_multiplier": 2.5,
+  "atr_period": 14,
+  "stop_loss_atr_multiplier": 2.5,
+  "dca_step_atr_multiplier": 1.5
+}
+```
+
+---
+
+## 5. Required Code Change (Python Patch)
+
+We need to enforce the VADX filter to prevent range chop from ruining the win rate. This patch assumes the bot uses a central `signal_generation` module and relies on `talib`.
+
+```python
+# PATCH: Implement Volatility-Adjusted (ADX) Entry Filter
+# Target Module: trading_logic/signal_processor.py (or similar main entry file)
+
+import talib
+import pandas as pd
+
+def filter_signal_by_volatility(data: pd.DataFrame, current_score: float, direction: str) -> (float, bool):
+    """
+    Applies ADX trend filter to adjust signal score based on market conditions.
+    
+    Returns: (adjusted_score, execute_trade)
+    """
+    
+    # --- Configuration Variables (from JSON patch) ---
+    ADX_MIN_TREND_THRESHOLD = 22  # Below this is ranging/choppy
+    MIN_SIGNAL_SCORE_HARD = 75    # Hard minimum score for execution
+    RANGE_SCORE_PENALTY = 0.5     # Penalty multiplier if range detected
+    
+    if len(data) < 14:
+        # Not enough data for ADX, skip filter but maintain hard score check
+        if current_score >= MIN_SIGNAL_SCORE_HARD:
+            return current_score, True
+        return 0.0, False
+
+    # Calculate ADX (standard 14 period)
+    adx_series = talib.ADX(data['high'], data['low'], data['close'], timeperiod=14)
+    current_adx = adx_series.iloc[-1]
+    
+    adjusted_score = current_score
+    
+    if current_adx < ADX_MIN_TREND_THRESHOLD:
+        # Market is Ranging (Choppy/Fear environment). Penalize trend-following signals.
+        
+        # Apply score penalty
+        adjusted_score *= RANGE_SCORE_PENALTY
+        
+        print(f"[{data.name}] ADX {current_adx:.2f} < {ADX_MIN_TREND_THRESHOLD}. Applying range penalty.")
+        
+        # If the original signal was already weak, the penalty will drop it below the floor.
+        if adjusted_score < MIN_SIGNAL_SCORE_HARD:
+            return 0.0, False
+            
+    elif current_score < MIN_SIGNAL_SCORE_HARD:
+        # Trending, but signal quality is too low based on strict configuration
+        return 0.0, False
+
+    # If the score is high enough after filtering
+    return adjusted_score, adjusted_score >= MIN_SIGNAL_SCORE_HARD
+
+# --- Example of Integration ---
+# (In the main processing loop where signals are generated)
+# score, direction = generate_raw_signal(data)
+# final_score, execute = filter_signal_by_volatility(data, score, direction)
+# if execute: place_order(direction, final_score)
+```
+
+---
+
+## 6. Prediction and Optimal Stance (Next 24 Hours)
+
+**Market Prediction:** BTC will continue its high-stress consolidation between $86,000 and $88,000. Volume will remain suppressed, but volatility (price movement speed) will be high, leading to sharp, sudden stop hunts. The overall bias is bearish until $88,500 is decisively breached and held. $86,000 is the critical support line; a break likely triggers a capitulation flush to $80,000.
+
+**Optimal Stance: Extreme Defensive, Mean-Reversion Scalping with Long Bias Preference.**
+
+1.  **Trade Volume:** Significantly reduced (only high-conviction signals above Score 75).
+2.  **Longs:** Only permitted on confirmed mean-reversion bounces off major supports (i.e., near $86k) and only if funding is negative. Use ATR stops and quick take-profits.
+3.  **Shorts:** Allowed only near the range top ($87.8k - $88k) or on confirmed breaks of $86k support. Must use tighter ATR stops to avoid being caught in sudden reversal spikes.
+4.  **Overall Objective:** Preserve capital and wait for the market structure to clearly define a new trend (ADX rising above 25). Avoid getting caught in the middle of the range.
+
+--- [GEMINI] 2026-01-11 10:19:37.527362 ---
+Antigravity Prime needs immediate intervention. A 40.66% Win Rate suggests that while the bot might occasionally catch large moves (allowing it to survive), the majority of its entries are premature or occurring in low-quality assets, leading to excessive transaction fees and slow but steady drawdown.
+
+The mission is compounding to millions; this requires consistency (Win Rate > 55% or Profit Factor > 1.5).
+
+---
+
+## 1. Diagnosis: Instability and Quality Control Failure
+
+| Issue | Observation | Impact |
+| :--- | :--- | :--- |
+| **Low Win Rate** | 40.66% | Unsustainable unless R:R is significantly > 2:1. Indicates poor entry timing or aggressive noise trading. |
+| **Asset Quality Failure** | Massive blacklist including meme coins (JELLYJELLY, BROCCOLI714) and major pairs (ETH, ZEC). | The bot is wasting capital and time analyzing and trading illiquid or manipulated assets, leading to unpredictable slippage and forced blacklisting. |
+| **Market Mismatch** | Extreme Fear + Ranging BTC. | The bot is likely using trend-following logic and getting whipsawed repeatedly in the $86k-$88k chop. |
+
+---
+
+## 2. Immediate Fixes
+
+The goal is to increase the signal-to-noise ratio dramatically and protect capital during this high-fear ranging phase.
+
+1.  **Raise Minimum Score (Conviction):** The bot is trading on low-conviction signals. Force it to wait for stronger alignment.
+    *   **Action:** Increase `min_score` from a hypothetical 0.60 (or whatever it currently is) to **0.75**.
+
+2.  **Reduce Exposure (Drawdown Management):** While the parameters are being tuned, reduce potential capital at risk.
+    *   **Action:** Reduce `max_aum_exposure_percent` from 10% to **7.5%**.
+
+3.  **Blacklist Review:** The Blacklist is saturated. We must remove high-volume, reliable pairs that were likely blacklisted due to temporary volatility, allowing them to be re-evaluated under stricter new rules.
+    *   **Action:** **Remove ETH/USDT, TRX/USDT, ZEC/USDT** from the blacklist.
+
+---
+
+## 3. Propose Next Evolution: Proactive Quality Control
+
+The bot needs to stop being reactive (blacklisting after a loss) and start being proactive (filtering noise before a trade is considered).
+
+### Evolution 1: Volume and Liquidity Gate (Priority)
+We must implement a hard filter requiring minimum 24-hour volume and order book depth before any technical analysis is performed. This instantly solves the meme-coin/low-liquidity problem.
+
+### Evolution 2: Range Confirmation Filter (ADX/ATR)
+To survive the current ranging market, signals must be conditional on volatility context.
+*   **If ADX < 20 (Range):** Favor mean-reversion signals (RSI/Stoch).
+*   **If ADX > 25 (Trend):** Favor momentum signals (MACD/Breakouts).
+
+We will implement Evolution 1 immediately via a code patch.
+
+---
+
+## 4. Indicator Sensitivity Patch
+
+Given the high volatility (Fear) but current ranging (Chop), we need slightly slower lookback periods to filter noise, combined with tighter entry zones for mean reversion signals.
+
+```json
+{
+  "rsi_oversold": 35,
+  "rsi_overbought": 65,
+  "ma_period_short": 15,
+  "ma_period_long": 45,
+  "atr_period": 20,
+  "min_stop_loss_percent": 0.5,
+  "max_stop_loss_percent": 3.0
+}
+```
+*(Rationale: Tightening RSI (35/65) forces entries closer to the extreme range boundaries, optimizing mean-reversion in the current chop. Increasing ATR/MA periods smooths noisy signals.)*
+
+---
+
+## 5. Python Patch: Liquidity Gate
+
+This patch implements a necessary volume filter at the pair selection level. We will set a minimum volume of $15,000,000 USD in 24 hours to ensure sufficient liquidity.
+
+```python
+# Assuming this patch applies to the 'AntigravityPrime.py' class method responsible for pair selection.
+
+--- AntigravityPrime.py
++++ AntigravityPrime.py
+@@ -101,6 +101,15 @@
+         candidate_pairs = []
+         
+         # --- EVOLUTION 1: LIQUIDITY GATE ---
++        MIN_24H_VOLUME_USD = 15000000 
++
++        for pair, ticker in tickers.items():
++            if 'quoteVolume' in ticker and ticker.get('quoteVolume', 0) < MIN_24H_VOLUME_USD:
++                self.log(f"Filtering {pair}: 24H volume ${ticker.get('quoteVolume', 0):.2f} < ${MIN_24H_VOLUME_USD}. Too illiquid.", 'debug')
++                continue
++            
++            # Ensure base currency is USDT/USD equivalent
++            if not pair.endswith('/USDT'):
++                continue
+ 
+         for pair in self.config['SYMBOLS']:
+             if pair not in self.blacklist and pair in tickers:
+```
+
+---
+
+## 6. Predicted Market Behavior and Optimal Stance
+
+**Prediction (Next 24h):** The market is consolidating under extreme fear ($86k-$88k range). This high-pressure environment suggests an eventual violent break. Given the dominant FUD (Fear, Uncertainty, Doubt), the path of least resistance remains **downward**. We predict continued tight range for the next 8-12 hours, followed by a sharp downside test toward $85,000 or potentially $84,000.
+
+**Optimal Stance:** **Neutral/Short-Bias.**
+
+1.  **Prioritize Short Signals:** Look for high-conviction short signals as BTC approaches $88k.
+2.  **Strict Mean Reversion:** Use the tightened indicator thresholds (RSI 65/35) to trade the boundaries of the established range.
+3.  **Avoid Breakouts:** Do not attempt long breakout trades until the Fear Index shifts to Neutral or Greed, or until BTC successfully holds above $89k. The current range is a distribution zone, not accumulation.
+
+--- [GEMINI] 2026-01-11 10:31:56.182913 ---
+The current performance of Antigravity Prime indicates a systemic issue with entry quality in the current market structure. While the bot is profitable (implied, given the growing balance), a 40.66% Win Rate requires an exceptional and unsustainable R:R ratio to maintain growth, especially in a tightening range.
+
+The bot is currently being whipsawed by noise within the $86k-$88k range. Our focus must be on enhancing signal discrimination and tightening immediate stops.
+
+---
+
+## 1. Diagnosis
+
+| Metric | Value | Diagnosis | Severity |
+| :--- | :--- | :--- | :--- |
+| **Win Rate** | 40.66% | Too low. Signals are generating excessive false flags due to market noise and range compression. | High |
+| **Market** | Extreme Fear, Ranging | Current signals likely optimized for trending markets, failing to adapt to mean reversion/scalping required now. | High |
+| **Blacklist** | Extensive | Good pruning behavior, but confirms the bot is struggling to find reliable pairs/signals. | Moderate |
+| **Drawdown** | *(Implicit)* | Low WR suggests large drawdowns are possible if R:R flips or average loss increases slightly. | Concern |
+
+## 2. Immediate Fixes
+
+To address the low Win Rate and range-bound noise, we must immediately raise the required signal quality (score) and confirm conservative risk management.
+
+### Action Plan: Signal Quality & Risk
+
+1.  **Increase Minimum Score:** Raise the barrier for entry to eliminate marginal, noisy trades.
+    *   **Old:** Assume `min_score` was 0.70-0.75.
+    *   **New:** Set `min_score` to **0.82**. This forces the bot to wait for higher confluence before entering.
+2.  **Adjust Risk Per Trade:** Maintain capital preservation during high fear/range periods.
+    *   **Risk:** Set maximum risk per trade to **1.2%** of capital.
+3.  **Prioritize Range Reversion:** Instruct the bot to favor **long entries** (buying dips) aggressively in the Extreme Fear environment, as the $86k floor is currently the liquidity magnet. Short entries should be high-conviction only.
+
+## 3. Next Evolution Proposal
+
+The bot needs a structural defense against ranging markets. We will introduce a **Volatility/Mean Reversion Filter (VMRF)**.
+
+**Evolution Objective:** Only enter trades when price is sufficiently displaced from the moving average, confirmed by low recent volatility (ATR contraction).
+
+### Proposed Feature: Dynamic Position Sizing (DPS) based on ATR
+
+1.  **Volatility Check:** Calculate 14-period Average True Range (ATR).
+2.  **ATR Multiplier:** If ATR is unusually high (e.g., top 80th percentile of the last 100 periods), reduce position size by 20% to mitigate risk during sudden spikes (panic selling/buying).
+3.  **Mean Reversion Trigger:** Introduce a filter that requires the current price to be at least 1.5 Standard Deviations (Bands) away from the 50-period moving average *before* a reversal signal (RSI/Stochastics) can fire a high-score trade. This confirms price exhaustion within the range.
+
+This VMRF ensures we are fading the extremes of the range, not chasing momentum within it.
+
+## 4. Indicator Sensitivity: `indicator_patches`
+
+Given the tight, high-fear range, we need faster, more extreme readings to confirm reversal points. We are speeding up short-term indicators and making oscillators more sensitive to extremes.
+
+```json
+{
+  "rsi_oversold": 25,
+  "rsi_overbought": 75,
+  "stoch_oversold": 15,
+  "stoch_overbought": 85,
+  "short_ma_period": 10,
+  "long_ma_period": 40,
+  "atr_period": 14,
+  "volatility_threshold_multiplier": 0.8
+}
+```
+
+## 5. Code Change (Python Patch)
+
+This patch focuses on implementing the immediate fixes: raising the required signal score and tightening risk controls in the main configuration file (`config.py` or similar).
+
+```python
+# --- START PYTHON PATCH (Apply to main Configuration File) ---
+
+# Section: CORE_STRATEGY_PARAMETERS
+
+# The minimum required confidence score (0.0 to 1.0) for a signal to execute a trade.
+# Raised from previous assumed value (~0.75) to filter out noise in ranging market.
+MIN_SIGNAL_SCORE = 0.82
+
+# Maximum capital to risk per single trade execution (percentage).
+MAX_RISK_PER_TRADE_PERCENT = 1.2
+
+# Section: RISK_MANAGEMENT
+
+# Aggressive initial stop loss configuration (in percent deviation from entry).
+# Tightened to prevent unnecessary drawdowns from range excursions.
+INITIAL_STOP_LOSS_PCT = 3.5 
+
+# Section: BLACKLIST_MANAGEMENT
+
+# Reduce evaluation period for pairs to prune faster in current volatile/noisy environment.
+PAIR_EVALUATION_WINDOW_HOURS = 12
+
+# --- END PYTHON PATCH ---
+```
+
+## 6. Market Prediction and Optimal Stance
+
+**Prediction for Next 24 Hours:**
+The market is holding strong support at $86k despite Extreme Fear readings. Volatility compression within this range suggests an imminent expansion. It is highly probable that the next 24 hours will include a **liquidity sweep** down to test $85,500 - $85,000 (shaking out late longs) before a strong rebound to challenge the $88,500 resistance.
+
+**Optimal Stance for Antigravity Prime:**
+
+| Parameter | Stance | Rationale |
+| :--- | :--- | :--- |
+| **Directional Bias** | Cautious Long Bias | Extreme Fear is usually a buy signal for strong assets (BTC/ETH). Favor mean reversion buys (dip buying). |
+| **Trade Frequency** | Reduced | Due to the raised `MIN_SIGNAL_SCORE` (0.82), trade frequency will drop, improving quality. |
+| **Position Sizing** | Moderate/Flexible | Use moderate sizes, ready to deploy the VMRF (once coded) to increase size if the price hits key support ($85.5k). |
+| **Stop Placement** | Tight | Set tight stops (via `INITIAL_STOP_LOSS_PCT = 3.5`) to ensure capital preservation during the predicted liquidity sweep. |
+
+--- [GEMINI] 2026-01-11 10:39:12.805628 ---
+This diagnosis confirms that Antigravity Prime is currently inefficient, prioritizing quantity or low-quality signals over reliability. A 40.66% Win Rate requires an R-multiple that is difficult to sustain consistently in choppy markets.
+
+We must immediately tighten controls to protect capital and boost entry precision before the anticipated breakout volatility hits.
+
+---
+
+## 1. Diagnosis Summary
+
+| Metric | Value | Diagnosis |
+| :--- | :--- | :--- |
+| **Current Balance** | $10,768.68 | 7.7% Net Gain - Acceptable, but growth is hampered by low WR. |
+| **Win Rate (WR)** | 40.66% | **Critical Failure.** Indicates poor entry timing or aggressive stop-losses relative to take-profit targets. The engine is losing money on 60% of its trades. |
+| **Blacklist** | Extensive (18 pairs) | Symptom of poor performance across diverse market caps. The strategy struggles with both high and low volatility/liquidity. |
+| **Market Context** | Extreme Fear, Ranging | High likelihood of whipsaws and false signals, which directly correlates with the observed low WR. |
+
+## 2. Immediate Fixes
+
+The primary goal is to **boost the Win Rate** by prioritizing signal quality and reducing overall exposure to whipsaws.
+
+| Parameter | Action | Rationale |
+| :--- | :--- | :--- |
+| **Risk per Trade** | Decrease from 2.0% (Assumed) to **1.5%** | Reduces potential drawdown during the transition phase while tuning the engine for quality. |
+| **`MIN_ENTRY_SCORE`** | Raise significantly from 0.65 (Assumed) to **0.75** | Filters out weaker, borderline signals common in ranging markets, forcing the bot to only take high-conviction trades. |
+| **Signal Source** | Review and potentially **Disable Scalping Signals** | Given the extreme fear/ranging dynamic, quick, short-term trades are likely getting chopped up. Focus on medium-term confirmation (H1/H4). |
+
+## 3. Proposed Next Evolution
+
+The bot requires an Adaptive Volatility Filter to dynamically adjust entry requirements based on market choppiness.
+
+**Evolution Proposal: Range Detection Filter (R-Filter)**
+
+Implement a filter that calculates the average True Range (ATR) over the last 5 bars and compares it to the ATR over the last 50 bars.
+
+*   **Condition:** If `ATR(5) / ATR(50) < 0.35`, the market is deemed too compressed and ranging.
+*   **Action:**
+    1.  Block all new entries for the specific pair.
+    2.  If the trade is already open, adjust the Take Profit targets wider (e.g., 1.5x standard TP) to account for the eventual violent breakout.
+
+This filter prevents the bot from entering the low-volatility chop that is currently devastating the Win Rate, forcing it to wait for momentum to build.
+
+## 4. Indicator Sensitivity Patch
+
+Given the ranging BTC market and underlying extreme fear volatility, we need tighter, slightly more anticipatory indicator settings to detect quick shifts within the range, but longer lookbacks for trend confirmation to avoid whipsaws.
+
+```json
+{
+    "rsi_oversold": 35,
+    "rsi_overbought": 65,
+    "ma_period": 50,
+    "bb_std_dev_multiplier": 1.8,
+    "atr_lookback": 14
+}
+```
+
+*Rationale for Patches:*
+*   **RSI (35/65):** Raises the boundaries, making the RSI trigger slightly earlier. In a ranging market, price often reverses before hitting extreme 30/70 levels.
+*   **MA Period (50):** Smoother moving average to ignore short-term fluctuations, focusing on the current flat trend base.
+*   **BB Multiplier (1.8):** Narrows the Bollinger Bands slightly, ensuring that price touches closer to the edges signal a more definitive short-term reversal, filtering out noise.
+
+## 5. Ready-to-Apply Python Patch
+
+Assuming configuration variables are stored in a `config.py` or similar settings file, apply the immediate fixes for risk and signal quality:
+
+```python
+# PATCH FOR: config.py (or similar settings file)
+
+--- a/config.py
++++ b/config.py
+@@ -10,10 +10,10 @@
+ # --- Risk Management Settings ---
+ 
+ # Maximum percentage of total capital risked per single trade (e.g., 0.02 = 2.0%)
+-MAX_RISK_PER_TRADE = 0.02 
++MAX_RISK_PER_TRADE = 0.015 
+ 
+ # Minimum signal score required to initiate a trade (e.g., 0.65 = 65% confidence)
+-MIN_ENTRY_SCORE = 0.65
++MIN_ENTRY_SCORE = 0.75
+ 
+ # --- Indicator Overrides (Temporary Patch) ---
+ 
+ # Apply indicator sensitivity patch
+@@ -21,4 +21,4 @@
+     "rsi_oversold": 35,
+     "rsi_overbought": 65,
+-    "ma_period": 21
++    "ma_period": 50,
++    "bb_std_dev_multiplier": 1.8
+ }
+```
+
+## 6. Prediction and Optimal Stance (Next 24 Hours)
+
+**Market Prediction:** The combination of Extreme Fear and tight consolidation ($86k-$88k) strongly suggests a build-up of kinetic energy. The most likely scenario is a **False Breakdown followed by a sharp Volatility Spike.** Fear often precedes capitulation, meaning a rapid test of $85k or even $84k is probable, designed to liquidate late shorts, followed by a violent reversal back towards $88k.
+
+**Optimal Stance: Cautious Contrarian.**
+
+*   **Avoid:** Entering fresh long positions within the current $87k mid-range.
+*   **Prioritize:**
+    1.  **High-Quality Short Scalps:** Fade $88k resistance with tight stops.
+    2.  **Highly Filtered Longs:** Wait for deep, fear-induced dips (below $86k) that coincide with strong RSI oversold signals (35 or lower) and high confidence scores (0.75+).
+
+The current tuning focuses on high precision, which is crucial for capitalizing on these short, sharp movements without getting trapped in the main range chop.

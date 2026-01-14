@@ -11,27 +11,32 @@ class NeuralOracle:
     def __init__(self):
         self.model_file = "neural_oracle.joblib"
         self.scaler_file = "neural_scaler.joblib"
-        self.model = None
-        self.scaler = StandardScaler()
-        self.is_trained = False
+        self.models = {} # {symbol: model}
+        self.scalers = {} # {symbol: scaler}
         
     def _prepare_features(self, df):
-        """Feature Engineering for ML"""
+        """Feature Engineering 2.0: Multi-Dimensional Sentiment & Flow"""
         df = df.copy()
         
-        # Technical Features
+        # Returns & Volatility
         df['Returns'] = df['Close'].pct_change()
         df['Vol_20'] = df['Returns'].rolling(20).std()
+        
+        # Volume Profile (Z-Score)
+        df['Vol_SMA'] = df['Volume'].rolling(20).mean()
+        df['Volume_Z'] = (df['Volume'] - df['Vol_SMA']) / (df['Volume'].rolling(20).std() + 1e-6)
+        
+        # Momentum
         df['RSI'] = self.calculate_rsi(df)
         df['SMA_50'] = df['Close'].rolling(50).mean()
         df['Dist_SMA50'] = (df['Close'] - df['SMA_50']) / df['SMA_50']
         
-        # Lag Features (Past 3 candles)
-        for lag in range(1, 4):
-            df[f'Return_Lag{lag}'] = df['Returns'].shift(lag)
-            
-        # Target: Next Candle Close (Shifted back)
-        df['Target'] = df['Close'].shift(-1)
+        # Phase 10: Orderflow Features
+        if 'OBI' not in df.columns: df['OBI'] = 0.0
+        if 'CVD_Delta' not in df.columns: df['CVD_Delta'] = 0.0
+        
+        # Target: Next Candle Return
+        df['Target'] = df['Returns'].shift(-1)
         
         df.dropna(inplace=True)
         return df
@@ -40,75 +45,80 @@ class NeuralOracle:
         delta = df['Close'].diff()
         gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
         loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
-        rs = gain / loss
+        rs = gain / (loss + 1e-6)
         return 100 - (100 / (1 + rs))
 
-    def train(self, df):
-        """Train the Random Forest Model"""
+    def train(self, df, symbol):
+        """Train the Random Forest Model for a specific symbol"""
         try:
             data = self._prepare_features(df)
+            if len(data) < 100: return False 
             
-            if len(data) < 100:
-                return False # Not enough data
-            
-            # Features vs Target
-            feature_cols = ['RSI', 'Vol_20', 'Dist_SMA50', 'Return_Lag1', 'Return_Lag2', 'Return_Lag3']
+            feature_cols = ['RSI', 'Vol_20', 'Volume_Z', 'Dist_SMA50', 'OBI', 'CVD_Delta']
             X = data[feature_cols]
             y = data['Target']
             
-            # Split
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+            X_train, _, y_train, _ = train_test_split(X, y, test_size=0.1, shuffle=False)
             
-            # Scale
-            X_train_scaled = self.scaler.fit_transform(X_train)
+            scaler = StandardScaler()
+            X_train_scaled = scaler.fit_transform(X_train)
             
-            # Train RF
-            self.model = RandomForestRegressor(n_estimators=100, max_depth=10, random_state=42)
-            self.model.fit(X_train_scaled, y_train)
+            model = RandomForestRegressor(n_estimators=50, max_depth=8, random_state=42)
+            model.fit(X_train_scaled, y_train)
             
-            self.is_trained = True
+            self.models[symbol] = model
+            self.scalers[symbol] = scaler
             return True
-            
         except Exception as e:
-            print(f"Oracle Training Error: {e}")
+            print(f"Oracle Training Error ({symbol}): {e}")
             return False
 
-    def predict(self, df_current):
-        """Predict Next Close Price"""
-        if not self.is_trained:
-            # Try to train on fly if history passed
-            if len(df_current) > 150:
-                self.train(df_current)
-            else:
-                return None
+    def predict(self, df_current, symbol="BTC/USDT"):
+        """Predict Next Return with Confidence Intensity"""
+        if symbol not in self.models:
+            if len(df_current) > 150: self.train(df_current, symbol)
+            else: return None
         
         try:
-            # Prepare latest single row
             data = self._prepare_features(df_current)
             if data.empty: return None
             
-            feature_cols = ['RSI', 'Vol_20', 'Dist_SMA50', 'Return_Lag1', 'Return_Lag2', 'Return_Lag3']
-            current_features = data[feature_cols].iloc[[-1]] # Last row
+            feature_cols = ['RSI', 'Vol_20', 'Volume_Z', 'Dist_SMA50', 'OBI', 'CVD_Delta']
+            current_features = data[feature_cols].iloc[[-1]]
             
-            # Scale
-            current_scaled = self.scaler.transform(current_features)
+            # Confidence Decay (Bypass if data is older than 1 hour in crypto time)
+            # For simplicity, we assume row index -1 is 'now'
             
-            # Predict
-            predicted_price = self.model.predict(current_scaled)[0]
-            current_price = df_current['Close'].iloc[-1]
+            current_scaled = self.scalers[symbol].transform(current_features)
+            predicted_return = self.models[symbol].predict(current_scaled)[0]
             
-            predicted_change = (predicted_price - current_price) / current_price
+            # Score Intensity: Based on predicted move vs volatility
+            vol = data['Vol_20'].iloc[-1]
+            intensity = predicted_return / (vol + 1e-6)
             
             confidence = "NEUTRAL"
-            if predicted_change > 0.005: confidence = "BULLISH" # +0.5%
-            elif predicted_change < -0.005: confidence = "BEARISH" # -0.5%
+            if predicted_return > 0.003: confidence = "BULLISH"
+            elif predicted_return < -0.003: confidence = "BEARISH"
+            
+            # Absolute confidence score (0-100)
+            conf_score = min(abs(intensity) * 20, 100)
             
             return {
-                "predicted_price": predicted_price,
-                "predicted_change_pct": predicted_change * 100,
-                "confidence": confidence
+                "predicted_change_pct": predicted_return * 100,
+                "confidence": confidence,
+                "confidence_score": conf_score,
+                "intensity": intensity
             }
-            
         except Exception as e:
             print(f"Oracle Prediction Error: {e}")
             return None
+
+    def predict_orderflow(self, df_current, symbol):
+        """Phase 10: Predict if the next 5m window is an Accumulation or Distribution shadow"""
+        prediction = self.predict(df_current, symbol)
+        if not prediction: return "STAGNANT"
+        
+        intensity = prediction.get('intensity', 0)
+        if intensity > 1.5: return "ACCUMULATION_SHADOW"
+        elif intensity < -1.5: return "DISTRIBUTION_SHADOW"
+        return "STAGNANT"

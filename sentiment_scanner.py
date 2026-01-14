@@ -1,6 +1,8 @@
-
 import pandas as pd
 import numpy as np
+import requests
+import json
+import time
 
 class SentimentScanner:
     def __init__(self):
@@ -59,5 +61,37 @@ class SentimentScanner:
         delta = df['Close'].diff()
         gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
         loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
-        rs = gain / loss
+        rs = gain / (loss + 1e-6)
         return 100 - (100 / (1 + rs))
+
+    def fetch_macro_news(self):
+        """
+        Phase 7.0: Macro-Sentience Bridge
+        Fetch global macro news to set Risk Bias
+        """
+        try:
+            # Mock news source or lightweight API call
+            # In production, this would use CryptoPanic or similar
+            news_events = [
+                {"title": "Fed hints at rate pause", "impact": "POSITIVE"},
+                {"title": "CPI data higher than expected", "impact": "NEGATIVE"},
+                {"title": "Institutional inflows into BTC ETFs", "impact": "POSITIVE"}
+            ]
+            
+            # Simulated analysis logic
+            sentiment_score = 0
+            for event in news_events:
+                if event['impact'] == "POSITIVE": sentiment_score += 20
+                else: sentiment_score -= 30
+            
+            risk_bias = "NEUTRAL"
+            if sentiment_score > 30: risk_bias = "RISK-ON"
+            elif sentiment_score < -30: risk_bias = "RISK-OFF"
+            
+            return {
+                "bias": risk_bias,
+                "score": sentiment_score,
+                "events": news_events
+            }
+        except Exception as e:
+            return {"bias": "NEUTRAL", "score": 0, "events": []}

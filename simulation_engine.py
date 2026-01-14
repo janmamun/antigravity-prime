@@ -35,6 +35,8 @@ class FuturesSimulator:
             self.state = {
                 "balance": initial_balance,
                 "initial_balance": initial_balance,
+                "safeguard_vault": 0, # Phase 6.0: Locked PnL
+                "total_funding_fees": 0, # Phase 7.0: Cumulative Funding Tracker
                 "positions": {}, 
                 "history": [],
                 "last_funding_check": datetime.now().isoformat()
@@ -62,6 +64,7 @@ class FuturesSimulator:
                 else: total_fee -= fee
             
             self.state["balance"] -= total_fee
+            self.state["total_funding_fees"] = self.state.get("total_funding_fees", 0) + total_fee
             self.state["last_funding_check"] = now.isoformat()
             self._save_state()
 
@@ -87,7 +90,7 @@ class FuturesSimulator:
             margin_used += margin
             
             positions_summary.append({
-                "Symbol": symbol, "Side": side, "Size": sz,
+                "Symbol": symbol, "Mode": "💿 SIM", "Side": side, "Size": sz,
                 "Entry": ep, "Mark": cp, "PnL ($)": pnl, 
                 "PnL (%)": (pnl/margin)*100 if margin else 0
             })
@@ -121,11 +124,16 @@ class FuturesSimulator:
             
             # --- Trailing Stop Logic ---
             if atr > 0:
-                activation_price = pos['entry_price'] + (atr * 1.5) if is_long else pos['entry_price'] - (atr * 1.5)
+                # Phase 33: Tighter Trailing SL for Alpha Moonshots
+                alpha_mode = pos.get('alpha_mode', False)
+                mult_activation = 0.5 if alpha_mode else 1.5
+                mult_trail = 0.5 if alpha_mode else 1.0 # Trail by 0.5x ATR for Alpha
+                
+                activation_price = pos['entry_price'] + (atr * mult_activation) if is_long else pos['entry_price'] - (atr * mult_activation)
                 is_active = (price >= activation_price) if is_long else (price <= activation_price)
                 
                 if is_active:
-                    new_sl = price - (atr * 1.0) if is_long else price + (atr * 1.0)
+                    new_sl = price - (atr * mult_trail) if is_long else price + (atr * mult_trail)
                     # Only move SL in our favor
                     if is_long and new_sl > sl: 
                         pos['sl'] = new_sl
@@ -155,7 +163,7 @@ class FuturesSimulator:
                 
         return notifications
 
-    def execute_trade(self, symbol, side, price, amount_usd, tp=0, sl=0, atr=0):
+    def execute_trade(self, symbol, side, price, amount_usd, tp=0, sl=0, atr=0, alpha_mode=False):
         # Apply slippage for PAPER mode
         if self.mode == 'PAPER':
             slippage = random.uniform(0.0001, 0.0005)
@@ -184,6 +192,7 @@ class FuturesSimulator:
             "tp": tp,
             "sl": sl,
             "atr": atr,
+            "alpha_mode": alpha_mode, # Phase 33
             "partial_taken": False,
             "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
@@ -221,6 +230,12 @@ class FuturesSimulator:
             "PnL": pnl, "Side": side, "Time": datetime.now().isoformat()
         })
         
+        # Phase 6.0: PnL Harvesting (Audit Safe-Vault)
+        if pnl > 0:
+            harvest_amt = pnl * 0.20 # 20% lock-in
+            self.state["balance"] -= harvest_amt
+            self.state["safeguard_vault"] = self.state.get("safeguard_vault", 0) + harvest_amt
+            
         del self.state["positions"][symbol]
         self._save_state()
         return pnl

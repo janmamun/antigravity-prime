@@ -5,8 +5,8 @@ import os
 import subprocess
 import signal
 
-HEARTBEAT_FILE = "guardian_heartbeat.json"
-BOT_SCRIPT = "run_v17.py"
+HEARTBEAT_FILE = "guardian_heartbeat_async.json"
+BOT_SCRIPT = "run_v17_async.py"
 
 def is_bot_alive():
     if not os.path.exists(HEARTBEAT_FILE):
