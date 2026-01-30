@@ -1,941 +1,941 @@
 {
-  "patterns": [],
-  "insights": [
-    {
-      "timestamp": "2026-01-13T05:14:01.829163",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T08:00:05.619461",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T08:10:10.758295",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T08:20:14.070425",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T08:30:16.811219",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T08:40:22.448652",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T08:50:25.951922",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T09:00:29.450565",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T09:10:32.338436",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T09:20:35.600413",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T09:30:39.706631",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T09:40:42.991720",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T09:50:46.404815",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T10:00:50.277816",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T10:10:54.032578",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T10:20:57.114595",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T10:31:00.527711",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T10:41:04.129112",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T10:51:07.563735",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T11:01:10.621448",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T11:11:14.046799",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T11:21:16.821225",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T11:31:19.777690",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T11:41:22.626367",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T11:51:25.530507",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T12:01:29.141105",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T12:11:32.144153",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T12:21:35.228958",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T12:31:38.388573",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T12:41:42.441221",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T12:51:46.015258",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T13:01:48.737679",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T13:11:53.100050",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T13:21:57.890206",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T13:32:01.062449",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T13:42:03.700790",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T13:52:06.662414",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T14:02:09.545125",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T14:12:13.110260",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T14:22:16.150493",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T14:32:19.526220",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T14:42:22.398979",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T14:52:25.320462",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T15:02:28.530775",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T19:42:05.075238",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T19:52:08.781222",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T20:02:14.946153",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T20:03:01.585152",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T20:13:09.361154",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T20:23:12.278264",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T20:33:15.026498",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T21:59:52.324729",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T22:09:57.517214",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T22:20:01.731556",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T22:30:06.120573",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T22:40:10.083007",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T22:50:13.199263",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T23:00:16.133479",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T23:10:19.016091",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T23:20:22.076837",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T23:30:25.683157",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T23:40:28.410068",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-13T23:50:31.402529",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-14T00:00:34.498062",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-14T00:10:38.357141",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-14T00:20:41.980811",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-14T00:30:44.797911",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.5940594059406
-    },
-    {
-      "timestamp": "2026-01-14T00:40:47.921611",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T00:50:50.867400",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T01:00:54.138803",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T01:10:56.797290",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T01:20:59.916984",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T01:31:02.775200",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T01:41:05.778635",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T01:51:08.492772",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T02:01:12.219264",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T02:11:15.370090",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T02:21:18.073220",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T02:31:21.255970",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T02:41:24.428399",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T02:51:27.687340",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T03:01:30.779971",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T03:11:34.055410",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T03:21:37.227623",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T03:31:39.878161",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T03:41:43.163184",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.88669950738916
-    },
-    {
-      "timestamp": "2026-01-14T05:25:23.621482",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.97560975609756
-    },
-    {
-      "timestamp": "2026-01-14T05:35:27.915932",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.97560975609756
-    },
-    {
-      "timestamp": "2026-01-14T05:45:31.022681",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.97560975609756
-    },
-    {
-      "timestamp": "2026-01-14T05:55:34.211095",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.97560975609756
-    },
-    {
-      "timestamp": "2026-01-14T06:05:37.670515",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.97560975609756
-    },
-    {
-      "timestamp": "2026-01-14T06:15:40.966934",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.97560975609756
-    },
-    {
-      "timestamp": "2026-01-14T06:25:44.628840",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.97560975609756
-    },
-    {
-      "timestamp": "2026-01-14T06:35:47.646805",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.97560975609756
-    },
-    {
-      "timestamp": "2026-01-14T06:45:50.784717",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.97560975609756
-    },
-    {
-      "timestamp": "2026-01-14T06:55:53.624619",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.97560975609756
-    },
-    {
-      "timestamp": "2026-01-14T07:05:57.728764",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.97560975609756
-    },
-    {
-      "timestamp": "2026-01-14T07:16:00.960930",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.97560975609756
-    },
-    {
-      "timestamp": "2026-01-14T07:26:04.316174",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.97560975609756
-    },
-    {
-      "timestamp": "2026-01-14T07:36:07.965801",
-      "top_performing_assets": [
-        "BTC/USDT",
-        "SOL/USDT",
-        "ETH/USDT"
-      ],
-      "win_rate": 40.97560975609756
-    }
-  ],
-  "sessions": [
-    {
-      "session_date": "2026-01-14",
-      "trades": [
+    "patterns": [],
+    "insights": [
         {
-          "symbol": "AXS/USDT",
-          "entry": 1.278,
-          "pnl_pct": 4.3,
-          "pnl_usd": 4.65,
-          "result": "WIN",
-          "notes": "Strong 24h momentum (+22%), recovered quickly"
+            "timestamp": "2026-01-29T16:10:42.564925",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
         },
         {
-          "symbol": "DOGE/USDT",
-          "entry": 0.148,
-          "pnl_pct": -5.14,
-          "pnl_usd": -5.66,
-          "result": "LOSS",
-          "notes": "Weaker 24h momentum (+5%), entered near local top"
+            "timestamp": "2026-01-29T16:20:47.406029",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T16:30:52.099640",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T16:40:55.687679",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T16:50:59.016012",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T17:01:03.305771",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T17:11:06.316300",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T17:21:09.774107",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T17:31:16.063289",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T17:41:19.245143",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T17:51:23.050872",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T18:01:26.537144",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T18:11:29.569850",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T18:21:33.507057",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T18:31:36.889840",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T18:41:40.065492",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T18:51:43.284095",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T19:01:47.433565",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T19:11:50.516411",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T19:21:54.534726",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T19:31:58.290267",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T19:42:02.085818",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T19:52:06.482489",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T20:02:09.726932",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T20:12:14.630716",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T20:22:18.088987",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "SOL/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 39.784946236559136
+        },
+        {
+            "timestamp": "2026-01-29T20:30:11.070634",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "ENSO/USDT",
+                "DASH/USDT"
+            ],
+            "win_rate": 36.96369636963696
+        },
+        {
+            "timestamp": "2026-01-29T20:30:11.847312",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "ENSO/USDT",
+                "DASH/USDT"
+            ],
+            "win_rate": 36.96369636963696
+        },
+        {
+            "timestamp": "2026-01-29T20:34:32.793696",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "DASH/USDT",
+                "ENSO/USDT"
+            ],
+            "win_rate": 37.049180327868854
+        },
+        {
+            "timestamp": "2026-01-29T20:34:34.573910",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "DASH/USDT",
+                "ENSO/USDT"
+            ],
+            "win_rate": 37.049180327868854
+        },
+        {
+            "timestamp": "2026-01-29T20:54:05.126611",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "DASH/USDT",
+                "ENSO/USDT"
+            ],
+            "win_rate": 37.45928338762215
+        },
+        {
+            "timestamp": "2026-01-29T20:54:16.131299",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "DASH/USDT",
+                "ENSO/USDT"
+            ],
+            "win_rate": 37.45928338762215
+        },
+        {
+            "timestamp": "2026-01-29T21:13:40.794106",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "AXS/USDT",
+                "DASH/USDT"
+            ],
+            "win_rate": 37.82051282051282
+        },
+        {
+            "timestamp": "2026-01-29T21:13:44.245144",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "AXS/USDT",
+                "DASH/USDT"
+            ],
+            "win_rate": 37.82051282051282
+        },
+        {
+            "timestamp": "2026-01-29T21:33:13.317263",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "AXS/USDT",
+                "DASH/USDT"
+            ],
+            "win_rate": 37.46031746031746
+        },
+        {
+            "timestamp": "2026-01-29T21:33:15.122034",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "AXS/USDT",
+                "DASH/USDT"
+            ],
+            "win_rate": 37.46031746031746
+        },
+        {
+            "timestamp": "2026-01-29T21:52:19.903447",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "AXS/USDT",
+                "DASH/USDT"
+            ],
+            "win_rate": 37.10691823899371
+        },
+        {
+            "timestamp": "2026-01-29T21:52:24.278014",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "AXS/USDT",
+                "DASH/USDT"
+            ],
+            "win_rate": 37.10691823899371
+        },
+        {
+            "timestamp": "2026-01-29T22:12:02.321902",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "AXS/USDT",
+                "DASH/USDT"
+            ],
+            "win_rate": 36.61538461538461
+        },
+        {
+            "timestamp": "2026-01-29T22:12:06.082394",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "AXS/USDT",
+                "DASH/USDT"
+            ],
+            "win_rate": 36.61538461538461
+        },
+        {
+            "timestamp": "2026-01-29T22:31:59.175839",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "AXS/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 36.77811550151976
+        },
+        {
+            "timestamp": "2026-01-29T22:32:01.601848",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "AXS/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 36.77811550151976
+        },
+        {
+            "timestamp": "2026-01-29T22:52:36.321091",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "SOL/USDT",
+                "ETH/USDT"
+            ],
+            "win_rate": 37.160120845921455
+        },
+        {
+            "timestamp": "2026-01-29T22:53:03.234618",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "SOL/USDT",
+                "ETH/USDT"
+            ],
+            "win_rate": 37.34939759036144
+        },
+        {
+            "timestamp": "2026-01-29T23:11:58.150326",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "ETH/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 37.53753753753754
+        },
+        {
+            "timestamp": "2026-01-29T23:12:27.364325",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "ETH/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 37.72455089820359
+        },
+        {
+            "timestamp": "2026-01-29T23:31:43.383237",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "SOL/USDT",
+                "ETH/USDT"
+            ],
+            "win_rate": 37.98219584569733
+        },
+        {
+            "timestamp": "2026-01-29T23:32:33.126297",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "SOL/USDT",
+                "ETH/USDT"
+            ],
+            "win_rate": 37.98219584569733
+        },
+        {
+            "timestamp": "2026-01-29T23:51:11.669259",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "SOL/USDT",
+                "ETH/USDT"
+            ],
+            "win_rate": 38.529411764705884
+        },
+        {
+            "timestamp": "2026-01-29T23:52:21.358493",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "SOL/USDT",
+                "ETH/USDT"
+            ],
+            "win_rate": 38.529411764705884
+        },
+        {
+            "timestamp": "2026-01-30T00:11:19.469306",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "SOL/USDT",
+                "ETH/USDT"
+            ],
+            "win_rate": 39.067055393586
+        },
+        {
+            "timestamp": "2026-01-30T00:12:01.896354",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "SOL/USDT",
+                "ETH/USDT"
+            ],
+            "win_rate": 38.95348837209303
+        },
+        {
+            "timestamp": "2026-01-30T00:30:30.054071",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "SOL/USDT",
+                "ETH/USDT"
+            ],
+            "win_rate": 39.30635838150289
+        },
+        {
+            "timestamp": "2026-01-30T00:31:09.644153",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "SOL/USDT",
+                "BTC/USDT"
+            ],
+            "win_rate": 39.481268011527376
+        },
+        {
+            "timestamp": "2026-01-30T00:48:57.805737",
+            "top_performing_assets": [
+                "DUSK/USDT",
+                "BTC/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 40.05681818181818
+        },
+        {
+            "timestamp": "2026-01-30T00:49:41.521932",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 40.226628895184135
+        },
+        {
+            "timestamp": "2026-01-30T01:07:35.793241",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 40.168539325842694
+        },
+        {
+            "timestamp": "2026-01-30T01:08:13.635857",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 40.168539325842694
+        },
+        {
+            "timestamp": "2026-01-30T01:26:18.248137",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 39.612188365650965
+        },
+        {
+            "timestamp": "2026-01-30T01:27:01.784285",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 39.50276243093923
+        },
+        {
+            "timestamp": "2026-01-30T01:44:57.051452",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 39.34426229508197
+        },
+        {
+            "timestamp": "2026-01-30T01:45:53.976247",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 39.23705722070845
+        },
+        {
+            "timestamp": "2026-01-30T02:03:53.786798",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.91891891891892
+        },
+        {
+            "timestamp": "2026-01-30T02:04:43.677002",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.91891891891892
+        },
+        {
+            "timestamp": "2026-01-30T02:23:36.399962",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.81401617250674
+        },
+        {
+            "timestamp": "2026-01-30T02:24:25.844392",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.81401617250674
+        },
+        {
+            "timestamp": "2026-01-30T02:42:21.170003",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.56382978723404
+        },
+        {
+            "timestamp": "2026-01-30T02:43:04.865057",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.56382978723404
+        },
+        {
+            "timestamp": "2026-01-30T03:01:27.053168",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.35978835978836
+        },
+        {
+            "timestamp": "2026-01-30T03:01:58.527038",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.35978835978836
+        },
+        {
+            "timestamp": "2026-01-30T03:19:58.984929",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.320209973753286
+        },
+        {
+            "timestamp": "2026-01-30T03:20:37.231325",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.320209973753286
+        },
+        {
+            "timestamp": "2026-01-30T03:38:35.723822",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.38120104438642
+        },
+        {
+            "timestamp": "2026-01-30T03:39:06.029391",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.38120104438642
+        },
+        {
+            "timestamp": "2026-01-30T03:57:19.410168",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.18181818181819
+        },
+        {
+            "timestamp": "2026-01-30T03:57:45.680370",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.18181818181819
+        },
+        {
+            "timestamp": "2026-01-30T04:16:40.303645",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.144329896907216
+        },
+        {
+            "timestamp": "2026-01-30T04:16:45.140667",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.144329896907216
+        },
+        {
+            "timestamp": "2026-01-30T04:35:23.601538",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.107416879795394
+        },
+        {
+            "timestamp": "2026-01-30T04:35:25.746276",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 38.107416879795394
+        },
+        {
+            "timestamp": "2026-01-30T04:55:02.487770",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 37.913486005089055
+        },
+        {
+            "timestamp": "2026-01-30T04:55:10.904773",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 37.913486005089055
+        },
+        {
+            "timestamp": "2026-01-30T05:14:10.396334",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 37.78337531486146
+        },
+        {
+            "timestamp": "2026-01-30T05:14:11.462077",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 37.78337531486146
+        },
+        {
+            "timestamp": "2026-01-30T05:32:51.600911",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 37.406483790523694
+        },
+        {
+            "timestamp": "2026-01-30T05:33:01.550002",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 37.406483790523694
+        },
+        {
+            "timestamp": "2026-01-30T05:51:35.537757",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 37.03703703703704
+        },
+        {
+            "timestamp": "2026-01-30T05:51:43.864333",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 37.03703703703704
+        },
+        {
+            "timestamp": "2026-01-30T06:10:45.655936",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 36.76470588235294
+        },
+        {
+            "timestamp": "2026-01-30T06:10:53.889132",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 36.76470588235294
+        },
+        {
+            "timestamp": "2026-01-30T06:29:17.874470",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 36.58536585365854
+        },
+        {
+            "timestamp": "2026-01-30T06:29:22.011635",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "DUSK/USDT",
+                "SOL/USDT"
+            ],
+            "win_rate": 36.58536585365854
+        },
+        {
+            "timestamp": "2026-01-30T06:48:09.390091",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "ETH/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 36.385542168674704
+        },
+        {
+            "timestamp": "2026-01-30T06:48:15.038472",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "ETH/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 36.385542168674704
+        },
+        {
+            "timestamp": "2026-01-30T07:06:44.543623",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "ETH/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 36.21103117505996
+        },
+        {
+            "timestamp": "2026-01-30T07:06:51.726654",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "ETH/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 36.21103117505996
+        },
+        {
+            "timestamp": "2026-01-30T07:25:20.488119",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "ETH/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 35.9338061465721
+        },
+        {
+            "timestamp": "2026-01-30T07:25:25.196944",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "ETH/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 35.9338061465721
+        },
+        {
+            "timestamp": "2026-01-30T07:31:11.707728",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "ETH/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 35.84905660377358
+        },
+        {
+            "timestamp": "2026-01-30T07:31:15.520535",
+            "top_performing_assets": [
+                "BTC/USDT",
+                "ETH/USDT",
+                "DUSK/USDT"
+            ],
+            "win_rate": 35.84905660377358
         }
-      ],
-      "key_learnings": [
-        "1. 24h MOMENTUM MATTERS: AXS (+22% day) recovered, DOGE (+5% day) didnt",
-        "2. ENTRY TIMING: Both entries were near local tops - need better detection",
-        "3. AUTO-STOPS WORK: Watcher prevented DOGE from going deeper",
-        "4. PROFIT TARGETS: Tight 1.5% target caught AXS spike to +4.3%",
-        "5. NET RESULT: -1.01 USD (breakeven) - capital preserved"
-      ],
-      "improvements": [
-        "Add momentum strength filter (prefer >15% 24h movers)",
-        "Wait for pullback entries, not chase pumps",
-        "Tighten stop on low-momentum plays"
-      ]
-    }
-  ],
-  "last_updated": "2026-01-14T16:04:17.563051"
+    ],
+    "sessions": [
+        {
+            "session_date": "2026-01-14",
+            "trades": [
+                {
+                    "symbol": "AXS/USDT",
+                    "entry": 1.278,
+                    "pnl_pct": 4.3,
+                    "pnl_usd": 4.65,
+                    "result": "WIN",
+                    "notes": "Strong 24h momentum (+22%), recovered quickly"
+                },
+                {
+                    "symbol": "DOGE/USDT",
+                    "entry": 0.148,
+                    "pnl_pct": -5.14,
+                    "pnl_usd": -5.66,
+                    "result": "LOSS",
+                    "notes": "Weaker 24h momentum (+5%), entered near local top"
+                }
+            ],
+            "key_learnings": [
+                "1. 24h MOMENTUM MATTERS: AXS (+22% day) recovered, DOGE (+5% day) didnt",
+                "2. ENTRY TIMING: Both entries were near local tops - need better detection",
+                "3. AUTO-STOPS WORK: Watcher prevented DOGE from going deeper",
+                "4. PROFIT TARGETS: Tight 1.5% target caught AXS spike to +4.3%",
+                "5. NET RESULT: -1.01 USD (breakeven) - capital preserved"
+            ],
+            "improvements": [
+                "Add momentum strength filter (prefer >15% 24h movers)",
+                "Wait for pullback entries, not chase pumps",
+                "Tighten stop on low-momentum plays"
+            ]
+        }
+    ],
+    "last_updated": "2026-01-14T16:04:17.563051"
 }

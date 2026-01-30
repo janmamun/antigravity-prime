@@ -70,7 +70,10 @@ class EvolutionarySentinel:
             self.log_to_bridge(f"CRITICAL LOSS detected on {sym} (< -{threshold}). Adding to toxic assets.")
 
         # 2. Sequential Failures
+        MAJORS_WHITELIST = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'SOLUSDT', 'BTCUSDT', 'ETHUSDT', 'BNBUSDT']
         for sym in df['Symbol'].unique():
+            if sym in MAJORS_WHITELIST: continue # Phase 77: Never block the Alpha Drivers
+            
             sym_df = df[df['Symbol'] == sym].tail(5)
             if len(sym_df) >= 3:
                 wins = len(sym_df[sym_df['PnL'] > 0])
@@ -78,7 +81,7 @@ class EvolutionarySentinel:
                     deaths.append(sym)
                     self.log_to_bridge(f"REPEATED FAILURE on {sym} (0/{len(sym_df)} Win Rate). Blacklisting.")
 
-        current_blacklist = self.get_blacklist()
+        current_blacklist = [b for b in self.get_blacklist() if b not in MAJORS_WHITELIST]
         current_blacklist.extend(deaths)
         self.save_blacklist(current_blacklist)
 
@@ -124,6 +127,12 @@ class EvolutionarySentinel:
         
         # Deep optimization based on recent volatility
         config = self.meta.load_config()
+        
+        # Phase 78: Manual Override Protection
+        if config.get('risk_factor') == "AGGRESSIVE":
+            self.log_to_bridge("DEEP OVERRIDE: Skipping parameter tightening in Aggressive Strike Mode.")
+            return
+
         # If win rate is low, increase rsi_oversold (buy lower)
         # and decrease leverage
         history = self.meta.load_history()
@@ -132,10 +141,10 @@ class EvolutionarySentinel:
         df = pd.DataFrame(history)
         win_rate = len(df[df['PnL'] > 0]) / len(df)
         
-        if win_rate < 0.55:
+        if win_rate < 0.45:
             config['rsi_oversold'] = max(20, config.get('rsi_oversold', 35) - 2)
             config['leverage'] = max(1, config.get('leverage', 5) - 1)
-            self.log_to_bridge("WIN RATE BELOW THRESHOLD. Entering DEFENSIVE mode. Buying deeper, reducing leverage.")
+            self.log_to_bridge("WIN RATE BELOW THRESHOLD (45%). Entering DEFENSIVE mode. Buying deeper, reducing leverage.")
         elif win_rate > 0.70:
             config['rsi_oversold'] = min(40, config.get('rsi_oversold', 35) + 1)
             config['leverage'] = min(20, config.get('leverage', 5) + 1)
@@ -185,10 +194,12 @@ class EvolutionarySentinel:
                 for i in range(50, len(df)):
                     snapshot = df.iloc[:i]
                     analysis = sim_bot.analyze_snapshot(snapshot, sym)
-                    if analysis['signal'] != 'WAIT':
+                    if analysis.get('signal') not in ['WAIT', 'SKIP', 'ERROR'] and 'price' in analysis:
                         simulator.execute_trade(
                             sym, analysis['signal'], analysis['price'], 
-                            100, analysis['tp'], analysis['sl'], analysis['atr']
+                            100, analysis.get('tp', analysis['price']), 
+                            analysis.get('sl', analysis['price']), 
+                            analysis.get('atr', 0)
                         )
                     # Simple monitor (no live price stream here, just use current data row)
                     current_prices = {sym: df.iloc[i]['Close']}
@@ -230,8 +241,10 @@ class EvolutionarySentinel:
         # Find latest balance from sim_state.json if available
         current_bal = "N/A"
         if os.path.exists(self.state_file):
-            with open(self.state_file, 'r') as f:
-                current_bal = json.load(f).get("balance", "N/A")
+            try:
+                with open(self.state_file, 'r') as f:
+                    current_bal = json.load(f).get("balance", "N/A")
+            except: pass
         
         performance_summary = f"Current Balance: {current_bal} | Blacklisted: {self.get_blacklist()} | Win Rate: {self.meta.get_win_rate()}%"
         advice = self.brain.evolve(performance_summary)
@@ -271,15 +284,17 @@ class EvolutionarySentinel:
                 match = re.search(r'\{.*"indicator_patches".*\}', advice, re.DOTALL)
                 if match:
                     try:
-                        patch_data = json.loads(match.group())
-                        patches = patch_data.get("indicator_patches", {})
-                        if patches:
-                            config = self.meta.load_config()
-                            config.update(patches)
-                            self.meta.save_config(config)
-                            self.log_to_bridge(f"Applied Neural Hindsight Patches: {list(patches.keys())}")
-                    except json.JSONDecodeError:
-                        pass 
+                        raw_block = match.group()
+                        if raw_block:
+                            patch_data = json.loads(raw_block)
+                            patches = patch_data.get("indicator_patches", {})
+                            if patches:
+                                config = self.meta.load_config()
+                                config.update(patches)
+                                self.meta.save_config(config)
+                                self.log_to_bridge(f"Applied Neural Hindsight Patches: {list(patches.keys())}\n")
+                    except (json.JSONDecodeError, Exception) as e:
+                        self.log_to_bridge(f"JSON Patching Block Error: {e}")
         except Exception as e:
             self.log_to_bridge(f"Sentinel Patching Error: {e}")
         

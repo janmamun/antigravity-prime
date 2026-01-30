@@ -26,6 +26,7 @@ class MarketScanner:
             }
         })
         self.bot = UltimateV17Bot()
+        self.bot.load_config() # Phase 57: Explicitly reload config
         self.bot.proxy_mgr = self.bot.proxy_mgr # Placeholder to show intent, will be handled by passing instance if needed, but for now we just need the bot's proxy_mgr to be the same.
         # Ensure the bot's exchange also uses the proxies
         self.log_file = "scan_logs.csv"
@@ -191,10 +192,13 @@ class MarketScanner:
             df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
             df.set_index('timestamp', inplace=True)
             
-            # Phase 33: Alpha Strike Injection
+            # Phase 75: Strategy ID Attribution
+            strategy_id = "alpha_strike" if alpha_mode else "trend_v17_stable"
+            
             analysis = self.bot.analyze_snapshot(df, symbol, alpha_mode=alpha_mode)
             
             if analysis and analysis.get('signal') != 'ERROR':
+                analysis['strategy_id'] = strategy_id # Track which logic generated this
                 is_valid = analysis['signal'] != 'WAIT'
                 status = "ACCEPTED" if is_valid else "REJECTED"
                 
@@ -219,7 +223,18 @@ class MarketScanner:
         return None
 
     async def scan_market(self):
-        """Scan top coins and Alpha Moonshots"""
+        """Scan top coins and Alpha Moonshots (With Scalpel Mode Support)"""
+        # Phase 57: Major-Only Scalpel Mode
+        scalpel = self.bot.config.get("scalpel_mode", False)
+        
+        if scalpel:
+            print("🔬 [TACTICAL SCALPEL] Focused on High-Cap Blue Chips (BTC/ETH/SOL/BNB)...")
+            majors = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT']
+            tasks = [self._analyze_symbol(sym, alpha_mode=False) for sym in majors]
+            results = await asyncio.gather(*tasks)
+            opportunities = [r for r in results if r is not None]
+            return opportunities
+
         top_coins = await self.get_top_volume_coins(limit=12)
         alpha_coins = await self.get_alpha_strike_candidates(limit=8)
         

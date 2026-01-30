@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOVEREIGN NEXUS | PHASE 75</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="dark-theme">
+    <div class="glass-container">
+        <nav class="top-nav">
+            <div class="logo">
+                <span class="glitch" data-text="SOVEREIGN">SOVEREIGN</span>
+                <span class="version">V17.5 APEX</span>
+            </div>
+            <div id="status-badge" class="badge">INITIALIZING...</div>
+        </nav>
+
+        <section class="hero-stats">
+            <div class="stat-card main-equity">
+                <label>CORE EQUITY</label>
+                <h1 id="equity-val">$0.00</h1>
+                <div class="pnl-meter">
+                    <span id="equity-pct">+0.00%</span>
+                    <label>SINCE BOOT</label>
+                </div>
+            </div>
+            <div class="stat-card">
+                <label>BASELINE</label>
+                <h2 id="baseline-val">$259.75</h2>
+            </div>
+            <div class="stat-card">
+                <label>WIN RATE</label>
+                <h2 id="win-rate">0%</h2>
+            </div>
+        </section>
+
+        <main class="grid-layout">
+            <div class="card positions-panel">
+                <div class="card-header">
+                    <h3>ACTIVE POSITIONS</h3>
+                    <span class="count" id="pos-count">0</span>
+                </div>
+                <div id="positions-list" class="scroll-area">
+                    <!-- Positions injected here -->
+                </div>
+            </div>
+
+            <div class="card terminal-panel">
+                <div class="card-header">
+                    <h3>INTEGRITY STREAM</h3>
+                </div>
+                <div id="signal-stream" class="terminal-area">
+                    <!-- Signals injected here -->
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="pulse-indicator"></div>
+            <span id="last-update">CONNECTING TO ENGINE...</span>
+        </footer>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>

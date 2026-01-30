@@ -2,7 +2,12 @@
 import os
 import requests
 import xml.etree.ElementTree as ET
-import google.generativeai as genai
+try:
+    from google import genai
+    from google.genai import types
+except ImportError:
+    genai = None
+
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -11,13 +16,21 @@ load_dotenv()
 class NewsSyndicate:
     def __init__(self):
         self.gemini_key = os.getenv("GEMINI_API_KEY")
-        if self.gemini_key:
-            genai.configure(api_key=self.gemini_key)
-            # Use gemini-flash-latest (matches list_models output)
-            self.model = genai.GenerativeModel('gemini-flash-latest')
+        if self.gemini_key and genai:
+            try:
+                # Modern google-genai SDK (v1.0+)
+                self.client = genai.Client(api_key=self.gemini_key)
+                self.model_name = 'gemini-2.0-flash-exp' # Use optimized flash model
+                print("💎 [SYNDICATE] Sovereign News Intelligence (google-genai) INITIALIZED.")
+            except Exception as e:
+                print(f"⚠️ [SYNDICATE] google-genai init failed: {e}. Falling back to keyword analysis.")
+                self.client = None
         else:
-            self.model = None
-            print("⚠️ [SYNDICATE] No Gemini API Key found in .env. News analysis will be mocked.")
+            self.client = None
+            if not genai:
+                print("⚠️ [SYNDICATE] google-genai package not found. News analysis will be mocked.")
+            else:
+                print("⚠️ [SYNDICATE] No Gemini API Key found in .env. News analysis will be mocked.")
 
         # News Sources (RSS)
         self.sources = [
@@ -76,7 +89,7 @@ class NewsSyndicate:
 
     def analyze_asset_sentiment(self, symbol, headlines):
         """Use Gemini to analyze sentiment, fallback to keyword method if needed"""
-        if not self.model or not headlines:
+        if not self.client or not headlines:
             return 0.0, "N/A"
 
         news_blob = "\n".join([f"- {h['title']}" for h in headlines])
@@ -102,15 +115,17 @@ class NewsSyndicate:
         """
 
         try:
-            response = self.model.generate_content(prompt)
-            raw_text = response.text.strip()
-            if "```json" in raw_text:
-                raw_text = raw_text.split("```json")[1].split("```")[0].strip()
-            elif "```" in raw_text:
-                raw_text = raw_text.split("```")[1].split("```")[0].strip()
+            # google-genai (v1.0+) syntax
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type='application/json'
+                )
+            )
             
             import json
-            data = json.loads(raw_text)
+            data = json.loads(response.text)
             return float(data.get('sentiment_score', 0)), data.get('narrative', 'No distinct narrative found.')
         except Exception as e:
             if "429" in str(e):

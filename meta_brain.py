@@ -79,24 +79,30 @@ class MetaBrain:
         # LOGIC: SELF CORRECTION
         adjustment = "STABLE"
         
-        if win_rate < 50:
-            # CRISIS: Tighten up
-            config['min_score'] = min(85, config.get('min_score', 60) + 5)
-            config['magic_sensitivity'] = 0.8 # Strict validation
+        # Phase 78: Manual Override Protection
+        if config.get('risk_factor') == "AGGRESSIVE":
+            return f"Win Rate: {win_rate:.1f}% | Action: OVERRIDE ACTIVE (Aggressive Strike Mode)"
+
+        if win_rate < 45:
+            # CRISIS: Tighten up but allow for recovery
+            config['min_score'] = min(75, config.get('min_score', 60) + 2) # Slower tightening
+            config['magic_sensitivity'] = 0.85
             config['risk_factor'] = "DEFENSIVE"
             adjustment = "TIGHTENED (Low Win Rate)"
             
-        elif win_rate > 80:
-            # GOD MODE: Scale up / Loose
+        elif win_rate > 75:
+            # GOD MODE: Scale up
             config['min_score'] = max(50, config.get('min_score', 60) - 2)
-            config['magic_sensitivity'] = 1.2 # Allow more wild trades
+            config['magic_sensitivity'] = 1.15
             config['risk_factor'] = "AGGRESSIVE"
             adjustment = "EXPANDED (High Win Rate)"
             
         else:
-            # Normalization
-            config['min_score'] = 60
+            # STABLE: Normal conditions
+            config['min_score'] = 55 # Lowered from 60 to encourage more alpha extraction
             config['risk_factor'] = "NORMAL"
+            config['magic_sensitivity'] = 1.0
+            adjustment = "NORMALIZED (Stable Performance)"
             
         self.save_config(config)
         self.update_knowledge(history)

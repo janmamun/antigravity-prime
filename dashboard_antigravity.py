@@ -23,221 +23,130 @@ st.set_page_config(page_title="x.ANTIGRAVITY", layout="wide", page_icon="🪐")
 st_autorefresh(interval=30000, key="datarefresh")
 
 # UI INJECTION: THE MISSION CONSOLE ENGINE
+# UI INJECTION: THE MISSION CONSOLE ENGINE
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
     
     :root {
-        --grok-bg: #000000;
-        --grok-primary: #FFFFFF;
-        --grok-accent: #00D1FF;
-        --grok-zinc: rgba(255, 255, 255, 0.05);
+        --obsidian-deep: #080a0c;
+        --obsidian-card: rgba(17, 21, 28, 0.7);
+        --obsidian-border: rgba(255, 255, 255, 0.08);
+        --accent-cyan: #00e5ff;
+        --accent-purple: #9d50bb;
+        --accent-emerald: #00ffa3;
+        --text-main: #f0f2f5;
+        --text-dim: #94a3b8;
     }
 
-    /* QUANTUM TRANSPARENCY PATCH */
-    html, body, [data-testid="stAppViewContainer"], .stApp, .stMain, .stHeader, [data-testid="stHeader"], div.block-container {
-        background: transparent !important;
-        background-color: transparent !important;
+    /* PREMIUM ENGINE OVERRIDE */
+    html, body, [data-testid="stAppViewContainer"], .stApp {
+        background: var(--obsidian-deep) !important;
+        background-color: var(--obsidian-deep) !important;
         font-family: 'Inter', sans-serif;
-        color: var(--grok-primary);
-        overflow-x: hidden;
+        color: var(--text-main);
     }
     
     .stDecoration { display: none !important; }
+    [data-testid="stHeader"] { background: transparent !important; }
 
-    /* MISSION CANVAS & BACKGROUND INFUSION */
-    canvas#sovereign-viewport {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: -10;
-        pointer-events: none;
-        background: radial-gradient(circle at 50% 50%, #0a0c12 0%, #000000 100%);
-    }
-
-    /* BENTO ARCHITECTURE (NORMALIZED) */
+    /* BENTO MODULE SHELLS */
     .bento-card {
-        background: rgba(255, 255, 255, 0.012);
-        backdrop-filter: blur(40px) saturate(180%);
-        -webkit-backdrop-filter: blur(40px) saturate(180%);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 16px; /* Professional tighter radius */
-        padding: 24px;
-        margin-bottom: 20px;
-        transition: all 0.3s ease;
-        /* Fail-safe visibility */
-        animation: fadeIn 1s forwards;
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+        background: var(--obsidian-card);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--obsidian-border);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
     .bento-card:hover {
-        background: rgba(255, 255, 255, 0.02);
-        border-color: rgba(0, 209, 255, 0.2);
+        border-color: rgba(0, 229, 255, 0.3);
+        box-shadow: 0 8px 30px rgba(0, 229, 255, 0.1);
+        transform: translateY(-2px);
     }
 
-    /* MISSION HEADER (DENSE) */
+    /* MISSION STATUS HEADER */
     .mission-header {
         background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 16px;
-        padding: 20px 32px;
-        margin-bottom: 24px;
+        border-bottom: 1px solid var(--obsidian-border);
+        padding: 24px 0;
+        margin-bottom: 32px;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
-    /* TYPOGRAPHY (HI-RES) */
-    .grok-label { 
+    /* TYPOGRAPHY SYSTEM */
+    .metric-label { 
         font-family: 'JetBrains Mono', monospace;
-        font-size: 10px;
-        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        color: var(--text-dim);
         text-transform: uppercase;
-        letter-spacing: 0.3em;
-        color: rgba(255,255,255,0.3);
-        margin-bottom: 4px;
+        margin-bottom: 6px;
     }
-    .grok-value-large {
-        font-size: 42px;
-        font-weight: 900;
-        letter-spacing: -0.05em;
-        color: var(--grok-primary);
+    .metric-value-xl {
+        font-size: 48px;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1;
     }
-    .grok-value-mid {
-        font-size: 22px;
+    .metric-value-lg {
+        font-size: 28px;
         font-weight: 700;
         letter-spacing: -0.02em;
-        color: var(--grok-primary);
     }
     .pill-tag {
         font-family: 'JetBrains Mono', monospace;
-        font-size: 9px;
+        font-size: 10px;
         font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        padding: 4px 12px;
-        border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        display: inline-block;
-    }
-    
-    .news-streamer {
-        background: rgba(0, 10, 20, 0.4);
-        border: 1px solid var(--grok-zinc);
-        border-radius: 12px;
-        padding: 15px;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 13px;
-        color: var(--grok-accent);
-        height: 100px;
-        overflow-y: auto;
-        margin-top: 20px;
-    }
-    .confidence-meter {
-        height: 6px;
-        background: var(--grok-zinc);
-        border-radius: 3px;
-        margin-top: 10px;
-        position: relative;
-    }
-    .confidence-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #FF00FF, #00D1FF);
-        border-radius: 3px;
-        transition: width 0.5s ease-out;
+        padding: 6px 14px;
+        border-radius: 6px;
+        border: 1px solid var(--obsidian-border);
+        background: rgba(255, 255, 255, 0.03);
     }
 
-    /* MISSION CORE GRID */
-    [data-testid="column"] {
-        padding: 0 10px !important;
-    }
-    
-    .stAppViewMain {
-        padding-top: 0 !important;
-    }
-
-    /* DATA GRIDS */
-    [data-testid="stDataFrame"] {
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 20px;
-        overflow: hidden;
-    }
-    
-    /* TABS & BUTTONS (PROFESSIONAL) */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 24px;
-        background-color: transparent;
-    }
-    .stTabs [data-baseweb="tab"] {
-        background-color: transparent !important;
-        border: none !important;
-        color: rgba(255,255,255,0.4) !important;
-        font-family: 'JetBrains Mono', monospace;
-        font-weight: 700;
-        font-size: 11px;
-        letter-spacing: 0.2em;
-        padding: 12px 0px;
-    }
-    .stTabs [aria-selected="true"] {
-        color: var(--grok-accent) !important;
-        border-bottom: 2px solid var(--grok-accent) !important;
-    }
-
-    /* LOG STREAMER (STABILIZED) */
-    .streamer {
-        background: rgba(0, 0, 0, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 12px;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
-        line-height: 1.5;
-        overflow-y: auto !important;
-        overflow-x: hidden !important;
-        padding: 12px;
-        color: rgba(255, 255, 255, 0.5);
-        display: block;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    .streamer pre {
-        margin: 0;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-    }
-
+    /* INTERACTIVE ELEMENTS */
     button[kind="secondary"], button[kind="primary"] {
-        background: rgba(255,255,255,0.03) !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        border-radius: 12px !important;
-        color: white !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid var(--obsidian-border) !important;
+        border-radius: 8px !important;
         font-family: 'JetBrains Mono', monospace !important;
-        font-size: 11px !important;
         text-transform: uppercase !important;
         letter-spacing: 0.1em !important;
-        padding: 10px 20px !important;
-        transition: all 0.2s ease !important;
+        font-weight: 600 !important;
+        transition: 0.2s all !important;
     }
-    button[kind="secondary"]:hover, button[kind="primary"]:hover {
-        background: rgba(0, 209, 255, 0.1) !important;
-        border-color: var(--grok-accent) !important;
-        box-shadow: 0 0 15px rgba(0, 209, 255, 0.2);
+    button[kind="primary"]:hover {
+        background: var(--accent-cyan) !important;
+        color: black !important;
+        box-shadow: 0 0 20px rgba(0, 229, 255, 0.3) !important;
     }
     
-    .status-light {
-        width: 8px;
-        height: 8px;
+    .status-active-pulse {
+        width: 10px;
+        height: 10px;
+        background: var(--accent-emerald);
         border-radius: 50%;
         display: inline-block;
-        margin-right: 8px;
-        box-shadow: 0 0 8px currentColor;
+        box-shadow: 0 0 12px var(--accent-emerald);
+        animation: pulse 2s infinite;
     }
-    .status-active { color: #00FF94; background: #00FF94; }
-    .status-warning { color: #FFB800; background: #FFB800; }
-    .status-error { color: #FF4B4B; background: #FF4B4B; }
+    
+    @keyframes pulse {
+        0% { opacity: 0.4; }
+        50% { opacity: 1; }
+        100% { opacity: 0.4; }
+    }
+
+    /* DATAFRAME CLEANING */
+    [data-testid="stDataFrame"] {
+        background: transparent !important;
+        border: 1px solid var(--obsidian-border) !important;
+    }
 
 </style>
 
@@ -320,12 +229,21 @@ st.markdown("""
             stagger: 0.2,
             ease: "expo.out"
         });
-        gsap.from(".grok-value", {
+        
+        gsap.from(".bento-card", {
             opacity: 0,
-            y: 40,
-            duration: 2,
-            delay: 0.5,
-            ease: "power4.out"
+            y: 30,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "expo.out"
+        });
+
+        gsap.from(".grok-value-mid, .grok-value-large", {
+            opacity: 0,
+            scale: 0.9,
+            duration: 1.2,
+            delay: 0.4,
+            ease: "elastic.out(1, 0.8)"
         });
     }, 100);
 </script>
@@ -361,9 +279,14 @@ def get_mission_data():
         except:
             pass
         
-        # Get portfolio status from simulator
+        # Get portfolio status from simulator/live
         try:
-            metrics = st.session_state.sim.get_portfolio_status(prices)
+            if st.session_state.scanner.bot.is_live:
+                live_bal = st.session_state.scanner.bot.get_live_balance()
+                metrics = default_metrics.copy()
+                metrics['equity'] = live_bal
+            else:
+                metrics = st.session_state.sim.get_portfolio_status(prices)
         except:
             metrics = default_metrics.copy()
 
@@ -377,28 +300,63 @@ def get_mission_data():
             if st.session_state.scanner.bot.is_live:
                 live_pos = st.session_state.scanner.bot.get_active_positions()
                 if live_pos:
+                    live_symbols = [p.get('symbol') for p in live_pos if p.get('symbol')]
+                    open_orders = st.session_state.scanner.bot.get_open_orders_for_symbols(live_symbols)
+                    
                     formatted_live = []
                     for lp in live_pos:
+                        symbol = lp.get('symbol', 'N/A')
                         notional = abs(lp.get('size', 0) * lp.get('entry', 0))
                         lev = lp.get('leverage', 1) or 1
                         margin = notional / lev if lev > 0 else 1
                         roi = (lp.get('unrealized_pnl', 0) / margin) * 100 if margin > 0 else 0
                         
+                        # Extract TP/SL from open orders
+                        tp_val = 0
+                        sl_val = 0
+                        if symbol in open_orders:
+                            for o in open_orders[symbol]:
+                                o_type = o.get('type', '').upper()
+                                if 'TAKE_PROFIT' in o_type:
+                                    tp_val = o.get('stopPrice') or o.get('price') or 0
+                                elif 'STOP' in o_type:
+                                    sl_val = o.get('stopPrice') or o.get('price') or 0
+                        
                         formatted_live.append({
-                            'Symbol': lp.get('symbol', 'N/A'),
+                            'Symbol': symbol,
                             'Mode': '🔥 LIVE',
                             'Side': lp.get('side', 'N/A'),
                             'Size': abs(lp.get('size', 0)),
                             'Entry': lp.get('entry', 0),
                             'Mark': lp.get('mark_price', 0),
+                            'Liq': lp.get('liquidation_price', 0),
                             'PnL ($)': lp.get('unrealized_pnl', 0),
-                            'PnL (%)': roi
+                            'PnL (%)': roi,
+                            'Leverage': lev,
+                            'TP': tp_val,
+                            'SL': sl_val
                         })
                     
                     metrics['positions'] = formatted_live + metrics.get('positions', [])
                     metrics['unrealized_pnl'] = sum([p['PnL ($)'] for p in formatted_live]) + metrics.get('unrealized_pnl', 0)
         except Exception as e:
             print(f"Shadow Sync Error: {e}")
+        
+        # Phase 48: Intelligence Upgrade Metrics
+        try:
+            metrics['session_peak'] = 0.0
+            if os.path.exists("session_peak_equity.json"):
+                with open("session_peak_equity.json", "r") as f:
+                    peak_data = json.load(f)
+                    if peak_data.get('date') == datetime.now().strftime('%Y-%m-%d'):
+                        metrics['session_peak'] = float(peak_data.get('peak', 0))
+            
+            # Trailing Halt Calc
+            if metrics['session_peak'] > 0:
+                metrics['trailing_halt'] = metrics['session_peak'] * 0.95 # 5% drawdown
+            else:
+                metrics['trailing_halt'] = 0.0
+        except: pass
         
         # Scanner logs (local file read, safe)
         try:
@@ -440,7 +398,8 @@ def get_mission_data():
 
         # Stats from simulator (local, safe)
         try:
-            stats = st.session_state.sim.calculate_stats()
+            # Use a lookback of 25 trades to make the Win Rate update with each current trade
+            stats = st.session_state.sim.calculate_stats(lookback=25)
         except:
             stats = default_stats.copy()
         
@@ -546,24 +505,24 @@ default_boot_stats = {'win_rate': 0, 'total_pnl': 0, 'history': []}
 if not st.session_state.booted:
     # First run: Use defaults and mark as booted
     metrics = default_boot_metrics.copy()
-    sim_stats = default_boot_stats.copy()
+    stats = default_boot_stats.copy()
     current_prices = {}
     st.session_state.booted = True
 else:
     # Subsequent runs: Fetch data with full resilience
     try:
-        metrics, sim_stats, current_prices = get_mission_data()
+        metrics, stats, current_prices = get_mission_data()
     except Exception as e:
         print(f"Dashboard data fetch failed: {e}")
         metrics = default_boot_metrics.copy()
-        sim_stats = default_boot_stats.copy()
+        stats = default_boot_stats.copy()
         current_prices = {}
 
 # Ensure metrics is never None/empty - UI must always render
 if not metrics:
     metrics = default_boot_metrics.copy()
-if not sim_stats:
-    sim_stats = default_boot_stats.copy()
+if not stats:
+    stats = default_boot_stats.copy()
 
 # Prepare sidebar variables
 import requests
@@ -573,25 +532,29 @@ mission_status = "ACTIVE" if hb_age < 300 else "STALLED"
 last_pulse = hb_age 
 
 # -----------------------------------------------------------------------------
+# 5. SIDEBAR: CONTROL CENTER (PREMIUM OBSIDIAN)
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # 5. SIDEBAR: CONTROL CENTER
 # -----------------------------------------------------------------------------
 with st.sidebar:
     st.markdown(f"""
-        <div style="text-align:center; padding: 20px 0; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-            <div style="font-size: 48px; filter: drop-shadow(0 0 10px rgba(0, 209, 255, 0.3));">🦅</div>
-            <div class="grok-label" style="opacity: 0.8; font-size: 14px; margin-top: 15px;">SOVEREIGN V6.0</div>
-            <div class='pill-tag' style='color:var(--grok-accent); border-color:var(--grok-accent); margin-top:10px; background: rgba(0, 209, 255, 0.05);'>{mission_status}</div>
+        <div style="text-align:center; padding: 20px 0; margin-bottom: 30px;">
+            <div style="font-size: 56px; filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.4));">🦅</div>
+            <div class="metric-label" style="font-size: 14px; margin-top: 20px; color: var(--text-main);">SOVEREIGN // V17.0</div>
+            <div class='pill-tag' style='color:var(--accent-cyan); border-color:var(--accent-cyan); margin-top:12px; font-size: 11px;'>SYSTEM {mission_status}</div>
         </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div class='grok-label' style='margin-left:5px;'>Connectivity Matrix</div>", unsafe_allow_html=True)
+    st.markdown("<div class='metric-label' style='margin-left:5px;'>Network Topology</div>", unsafe_allow_html=True)
     
     # Check Brain Connection
     try:
         brain_check = requests.get("http://127.0.0.1:11434/api/tags", timeout=1).status_code == 200
-        brain_status = "status-active" if (st.session_state.brain.gemini_model or brain_check) else "status-error"
+        brain_status = "var(--accent-emerald)" if (st.session_state.brain.gemini_model or brain_check) else "var(--obsidian-border)"
     except:
-        brain_status = "status-active" if st.session_state.brain.gemini_model else "status-error"
+        brain_status = "var(--accent-emerald)" if st.session_state.brain.gemini_model else "var(--obsidian-border)"
         
     # Evolution Sentinel Check
     sentinel_active = False
@@ -599,99 +562,106 @@ with st.sidebar:
         mtime = os.path.getmtime("neural_bridge.log")
         if time.time() - mtime < 3700: sentinel_active = True
         
-    sentinel_status = "status-active" if sentinel_active else "status-error"
-    exchange_status = "status-active" if st.session_state.scanner.bot.is_live else "status-warning"
-    pulse_status = "status-active" if last_pulse < 300 else "status-error"
+    sentinel_status = "var(--accent-emerald)" if sentinel_active else "var(--obsidian-border)"
+    exchange_status = "var(--accent-emerald)" if st.session_state.scanner.bot.is_live else "var(--accent-purple)"
+    pulse_status = "var(--accent-emerald)" if last_pulse < 300 else "var(--obsidian-border)"
 
-    # Watchdog Check (Check watchdog.log instead of neural_bridge)
+    # Watchdog Check
     watchdog_active = False
     if os.path.exists("watchdog.log"):
         mtime = os.path.getmtime("watchdog.log")
         if time.time() - mtime < 300: watchdog_active = True
-    watchdog_status = "status-active" if watchdog_active else "status-error"
+    watchdog_status = "var(--accent-emerald)" if watchdog_active else "var(--obsidian-border)"
 
     st.markdown(f"""
-        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; margin-bottom: 20px;">
-            <div style="margin-bottom: 10px;"><span class="status-light {pulse_status}"></span> <span style="font-size:11px; opacity:0.7; font-family:'JetBrains Mono';">System Pulse</span></div>
-            <div style="margin-bottom: 10px;"><span class="status-light {brain_status}"></span> <span style="font-size:11px; opacity:0.7; font-family:'JetBrains Mono';">Neural Core (AI)</span></div>
-            <div style="margin-bottom: 10px;"><span class="status-light {sentinel_status}"></span> <span style="font-size:11px; opacity:0.7; font-family:'JetBrains Mono';">Evolution Sentinel</span></div>
-            <div style="margin-bottom: 10px;"><span class="status-light {watchdog_status}"></span> <span style="font-size:11px; opacity:0.7; font-family:'JetBrains Mono';">Perpetual Watchdog</span></div>
-            <div style="margin-bottom: 10px;"><span class="status-light {exchange_status}"></span> <span style="font-size:11px; opacity:0.7; font-family:'JetBrains Mono';">Binance Sync</span></div>
-            <div style="margin-bottom: 10px;"><span class="status-light {'status-active' if st.session_state.scanner.bot.is_live else 'status-warning'}"></span> <span style="font-size:11px; opacity:0.7; font-family:'JetBrains Mono';">Liquidation Guard</span></div>
-            <div style="margin-bottom: 10px;"><span class="status-light {'status-warning' if st.session_state.scanner.bot.hedge_active else 'status-active'}"></span> <span style="font-size:11px; opacity:0.7; font-family:'JetBrains Mono';">Crash Shield</span></div>
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--obsidian-border); border-radius: 12px; padding: 18px; margin-bottom: 24px;">
+            <div style="margin-bottom: 12px; display:flex; align-items:center; gap:10px;"><div style="width:8px; height:8px; border-radius:50%; background:{pulse_status}; box-shadow:0 0 8px {pulse_status};"></div> <span style="font-size:11px; color:var(--text-dim); font-family:'JetBrains Mono';">System Pulse</span></div>
+            <div style="margin-bottom: 12px; display:flex; align-items:center; gap:10px;"><div style="width:8px; height:8px; border-radius:50%; background:{brain_status}; box-shadow:0 0 8px {brain_status};"></div> <span style="font-size:11px; color:var(--text-dim); font-family:'JetBrains Mono';">Neural Core (AI)</span></div>
+            <div style="margin-bottom: 12px; display:flex; align-items:center; gap:10px;"><div style="width:8px; height:8px; border-radius:50%; background:{sentinel_status}; box-shadow:0 0 8px {sentinel_status};"></div> <span style="font-size:11px; color:var(--text-dim); font-family:'JetBrains Mono';">Evolution Sentinel</span></div>
+            <div style="margin-bottom: 12px; display:flex; align-items:center; gap:10px;"><div style="width:8px; height:8px; border-radius:50%; background:{watchdog_status}; box-shadow:0 0 8px {watchdog_status};"></div> <span style="font-size:11px; color:var(--text-dim); font-family:'JetBrains Mono';">Perpetual Watchdog</span></div>
+            <div style="margin-bottom: 12px; display:flex; align-items:center; gap:10px;"><div style="width:8px; height:8px; border-radius:50%; background:{exchange_status}; box-shadow:0 0 8px {exchange_status};"></div> <span style="font-size:11px; color:var(--text-dim); font-family:'JetBrains Mono';">Binance Sync</span></div>
         </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div class='grok-label' style='margin-top:20px;'>Risk & Allocation</div>", unsafe_allow_html=True)
-    risk = st.select_slider("ACCOUNT RISK (%)", options=[1, 2, 5, 10, 15, 20, 25], value=10)
-    lev = st.select_slider("LEVERAGE MULTIPLIER", options=[1, 3, 5, 10, 20], value=5)
+    st.markdown("<div class='metric-label' style='margin-top:20px;'>Risk & Allocation</div>", unsafe_allow_html=True)
+    risk = st.select_slider("ACCOUNT RISK (%)", options=[1, 2, 5, 10, 15, 20, 25], value=10, key="sidebar_risk_slider")
+    lev = st.select_slider("LEVERAGE MULTIPLIER", options=[1, 3, 5, 10, 20], value=5, key="sidebar_lev_slider")
     
-    # Phase 31: Persist slider values to bot_config
-    try:
-        config_path = "bot_config.json"
-        if os.path.exists(config_path):
-            with open(config_path, "r") as f:
-                dash_config = json.load(f)
-            if dash_config.get("risk_factor_pct") != risk/100 or dash_config.get("leverage") != lev:
-                dash_config["risk_factor_pct"] = risk/100
-                dash_config["leverage"] = lev
-                with open(config_path, "w") as f:
-                    json.dump(dash_config, f, indent=4)
-                # No rerun here to avoid flicker, the next refresh will pick it up
-    except:
-        pass
-    
-    if st.button("TRIGGER GLOBAL SCAN", width="stretch"):
+    if st.button("TRIGGER GLOBAL SCAN", width="stretch", key="sidebar_scan_btn"):
         with st.spinner("SCANNING..."):
             import asyncio
             asyncio.run(st.session_state.scanner.scan_market())
             st.rerun()
 
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("🚨 EMERGENCY PURGE", type="primary", use_container_width=True):
+        st.warning("PERFORMING EMERGENCY EXIT...")
+        try:
+            import ccxt, os
+            from dotenv import load_dotenv
+            load_dotenv()
+            ex = ccxt.binance({
+                'apiKey': os.getenv('BINANCE_API_KEY'),
+                'secret': os.getenv('BINANCE_SECRET'),
+                'options': {'defaultType': 'future'}
+            })
+            bal = ex.fetch_balance()
+            for p in bal.get('info', {}).get('positions', []):
+                if float(p.get('positionAmt', 0)) != 0:
+                    sym = p['symbol']
+                    side = 'sell' if float(p['positionAmt']) > 0 else 'buy'
+                    ex.create_order(sym.replace('USDT', '/USDT:USDT'), 'MARKET', side, abs(float(p['positionAmt'])), params={'reduceOnly': True})
+            st.success("ALL POSITIONS PURGED.")
+            time.sleep(2)
+            st.rerun()
+        except Exception as e:
+            st.error(f"PURGE FAILED: {e}")
+
 # PROFESSIONAL MISSION HEADER (DENSE)
-total_net = sim_stats.get('total_pnl', 0) + metrics.get('unrealized_pnl', 0)
+total_net = stats.get('total_pnl', 0) + metrics.get('unrealized_pnl', 0)
 is_live = st.session_state.scanner.bot.is_live
+live_bal = metrics['equity']
 
-# Phase 29: Timeout-Protective Balance Fetch
-live_bal = metrics['equity'] # Default Fallback
-if is_live:
-    try:
-        # Give it a very short window to avoid hanging the UI
-        live_bal = st.session_state.scanner.bot.get_live_balance()
-    except:
-        pass
+try:
+    if is_live: live_bal = st.session_state.scanner.bot.get_live_balance()
+except:
+    pass
 
-pnl_color = "var(--grok-accent)" if total_net >= 0 else "#FF00FF"
-
-# Compounding Target Calculation
-target_goal = 200.00 # Target to hit Phase 26 milestone
-initial_capital = st.session_state.scanner.bot.session_start_equity if hasattr(st.session_state.scanner.bot, 'session_start_equity') else 111.09
-compounding_pct = min(100, max(0, ((live_bal - 100) / (target_goal - 100)) * 100))
+target_goal = 500.00 
+initial_capital = st.session_state.scanner.bot.session_start_equity if hasattr(st.session_state.scanner.bot, 'session_start_equity') else 288.46
 session_pnl = live_bal - initial_capital
+compounding_pct = min(100, max(0, ((live_bal - initial_capital) / (target_goal - initial_capital)) * 100))
 
 st.markdown(f"""
-<div class="mission-header" style="margin-top: -30px;">
+<div class="mission-header" style="margin-top: -40px;">
     <div style="flex: 1.5;">
-        <div class="grok-label">Capital Core</div>
-        <div style="display:flex; align-items:baseline; gap:12px;">
-            <div class="grok-value-mid" style="font-size:32px;">${live_bal:,.2f}</div>
-            <div class='pill-tag' style='background:rgba(255,255,255,0.02); vertical-align:middle;'>{ 'LIVE' if is_live else 'SIM' }</div>
+        <div class="metric-label">Operational Capital</div>
+        <div style="display:flex; align-items:baseline; gap:16px;">
+            <div class="metric-value-xl">${live_bal:,.2f}</div>
+            <div class='pill-tag' style='color:#00e5ff; border-color:#00e5ff;'>{ 'LIVE' if is_live else 'SIM' } SOURCE</div>
         </div>
-        <div class="confidence-meter" style="width: 200px; height: 4px; margin-top: 5px;">
-            <div class="confidence-fill" style="width: {compounding_pct}%; background: linear-gradient(90deg, #00D1FF, #00FF94);"></div>
+        <div style="display:flex; align-items:center; gap:12px; margin-top:12px;">
+            <div style="background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; flex: 1; overflow: hidden;">
+                <div style="background: linear-gradient(90deg, #9d50bb, #6e48aa); width: {compounding_pct}%; height: 100%;"></div>
+            </div>
+            <div class="metric-label" style="font-size: 9px; margin-bottom: 0;">STAGE 1: $500.00</div>
         </div>
-        <div class="grok-label" style="font-size: 8px; margin-top: 4px;">TARGET: $200.00 ({compounding_pct:.1f}%)</div>
     </div>
-    <div style="flex: 1; text-align: center; border-left: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05);">
-        <div class="grok-label">Session PnL</div>
-        <div class="grok-value-mid" style="color:{ '#00FF94' if session_pnl >= 0 else '#FF00FF' }; font-size:24px;">{session_pnl:+,.2f} USD</div>
+    <div style="flex: 1; text-align: center; border-left: 1px solid var(--obsidian-border);">
+        <div class="metric-label">Session Peak</div>
+        <div class="metric-value-lg" style="color:var(--accent-emerald);">${metrics.get('session_peak', 0):,.2f}</div>
     </div>
-    <div style="flex: 1; text-align: center; border-right: 1px solid rgba(255,255,255,0.05);">
-        <div class="grok-label">Macro Sentience</div>
-        <div class="grok-value-mid" style="color:{ '#00FF94' if metrics.get('macro_bias') == 'RISK-ON' else '#FF00FF' if metrics.get('macro_bias') == 'RISK-OFF' else 'var(--grok-accent)' }; font-size:24px;">{metrics.get('macro_bias', 'NEUTRAL')}</div>
+    <div style="flex: 1; text-align: center; border-left: 1px solid var(--obsidian-border);">
+        <div class="metric-label">Real-Time PnL</div>
+        <div class="metric-value-lg" style="color:{ 'var(--accent-emerald)' if session_pnl >= 0 else 'var(--accent-purple)' }; font-size:24px;">{session_pnl:+,.2f} USD</div>
     </div>
-    <div style="flex: 0.7; text-align: right;">
-        <div class="grok-label">Success Density</div>
-        <div class="grok-value-mid" style="color:var(--grok-accent); font-size:24px;">{sim_stats['win_rate']:.1f}%</div>
+    <div style="flex: 1; text-align: center; border-left: 1px solid var(--obsidian-border);">
+        <div class="metric-label">System Integrity</div>
+        <div class="metric-value-lg" style="color:var(--accent-cyan); font-size: 24px;">{stats['win_rate']:.1f}%</div>
+    </div>
+    <div style="flex: 0.8; text-align: right; border-left: 1px solid var(--obsidian-border); padding-left: 20px;">
+        <div class="metric-label">Market Bias</div>
+        <div class="metric-value-lg" style="color:{ 'var(--accent-emerald)' if metrics.get('macro_bias') == 'RISK-ON' else 'var(--accent-purple)' if metrics.get('macro_bias') == 'RISK-OFF' else 'var(--accent-cyan)' };">{metrics.get('macro_bias', 'NEUTRAL')}</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -701,22 +671,26 @@ ic1, ic2, ic3, ic4 = st.columns(4)
 conf_score = metrics.get('score', 0)
 conf_pct = min(max(abs(conf_score), 0), 100)
 
-with ic1: st.markdown(f"<div class='bento-card' style='padding:20px; height:120px;'><div class='grok-label'>Conviction</div><div class='grok-value-mid' style='color:var(--grok-accent); font-size:20px;'>{conf_score:+d}</div><div class='confidence-meter' style='margin-top:8px;'><div class='confidence-fill' style='width: {conf_pct}%'></div></div></div>", unsafe_allow_html=True)
-with ic2: st.markdown(f"<div class='bento-card' style='padding:20px; height:120px;'><div class='grok-label'>Regime</div><div class='grok-value-mid' style='font-size:18px;'>{metrics.get('regime', 'NEUTRAL')}</div></div>", unsafe_allow_html=True)
-with ic3: st.markdown(f"<div class='bento-card' style='padding:20px; height:120px;'><div class='grok-label'>The Hype Meter</div><div class='grok-value-mid' style='font-size:18px; color:{'#00FF94' if metrics.get('sentiment') == 'HYPED' else ('#FF00FF' if metrics.get('sentiment') == 'FUD' else 'white')}'>{metrics.get('sentiment', 'NEUTRAL')}</div></div>", unsafe_allow_html=True)
+with ic1: 
+    conviction_color = "var(--accent-cyan)"
+    if conf_score > 120: conviction_color = "var(--accent-emerald)"
+    elif conf_score < 60: conviction_color = "var(--accent-purple)"
+    st.markdown(f"<div class='bento-card' style='height:140px; border-top: 2px solid {conviction_color};'><div class='metric-label'>Neural Conviction</div><div class='metric-value-lg' style='color:{conviction_color}; margin-top:8px;'>{conf_score:+d}</div><div style='background:rgba(255,255,255,0.05); height:4px; border-radius:2px; margin-top:12px;'><div style='width:{conf_pct}%; height:100%; background:{conviction_color};'></div></div></div>", unsafe_allow_html=True)
+with ic2: st.markdown(f"<div class='bento-card' style='height:140px;'><div class='metric-label'>Structural Regime</div><div class='metric-value-lg' style='margin-top:8px; font-size:22px;'>{metrics.get('regime', 'NEUTRAL')}</div></div>", unsafe_allow_html=True)
+with ic3: st.markdown(f"<div class='bento-card' style='height:140px;'><div class='metric-label'>Institutional Bias</div><div class='metric-value-lg' style='margin-top:8px; font-size:22px; color:{ 'var(--accent-emerald)' if metrics.get('sentiment') == 'HYPED' else ('var(--accent-purple)' if metrics.get('sentiment') == 'FUD' else 'white') }'>{metrics.get('sentiment', 'NEUTRAL')}</div></div>", unsafe_allow_html=True)
 with ic4:
     squeeze_status = "ACTIVE" if metrics.get('is_squeezing') else "STANDBY"
-    st.markdown(f"<div class='bento-card' style='padding:20px; height:120px;'><div class='grok-label'>Squeeze Tracker</div><div class='grok-value-mid' style='font-size:18px; color:{'#00D1FF' if metrics.get('is_squeezing') else 'rgba(255,255,255,0.3)'}'>{squeeze_status}</div></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='bento-card' style='height:140px;'><div class='metric-label'>Volatility Squeeze</div><div class='metric-value-lg' style='margin-top:8px; font-size:22px; color:{ 'var(--accent-cyan)' if metrics.get('is_squeezing') else 'var(--text-dim)' }'>{squeeze_status}</div></div>", unsafe_allow_html=True)
 
 # Phase 15: TIDAL PULSE BAR (Institutional Flow)
 st.markdown(f"""
-<div style='margin-bottom: 20px; background: rgba(0,0,0,0.2); border: 1px solid rgba(0, 209, 255, 0.1); border-radius: 12px; padding: 15px;'>
+<div style='margin-bottom: 32px; background: var(--obsidian-card); border: 1px solid var(--obsidian-border); border-radius: 12px; padding: 20px;'>
     <div style='display: flex; justify-content: space-between; align-items: center;'>
-        <div class='grok-label' style='font-size: 12px;'>INSTITUTIONAL TIDAL SHIFT (BLOCK TRADES ROC)</div>
-        <div class='pill-tag' style='color: {"#00FF94" if metrics.get("turbo_active") else "var(--grok-accent)"};'>{ "TURBO BOOSTED" if metrics.get("turbo_active") else "NOMINAL FLOW" }</div>
+        <div class='metric-label' style='font-size: 11px; margin-bottom:0;'>INSTITUTIONAL TIDAL SHIFT (PHASE 51)</div>
+        <div class='pill-tag' style='color: {"var(--accent-emerald)" if metrics.get("turbo_active") else "var(--accent-cyan)"}; border-color:transparent;'>{ "TURBO BOOSTED" if metrics.get("turbo_active") else "NOMINAL FLOW" }</div>
     </div>
-    <div style='background: rgba(255,255,255,0.05); height: 8px; border-radius: 4px; margin-top: 10px; overflow: hidden;'>
-        <div style='background: linear-gradient(90deg, #00D1FF, #00FF94); width: {min(100, int(metrics.get("tidal_shift", 0) * 100))}%; height: 100%; transition: width 0.8s ease;'></div>
+    <div style='background: rgba(255,255,255,0.05); height: 6px; border-radius: 3px; margin-top: 16px; overflow: hidden;'>
+        <div style='background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan), var(--accent-emerald)); width: {min(100, int(metrics.get("tidal_shift", 0) * 100))}%; height: 100%; transition: width 0.8s ease;'></div>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -724,84 +698,40 @@ st.markdown(f"""
 # BLOOMBERG WORKSPACE (STRICT 70/30 SPLIT)
 col_l, col_r = st.columns([7, 3]) 
 with col_l:
-    st.markdown("<div class='grok-label'>Intelligence Core Visualization</div>", unsafe_allow_html=True)
+    st.markdown("<div class='metric-label'>Terminal Visualization</div>", unsafe_allow_html=True)
     active_sym = metrics['positions'][0]['Symbol'] if metrics['positions'] else "BTC/USDT"
     render_tradingview(active_sym)
 
 with col_r:
-    st.markdown("<div class='grok-label'>Sovereign Neural Stream</div>", unsafe_allow_html=True)
+    st.markdown("<div class='metric-label'>Neural Streamer</div>", unsafe_allow_html=True)
     all_logs = get_live_logs(lines=100)
-    alpha_alerts = [line for line in all_logs if "[ALPHA_ALERT]" in line][-5:]
     
-    if alpha_alerts:
-        st.markdown("<div class='grok-label' style='color:#00FF94; font-size:10px;'>⚡ ALPHA ALERT TERMINAL</div>", unsafe_allow_html=True)
-        alert_box = "".join([f"<div style='color:#00FF94; font-family:\"JetBrains Mono\"; font-size:10px; margin-bottom:5px; border-left: 2px solid #00FF94; padding-left:10px;'>{a}</div>" for a in alpha_alerts])
-        st.markdown(f"<div style='background:rgba(0,255,148,0.05); padding:10px; border-radius:8px; margin-bottom:10px;'>{alert_box}</div>", unsafe_allow_html=True)
-
-    log_content = "".join(all_logs[-25:])
+    log_content = "".join(all_logs[-30:])
     st.markdown(f"""
-        <div class='streamer' style='height:360px;'>
-            <pre>{log_content}</pre>
+        <div style='height:420px; background:var(--obsidian-card); border:1px solid var(--obsidian-border); border-radius:12px; padding:15px; font-family:"JetBrains Mono"; font-size:11px; overflow-y:auto; color:var(--text-dim); line-height:1.6;'>
+            <pre style='white-space:pre-wrap; word-wrap:break-word; margin:0;'>{log_content}</pre>
         </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("<div class='grok-label' style='margin-top:20px;'>Mission Status Update</div>", unsafe_allow_html=True)
     st.markdown(f"""
-    <div class='news-streamer' style='height:100px;'>
-        [SYSTEM] Intelligence Hub stabilized. <br>
-        [INTEL] Multi-matrix synchronization active. <br>
-        [PULSE] Latency: {int(last_pulse)}ms
-    </div>
-    <div style='margin-top:20px;'>
-        <div class='grok-label' style='font-size:10px; opacity:0.5; margin-bottom:5px;'>LIQUIDITY GAP (SPREAD)</div>
-        <div style='background: rgba(255,255,255,0.05); border-radius: 4px; height: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);'>
-            <div style='background: linear-gradient(90deg, #00FF94, #FFB800, #FF00FF); width: {min(100, int(metrics.get("spread_pct", 0) * 1000))}%; height: 100%; transition: width 0.5s ease;'></div>
-        </div>
-        <div style='display: flex; justify-content: space-between; font-family: "JetBrains Mono"; font-size: 9px; opacity: 0.4; margin-top: 4px;'>
-            <span>SHARP</span>
-            <span>GAP</span>
+    <div style='margin-top:24px;'>
+        <div class='metric-label' style='font-size:10px; opacity:0.5; margin-bottom:8px;'>LIQUIDITY GAP (ENTROPY)</div>
+        <div style='background: rgba(255,255,255,0.05); border-radius: 4px; height: 10px; overflow: hidden; border: 1px solid var(--obsidian-border);'>
+            <div style='background: linear-gradient(90deg, var(--accent-emerald), var(--accent-cyan), var(--accent-purple)); width: {min(100, int(metrics.get("spread_pct", 0) * 1000))}%; height: 100%;'></div>
         </div>
     </div>
     <div style='margin-top:20px;'>
-        <div class='grok-label' style='font-size:10px; opacity:0.5; margin-bottom:5px;'>V11 PROFIT LADDER (ACTIVE)</div>
-        <div style='background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px;'>
-            <div style='font-size: 10px; opacity: 0.8; margin-bottom: 5px; color: #00FF94;'>[T1] 0.8% ATR Target (30% Scale-Out)</div>
-            <div style='font-size: 10px; opacity: 0.8; margin-bottom: 5px; color: #00D1FF;'>[T2] 1.5% ATR Target (40% Scale-Out)</div>
-            <div style='font-size: 10px; opacity: 0.8; color: #FF00FF;'>[T3] 3.0% ATR Target (30% Runner)</div>
-        </div>
-    </div>
-    <div style='margin-top:20px;'>
-        <div class='grok-label' style='font-size:10px; opacity:0.5; margin-bottom:5px;'>WALL PERSISTENCE (STABILITY)</div>
-        <div style='background: rgba(255,255,255,0.05); border-radius: 4px; height: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);'>
-            <div style='background: linear-gradient(90deg, #FF00FF, #00D1FF); width: {min(100, int(len(metrics.get("persistence", {}).get(active_sym, {}).get("times", [])) * 10)) if "active_sym" in locals() else 50}%; height: 100%; transition: width 0.5s ease;'></div>
-        </div>
-        <div style='display: flex; justify-content: space-between; font-family: "JetBrains Mono"; font-size: 9px; opacity: 0.4; margin-top: 4px;'>
-            <span>FLICKER</span>
-            <span>STABLE</span>
-        </div>
-    </div>
-    <div style='margin-top:20px;'>
-        <div class='grok-label' style='font-size:10px; opacity:0.5; margin-bottom:5px;'>V15 LIQUIDITY VACUUM MAP</div>
-        <div style='background: rgba(255,255,255,0.05); border-radius: 4px; height: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);'>
-            <div style='background: linear-gradient(90deg, #FFB800, #FF00FF); width: {metrics.get("vacuum_score", 10)}%; height: 100%; transition: width 0.5s ease;'></div>
-        </div>
-        <div style='display: flex; justify-content: space-between; font-family: "JetBrains Mono"; font-size: 9px; opacity: 0.4; margin-top: 4px;'>
-            <span>DENSE</span>
-            <span>VACUUM</span>
-        </div>
-    </div>
-    <div style='margin-top:20px;'>
-        <div class='grok-label' style='font-size:10px; opacity:0.5; margin-bottom:5px;'>INSTITUTIONAL ALPHA DEPTH</div>
-        <div style='background: rgba(255,255,255,0.05); border-radius: 4px; height: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);'>
-            <div style='background: linear-gradient(90deg, #00D1FF, #00FF94); width: {min(100, int(st.session_state.scanner.bot._get_liquidity_depth(active_sym)["depth"] * 33)) if "active_sym" in locals() else 50}%; height: 100%; transition: width 0.5s ease;'></div>
+        <div class='metric-label' style='font-size:10px; opacity:0.5; margin-bottom:8px;'>V15 VACUUM DETECTION</div>
+        <div style='background: rgba(255,255,255,0.05); border-radius: 4px; height: 10px; overflow: hidden; border: 1px solid var(--obsidian-border);'>
+            <div style='background: linear-gradient(90deg, var(--accent-cyan), var(--accent-emerald)); width: {metrics.get("vacuum_score", 10)}%; height: 100%;'></div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
 # TABS: SOVEREIGN GRID (PERSISTENT)
 st.markdown("<br>", unsafe_allow_html=True)
-tab_titles = ["EXPOSURE", "AUDIT", "HISTORY", "SCANNER", "NEURAL", "SYNDICATE"]
-t1, t2, t3, t4, t5, t6 = st.tabs(tab_titles)
+tab_titles = ["EXPOSURE", "AUDIT", "HISTORY", "SCANNER", "MEMORY", "NEURAL", "SYNDICATE"]
+t1, t2, t3, t4, tm, t5, t6 = st.tabs(tab_titles)
 
 # Streamlit tabs don't have a direct 'index' sync, but we can simulate it or just let the user navigate.
 # To ensure the chat doesn't feel like it "disappeared", we'll check if a message was just sent.
@@ -812,13 +742,93 @@ if 'last_action' in st.session_state and st.session_state.last_action == 'chat':
     del st.session_state['last_action']
 
 with t1:
-    if metrics['positions']:
-        st.dataframe(pd.DataFrame(metrics['positions']), width="stretch")
-    else:
-        st.markdown("<div style='border:1px solid var(--grok-zinc); border-radius:20px; padding:80px; text-align:center; color:rgba(255,255,255,0.2)'>NO ACTIVE EXPOSURE</div>", unsafe_allow_html=True)
+    sub_live, sub_sim = st.tabs(["🔥 LIVE POSITION MANAGEMENT", "🧪 STRATEGY SIMULATION"])
+    
+    with sub_live:
+        live_positions = [p for p in metrics.get('positions', []) if "LIVE" in p.get('Mode', '')]
+        if live_positions:
+            for pos in live_positions:
+                side_color = "var(--accent-emerald)" if pos['Side'] == "BUY" else "var(--accent-purple)"
+                pnl_color = "var(--accent-emerald)" if pos['PnL ($)'] >= 0 else "var(--accent-purple)"
+                symbol = pos['Symbol']
+                tv_symbol = f"BINANCE:{symbol.replace('/USDT:USDT', 'USDT').replace('/', '')}.P"
+                
+                card_html = f"""
+<div class='bento-card' style='padding: 0; border-left: 2px solid {side_color}; overflow: hidden; margin-bottom: 16px;'>
+    <div style='padding: 12px 16px; border-bottom: 1px solid var(--obsidian-border); display: flex; justify-content: space-between; align-items: center;'>
+        <div>
+            <div class='metric-label' style='margin-bottom: 2px; font-size: 10px;'>{symbol} // {pos.get('Leverage', 1)}x</div>
+            <div style='color:{side_color}; font-weight: 800; font-size: 16px;'>{pos['Side']} POSITION</div>
+        </div>
+        <div style='text-align: right;'>
+            <div class='metric-label' style='font-size: 10px;'>Session PnL</div>
+            <div style='color: {pnl_color}; font-weight: 800; font-size: 16px;'>{pos['PnL ($)']:+,.2f} USD ({pos['PnL (%)']:+,.2f}%)</div>
+        </div>
+    </div>
+    <div style='height: 220px;'>
+        <iframe 
+            src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_762ed&symbol={tv_symbol}&interval=1&hidesidetoolbar=1&hidetoptoolbar=1&symboledit=0&saveimage=0&toolbarbg=f1f3f6&studies=[]&theme=dark&style=1&timezone=Etc%2FUTC&studies_overrides=%7B%7D&overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&locale=en&utm_source=antigravity"
+            width="100%" height="100%" frameborder="0" allowtransparency="true" scrolling="no" allowfullscreen>
+        </iframe>
+    </div>
+    <div style='padding: 12px 16px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; background: rgba(255,255,255,0.01);'>
+        <div><div class='metric-label' style='font-size: 9px;'>Size</div><div style='font-size: 12px; font-weight: 600;'>{pos['Size']:.4f}</div></div>
+        <div><div class='metric-label' style='font-size: 9px;'>Entry</div><div style='font-size: 12px; color: var(--accent-cyan); font-weight: 600;'>{pos['Entry']:,.4f}</div></div>
+        <div><div class='metric-label' style='font-size: 9px;'>Mark</div><div style='font-size: 12px; font-weight: 600;'>{pos['Mark']:,.4f}</div></div>
+        <div><div class='metric-label' style='font-size: 9px;'>Liquidation</div><div style='font-size: 12px; color: #ffab00; font-weight: 600;'>{pos.get('Liq', 0):,.4f}</div></div>
+    </div>
+</div>
+"""
+                st.markdown(card_html, unsafe_allow_html=True)
+                
+                # LIVE CONTROLS ROW
+                c1, c2, c3, c4 = st.columns([1, 1, 1, 1])
+                with c1:
+                    if st.button("🚨 TERMINATE", key=f"close_btn_{symbol}", use_container_width=True):
+                        res = st.session_state.scanner.bot.close_live_position(symbol)
+                        if res['status'] == 'SUCCESS': st.success(f"Terminated {symbol}")
+                        else: st.error(res['msg'])
+                        st.rerun()
+                
+                with c2:
+                    current_tp = float(pos.get('TP', 0)) if pos.get('TP') else 0.0
+                    new_tp = st.number_input("LIMIT TP", value=current_tp, key=f"tp_in_{symbol}", format="%.5f", label_visibility="visible")
+                with c3:
+                    current_sl = float(pos.get('SL', 0)) if pos.get('SL') else 0.0
+                    new_sl = st.number_input("STOP SL", value=current_sl, key=f"sl_in_{symbol}", format="%.5f", label_visibility="visible")
+                with c4:
+                    st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
+                    if st.button("🛰️ ATOMIC UPDATE", key=f"upd_btn_{symbol}", use_container_width=True):
+                        res = st.session_state.scanner.bot.update_live_tp_sl(symbol, pos['Side'], new_tp, new_sl)
+                        if res['status'] == 'SUCCESS': st.success(f"Atomic Update: {symbol}")
+                        else: st.error(res['msg'])
+                        st.rerun()
+                st.markdown("<div style='height:32px;'></div>", unsafe_allow_html=True)
+        else:
+            st.markdown("<div style='border:1px solid var(--obsidian-border); border-radius:12px; padding:80px; text-align:center; color:var(--text-dim); background:var(--obsidian-card);'>AWAITING ALPHA DEPLOYMENT // NO LIVE EXPOSURE</div>", unsafe_allow_html=True)
+
+    with sub_sim:
+        sim_positions = [p for p in metrics.get('positions', []) if "SIM" in p.get('Mode', '')]
+        if sim_positions:
+            for pos in sim_positions:
+                side_color = "var(--accent-emerald)" if pos['Side'] == "BUY" else "var(--accent-purple)"
+                pnl_color = "var(--accent-emerald)" if pos['PnL ($)'] >= 0 else "var(--accent-purple)"
+                st.markdown(f"""
+                    <div class='bento-card' style='padding: 12px 16px; border-left: 2px solid var(--obsidian-border); margin-bottom: 8px; opacity: 0.6;'>
+                        <div style='display: flex; justify-content: space-between; align-items: center;'>
+                            <div>
+                                <span class='metric-label' style='margin-right:12px; font-size: 10px;'>{pos['Symbol']}</span>
+                                <span class='pill-tag' style='padding: 2px 8px; font-size: 9px;'>SIMULATION</span>
+                            </div>
+                            <div style='color: {pnl_color}; font-weight: 700; font-size: 16px;'>{pos['PnL ($)']:+,.2f}</div>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.markdown("<div style='text-align:center; color:var(--text-dim); padding:40px;'>No simulation cycles active</div>", unsafe_allow_html=True)
 
 with t2:
-    st.markdown("<div class='grok-label'>Granular Trade Attribution (God-Mode)</div>", unsafe_allow_html=True)
+    st.markdown("<div class='metric-label'>Granular Execution Attribution</div>", unsafe_allow_html=True)
     
     col_audit1, col_audit2 = st.columns([7, 3])
     with col_audit1:
@@ -826,58 +836,72 @@ with t2:
             with open("sovereign_audit.json", "r") as f:
                 audits = json.load(f)
             df_audit = pd.DataFrame(audits).sort_index(ascending=False)
-            st.dataframe(df_audit.style.applymap(lambda x: 'color: #00D1FF' if x == 'BUY' else 'color: #FF00FF', subset=['side']), width="stretch")
-            if not df_audit.empty:
-                st.markdown(f"<div class='pill-tag'>Total Executions: {len(df_audit)}</div>", unsafe_allow_html=True)
+            st.dataframe(df_audit, width="stretch")
         else:
-            st.info("Awaiting first Sovereign Audit record...")
+            st.info("Registry clear. Monitoring standby.")
 
     with col_audit2:
-        st.markdown("<div class='grok-label'>Toxic Assets (Blacklist)</div>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-label'>Asset Quarantine</div>", unsafe_allow_html=True)
         if os.path.exists("blacklist.json"):
             with open("blacklist.json", "r") as f:
                 blacklist = json.load(f)
             if blacklist:
                 for item in blacklist:
-                    st.markdown(f"<div class='pill-tag' style='color:#FF4B4B; border-color:#FF4B4B; margin-bottom:5px; width:100%; text-align:center;'>💀 {item}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='pill-tag' style='color:var(--accent-purple); border-color:var(--accent-purple); margin-bottom:8px; width:100%; text-align:center;'>💀 {item}</div>", unsafe_allow_html=True)
             else:
-                st.markdown("<div style='opacity:0.3; font-size:10px;'>Registry Empty</div>", unsafe_allow_html=True)
-        else:
-            st.markdown("<div style='opacity:0.3; font-size:10px;'>Blacklist Inactive</div>", unsafe_allow_html=True)
+                st.markdown("<div style='opacity:0.3; font-size:11px;'>Quarantine Clear</div>", unsafe_allow_html=True)
 
 with t3:
-    st.markdown("<div class='grok-label'>Historical Mission Playback (Smart Backtest)</div>", unsafe_allow_html=True)
-    sim_history = sim_stats.get('history', [])
-    if sim_history:
-        h_df = pd.DataFrame(sim_history).sort_values('Time', ascending=False)
-        st.markdown("<div style='margin-bottom:20px;'>", unsafe_allow_html=True)
-        st.dataframe(h_df.style.applymap(lambda x: 'color: #00FF41' if x > 0 else 'color: #FF00FF', subset=['PnL']), width="stretch")
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        # Hindsight Insights
-        if os.path.exists("hindsight_data.json"):
-            with open("hindsight_data.json", "r") as f:
-                hindsight = json.load(f)
-            st.markdown("<div class='grok-label'>Sovereign Predictions Registry</div>", unsafe_allow_html=True)
-            
-            # Display recent logs with expanders and block trade detection
-            recent_logs = st.session_state.scanner.get_recent_logs(limit=30) # Assuming scanner logs are relevant here
-            if not recent_logs.empty:
-                for _, row in recent_logs.iterrows():
-                    with st.expander(f"{row['Symbol']} - {row['Signal']} (Score: {row['Score']})"):
-                        st.write(f"**Regime:** {row['Regime']}")
-                        
-                        # Highlight Block Trades
-                        whale_bias = row.get('Whale_Bias', 'NEUTRAL')
-                        if whale_bias != 'NEUTRAL':
-                            st.warning(f"🚨 WHALE ACTIVITY: {whale_bias} BIAS DETECTED")
-                        
-                        st.write(f"**Reasons:** {row['Reasons']}")
-                        st.write(f"**Funding:** {row['Funding']} | **OI Momentum:** {row['OI_Mom']}")
-            else:
-                st.info("No recent scanner logs for predictions registry.")
+    hist_live, hist_sim = st.tabs(["🔥 LIVE AUDIT", "🧪 SIMULATION REPLAY"])
+    with hist_live:
+        st.markdown("<div class='metric-label'>Institutional Ledger</div>", unsafe_allow_html=True)
+        if os.path.exists("sovereign_audit.json"):
+            with open("sovereign_audit.json", "r") as f:
+                audit_log = json.load(f)
+            if audit_log:
+                live_audit = [a for a in audit_log if "SIM" not in a.get('audit_tag', '')]
+                if live_audit:
+                    df_live = pd.DataFrame(live_audit).sort_values('timestamp', ascending=False)
+                    st.dataframe(df_live, use_container_width=True)
+                else:
+                    st.info("No live cycles recorded.")
+    with hist_sim:
+        st.markdown("<div class='metric-label'>Simulation Replay Stream</div>", unsafe_allow_html=True)
+        sim_history = stats.get('history', [])
+        if sim_history:
+            h_df = pd.DataFrame(sim_history).sort_values('Time', ascending=False)
+            st.dataframe(h_df, use_container_width=True)
+
+with tm:
+    st.markdown("<div class='metric-label'>Neural Learning Density</div>", unsafe_allow_html=True)
+    bot = st.session_state.scanner.bot
+    memory_data = bot.memory.get("performance", {}) if hasattr(bot, 'memory') else {}
+    if memory_data:
+        m_rows = []
+        for sym, data in memory_data.items():
+            m_rows.append({"Asset": sym, "Win Rate": f"{(data.get('wins',0)/(data.get('wins',0)+data.get('losses',1))*100):.1f}%", "Streak": data.get("streak", 0)})
+        st.dataframe(pd.DataFrame(m_rows), use_container_width=True)
     else:
-        st.info("Hindsight Matrix is empty.")
+        st.info("Neural Memory initializing...")
+
+    st.markdown("<br><div class='grok-label'>Active Protections (Anti-Fragility)</div>", unsafe_allow_html=True)
+    c_anti1, c_anti2 = st.columns(2)
+    with c_anti1:
+        st.markdown(f"""
+        <div class='bento-card' style='border-left: 4px solid #00D1FF;'>
+            <div class='grok-label'>Volatility Protector</div>
+            <div style='font-size: 14px; opacity: 0.8;'>REJECTING SCAM WICKS ({st.session_state.scanner.bot.config.get('volatility_protector_multiplier', 4.0)}x Threshold)</div>
+            <div style='color: #00FFAB; font-size: 12px; margin-top:5px;'>● ACTIVE</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with c_anti2:
+        st.markdown(f"""
+        <div class='bento-card' style='border-left: 4px solid #FF00FF;'>
+            <div class='grok-label'>Symbol Quarantining</div>
+            <div style='font-size: 14px; opacity: 0.8;'>PENALIZING RECENT FAILURES (-20 pts)</div>
+            <div style='color: #00FFAB; font-size: 12px; margin-top:5px;'>● ACTIVE</div>
+        </div>
+        """, unsafe_allow_html=True)
 
 with t4:
     st.markdown("<div class='grok-label'>Scanner Activity Stream</div>", unsafe_allow_html=True)
