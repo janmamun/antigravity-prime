@@ -686,7 +686,7 @@ with ic4:
 st.markdown(f"""
 <div style='margin-bottom: 32px; background: var(--obsidian-card); border: 1px solid var(--obsidian-border); border-radius: 12px; padding: 20px;'>
     <div style='display: flex; justify-content: space-between; align-items: center;'>
-        <div class='metric-label' style='font-size: 11px; margin-bottom:0;'>INSTITUTIONAL TIDAL SHIFT (PHASE 51)</div>
+        <div class='metric-label' style='font-size: 11px; margin-bottom:0;'>EXPONENTIAL BLITZ (PHASE 89)</div>
         <div class='pill-tag' style='color: {"var(--accent-emerald)" if metrics.get("turbo_active") else "var(--accent-cyan)"}; border-color:transparent;'>{ "TURBO BOOSTED" if metrics.get("turbo_active") else "NOMINAL FLOW" }</div>
     </div>
     <div style='background: rgba(255,255,255,0.05); height: 6px; border-radius: 3px; margin-top: 16px; overflow: hidden;'>

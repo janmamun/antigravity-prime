@@ -10,13 +10,14 @@ from datetime import datetime
 from market_scanner import MarketScanner
 from simulation_engine import FuturesSimulator
 from meta_brain import LocalBrain, MetaBrain
+from geometric_prophet import get_geometric_signal
 
 # Constants
 HEARTBEAT_FILE = "guardian_heartbeat_async.json"
 TOP_LIMIT = 20
 
 # Profit-Locking Thresholds
-PROFIT_LOCK_PCT = 5.0    # Exact Golden Era: +5% ROI
+PROFIT_LOCK_PCT = 2.5    # Aggressive Offensive: +2.5% ROI
 BREAKEVEN_PCT = 2.0      # Exact Golden Era: +2% ROI
 MAX_STOP_LOSS_PCT = 3.0
 
@@ -98,7 +99,9 @@ def get_session_peak_equity():
                 data = json.load(f)
                 if data.get('date') == datetime.now().strftime('%Y-%m-%d'):
                     return data.get('peak')
-    except: pass
+    except Exception as e:
+        if not SILENT_MODE: log_sovereign(f"Peak Equity Read Error: {e}", "DEBUG")
+        pass
     return None
 
 def set_session_peak_equity(peak):
@@ -106,7 +109,9 @@ def set_session_peak_equity(peak):
         data = {'peak': peak, 'date': datetime.now().strftime('%Y-%m-%d')}
         with open(SESSION_PEAK_FILE, 'w') as f:
             json.dump(data, f)
-    except: pass
+    except Exception as e:
+        log_sovereign(f"Peak Equity Write Error: {e}", "ERROR")
+        pass
 
 SESSION_START_EQUITY = get_session_start_equity()  # Load from file on startup
 SESSION_PEAK_EQUITY = get_session_peak_equity()
@@ -159,7 +164,7 @@ def log_sovereign(msg, level="INFO"):
     try:
         with open("bot_output_async.log", "a") as f:
             f.write(formatted_msg + "\n")
-    except: pass
+    except Exception: pass
 
 
 
@@ -167,7 +172,7 @@ def update_heartbeat():
     try:
         with open(HEARTBEAT_FILE, "w") as f:
             json.dump({"last_heartbeat": time.time(), "status": "ALIVE_ASYNC"}, f)
-    except:
+    except Exception as e:
         pass
 
 # Phase 53: Instance Guard (Atomic Singleton Lock)
@@ -192,7 +197,7 @@ def acquire_lock():
             try:
                 os.remove(LOCK_FILE)
                 return acquire_lock() # Try again
-            except: pass
+            except Exception: pass
         return False
     except Exception:
         return False
@@ -201,7 +206,7 @@ def release_lock():
     try:
         if os.path.exists(LOCK_FILE):
             os.remove(LOCK_FILE)
-    except:
+    except Exception:
         pass
 
 class AsyncSovereignEngine:
@@ -235,12 +240,27 @@ class AsyncSovereignEngine:
         # Phase 64: Uptime Watchdog
         self.last_pulse_time = time.time()
         
+        # AI-Guardian Kill-Switch State
+        self.kill_switch_file = "kill_switch.json"
+        
         # Send Start Notification
-        if self.telegram.is_active:
-             asyncio.create_task(self.telegram.send_message("🚀 *SOVEREIGN ENGINE STARTING* (Phase 64 - Fortress Resilience)"))
+
+
+    async def safe_task(self, coro, name="Unknown"):
+        """Wrapper to catch and log anomalies in background tasks"""
+        try:
+            return await coro
+        except asyncio.CancelledError:
+            log_sovereign(f"⚠️ [TASK] Task '{name}' cancelled.", "DEBUG")
+            raise
+        except Exception as e:
+            log_sovereign(f"❌ [TASK CRITICAL] Task '{name}' failed: {e}", "ERROR")
+            import traceback
+            log_sovereign(traceback.format_exc(), "DEBUG")
+            return None
 
     # ==== Phase 54: Atomic Shield Helper ====
-    async def place_atomic_trade(self, ccxt_sym_full, side, amount, entry_price, tp_price=None, sl_price=None, reduce_only=False):
+    async def place_atomic_trade(self, ccxt_sym_full, side, amount, entry_price, tp_price=None, sl_price=None, reduce_only=False, alpha_mode=False):
         """Place a market order and immediately attach stop‑loss / take‑profit.
         Phase 83: Atomic Shield - Emergency close if SL protection fails.
         """
@@ -309,27 +329,98 @@ class AsyncSovereignEngine:
             return None
 
     # ==== Phase 55: Liquidity Sentinel Helper ====
-    async def check_liquidity(self, ccxt_sym_full, desired_qty, max_slippage_pct=0.002, depth=20):
-        """Verify sufficient order‑book depth before trading. Returns True if enough liquidity."""
+    async def check_liquidity(self, ccxt_sym_full, desired_qty, max_slippage_pct=0.002, depth=20, alpha_mode=False):
+        """Phase 85.2: Verify depth + Natural Spread Guard before trading."""
         try:
+            if not desired_qty or abs(desired_qty) < 1e-9: return True # Nothing to fill
+            
             ob = await self._engine_fetch_with_proxy(self.scanner.bot.exchange, 'fetch_order_book', ccxt_sym_full, limit=depth)
-            side = 'asks' if desired_qty > 0 else 'bids'
-            cum_vol = 0.0
-            price_levels = ob.get(side, [])
-            best_price = price_levels[0][0] if price_levels else None
-            for price, vol in price_levels:
-                cum_vol += vol
-                if cum_vol >= abs(desired_qty):
-                    break
-            if best_price is None:
+            if not ob or not ob['bids'] or not ob['asks'] or len(ob['bids']) == 0 or len(ob['asks']) == 0: 
+                log_sovereign(f"🛡️ [LIQUIDITY] {ccxt_sym_full} rejected: Empty Orderbook detected.", "SYSTEM")
                 return False
-            # Simple slippage check
-            slippage = abs(best_price - (best_price * (1 + max_slippage_pct))) / best_price
-            if cum_vol >= abs(desired_qty) and slippage <= max_slippage_pct:
-                return True
+            
+            mid_price = (ob['bids'][0][0] + ob['asks'][0][0]) / 2
+            
+            # 1. Natural Spread Guard
+            natural_spread = (ob['asks'][0][0] - ob['bids'][0][0]) / mid_price
+            if natural_spread > 0.003: # 0.3% limit
+                log_sovereign(f"🛡️ [SPREAD GUARD] {ccxt_sym_full} rejected: Natural spread too high ({natural_spread*100:.2f}% > 0.3%).", "SYSTEM")
+                return False
+
+            # 2. Volume-Weighted Slippage Check
+            side = 'asks' if desired_qty > 0 else 'bids'
+            price_levels = ob.get(side, [])
+            qty_to_fill = abs(desired_qty)
+            
+            total_vol = 0
+            weighted_sum = 0
+            for price, amount in price_levels:
+                fill = min(amount, qty_to_fill - total_vol)
+                weighted_sum += price * fill
+                total_vol += fill
+                if total_vol >= qty_to_fill: break
+            
+            if total_vol < qty_to_fill:
+                log_sovereign(f"🛡️ [LIQUIDITY] {ccxt_sym_full} rejected: Insufficient book depth for {qty_to_fill} units.", "SYSTEM")
+                return False
+            
+            avg_exec_price = weighted_sum / qty_to_fill
+            slippage = abs(avg_exec_price - mid_price) / mid_price
+            
+            if slippage > max_slippage_pct:
+                log_sovereign(f"🛡️ [LIQUIDITY] {ccxt_sym_full} rejected: Est. Slippage {slippage*100:.2f}% > {max_slippage_pct*100:.2f}% limit.", "CRITICAL")
+                return False
+                
+            return True
         except Exception as e:
             log_sovereign(f"[LIQUIDITY] Check failed: {e}", "ERROR")
         return False
+
+    async def emergency_close_all(self):
+        """Phase 88: AI-Guardian Kill-Switch - Immediate full portfolio liquidation"""
+        log_sovereign("🚨 [AI-GUARDIAN] KILL-SWITCH ENGAGED. LIQUIDATING ALL POSITIONS!", "CRITICAL")
+        try:
+            positions = await asyncio.to_thread(self.scanner.bot.get_active_positions)
+            for pos in positions:
+                symbol = pos['symbol']
+                ccxt_symbol = binance_to_ccxt(symbol)
+                side = 'sell' if pos['side'] == 'BUY' else 'buy'
+                size = abs(pos['size'])
+                
+                log_sovereign(f"🛡️ [KILL-SWITCH] Closing {symbol} ({size})...", "SYSTEM")
+                await asyncio.to_thread(
+                    self.scanner.bot.exchange.create_order,
+                    ccxt_symbol,
+                    'MARKET',
+                    side,
+                    size,
+                    None,
+                    {'reduceOnly': True}
+                )
+            
+            # Cancel all open orders
+            log_sovereign("🛡️ [KILL-SWITCH] Purging all open orders...", "SYSTEM")
+            await asyncio.to_thread(self.scanner.bot.exchange.fapiPrivateDeleteAllOpenOrders)
+            
+            log_sovereign("✅ [AI-GUARDIAN] Liquidation Complete. System Halted.", "CRITICAL")
+        except Exception as e:
+            log_sovereign(f"💀 [KILL-SWITCH FAILURE] Error during liquidation: {e}", "ERROR")
+
+    async def _kill_switch_sentinel(self):
+        """Monitor for kill_switch.json to trigger emergency shutdown"""
+        while self.is_running:
+            if os.path.exists(self.kill_switch_file):
+                try:
+                    with open(self.kill_switch_file, 'r') as f:
+                        trigger = json.load(f)
+                    if trigger.get("active", False):
+                        await self.emergency_close_all()
+                        # Move to .bak to prevent loop
+                        os.rename(self.kill_switch_file, self.kill_switch_file + ".bak")
+                        # self.is_running = False # Optionally stop engine
+                except Exception as e:
+                    log_sovereign(f"Kill-Switch Error: {e}", "DEBUG")
+            await asyncio.sleep(5) # Frequent check
 
     async def update_heartbeat_loop(self):
         while self.is_running:
@@ -375,16 +466,21 @@ class AsyncSovereignEngine:
                     except (asyncio.TimeoutError, Exception) as e:
                         err_str = str(e).lower()
                         # Special handling for WebSocket disconnects & "Closing Transport" race conditions
-                        if "closing transport" in err_str or "connection closed" in err_str or "connection_reset" in err_str:
+                        if "closing transport" in err_str or "connection closed" in err_str or "connection_reset" in err_str or "clientconnectionreseterror" in err_str:
                             log_sovereign(f"🔌 [WS SENTINEL] Nuclear Reset active for {symbol} (Transport Corruption Detected)", "DEBUG")
                             try:
                                 # Force clean shutdown of corrupted transport
-                                await asyncio.wait_for(self.spot_ws.close(), timeout=1.0)
-                            except: pass
+                                if self.spot_ws:
+                                    # Attempt to close the underlying transport gracefully if possible
+                                    try:
+                                        await asyncio.wait_for(self.spot_ws.close(), timeout=1.0)
+                                    except Exception: pass
+                            except Exception: pass
                             
                             # Phase 67: Core Re-initialization (Nuclear Option)
                             # Re-initialize the WS object if it's stuck in "closing" state
                             try:
+                                await asyncio.sleep(1.0) # Wait for socket cleanup
                                 self.spot_ws = ccxt.pro.binance({
                                     'enableRateLimit': True,
                                     'options': {'defaultType': 'spot'},
@@ -392,13 +488,13 @@ class AsyncSovereignEngine:
                                         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
                                     }
                                 })
-                            except: pass
+                            except Exception: pass
                         
                         # Fallback to REST via engine proxy loop
                         try:
                             ticker = await self._engine_fetch_with_proxy(self.scanner.bot.exchange, 'fetch_ticker', symbol)
                             self.price_buffer[symbol] = ticker['last']
-                        except:
+                        except Exception:
                             pass
                     await asyncio.sleep(0.1)
                 # Phase 64: Update Uptime Pulse
@@ -508,7 +604,8 @@ class AsyncSovereignEngine:
                                 if self.telegram.is_active:
                                     asyncio.create_task(self.telegram.send_message(f"🚨 *TRAILING PROTECTION ACTIVATED*\nEquity dropped {trailing_drop:.1f}% from peak ${SESSION_PEAK_EQUITY:.2f}. Skipping new scans."))
                                 goto_monitoring = True
-                    except: pass
+                    except Exception as e:
+                        if not SILENT_MODE: log_sovereign(f"Trailing Protection Check Error: {e}", "DEBUG")
                     
                     try:
                         live_positions = await self._engine_fetch_with_proxy(self.scanner.bot, 'get_active_positions')
@@ -526,7 +623,7 @@ class AsyncSovereignEngine:
                                     for order in open_orders:
                                         try:
                                             await self._engine_fetch_with_proxy(self.scanner.bot.exchange, 'cancel_order', order['id'], sym)
-                                        except:
+                                        except Exception:
                                             pass
                             except Exception as e:
                                 log_sovereign(f"⚠️ [ORDER_CLEANUP] Failed to cancel orders for {sym}: {e}", "ERROR")
@@ -554,7 +651,7 @@ class AsyncSovereignEngine:
                                                     log_sovereign(f"🧊 [LOSS COOLDOWN] Locking {ccxt_sym} for {LOSS_COOL_DOWN_SECONDS}s after failure.", "SYSTEM")
                                                     self.pos_cooldowns[ccxt_sym] = time.time() + LOSS_COOL_DOWN_SECONDS
                                                 break
-                                    except: pass
+                                    except Exception: pass
                                     
                                     # ALERT: Notify on significant losses
                                     if pnl < -10:
@@ -573,7 +670,8 @@ class AsyncSovereignEngine:
                                         del PEAK_PROFIT_STORE[binance_sym]
                                     save_harvest_state(PARTIAL_HARVEST_STORE, PEAK_PROFIT_STORE)
                                     
-                            except: pass
+                            except Exception as e:
+                                log_sovereign(f"Symbol Cleanup Error: {e}", "ERROR")
                         self.last_live_symbols = curr_live_symbols
 
                         if live_positions:
@@ -620,7 +718,8 @@ class AsyncSovereignEngine:
                                         close_side = 'sell' if pos['side'] == 'BUY' else 'buy'
                                         await self.place_atomic_trade(ccxt_sym_full, close_side, size, entry, reduce_only=True)
                                         continue
-                                except: pass
+                                except Exception as e:
+                                    if not SILENT_MODE: log_sovereign(f"Time Stop Error: {e}", "DEBUG")
                                                                 # 🎯 PROFIT LOCK: Auto-close at +10% (Legacy, kept for higher ROI targets if needed)
                                 if roi >= PROFIT_LOCK_PCT:
                                     try:
@@ -758,7 +857,8 @@ class AsyncSovereignEngine:
                                     if age_seconds > MAX_POSITION_AGE_SECONDS:
                                         log_sovereign(f"⏳ [SIM TIME STOP] {sym} open for {age_seconds/3600:.1f}h. Harvesting stale sim.", "EXECUTOR")
                                         self.sim.close_position(sym, curr_price)
-                                except: pass
+                                except Exception as e:
+                                    if not SILENT_MODE: log_sovereign(f"Sim Time Stop Error: {e}", "DEBUG")
 
                 if goto_monitoring:
                     await asyncio.sleep(60) # Still run the loop but slow down
@@ -829,7 +929,7 @@ class AsyncSovereignEngine:
                                             if vol_24h < min_vol:
                                                 log_sovereign(f"🛡️ [LIQUIDITY GUARD] {top_trade['symbol']} volume ${vol_24h:,.0f} < ${min_vol:,.0f}. Skipping.", "SYSTEM")
                                                 continue
-                                        except: pass
+                                        except Exception: pass
 
                                         # 2. TREND FILTER: Must be above 4h EMA for BUY
                                         try:
@@ -862,6 +962,7 @@ class AsyncSovereignEngine:
                                         
                                         # Allocation planning (Adjusted for Golden Era Risk)
                                         score = top_trade.get('score', 0)
+                                        alpha_mode = top_trade.get('alpha_mode', False)
                                         if score > 120: amount = 40
                                         elif score > 100: amount = 30
                                         else: amount = 20
@@ -902,7 +1003,11 @@ class AsyncSovereignEngine:
                                         base_slip = self.scanner.bot.config.get('max_slippage_pct', 0.0035)
                                         
                                         # Adaptive Permission Scaling
-                                        if score > 115:
+                                        # Phase 85: Meme Safeguard (Adaptive Slippage for Alphas)
+                                        if alpha_mode:
+                                            max_slip = 0.008  # 0.8% for Memes
+                                            log_sovereign(f"🚀 [MEME SAFEGUARD] Granting 0.8% Slippage Permission for {exec_symbol}", "SYSTEM")
+                                        elif score > 115:
                                             max_slip = 0.012  # God-Mode: 1.2% permission for Moonshots
                                             log_sovereign(f"⚡ [PERMISSION_BOOST] Score {score} > 115. Granting 1.2% Slippage Permission.", "SYSTEM")
                                         elif score > 100:
@@ -1077,20 +1182,58 @@ class AsyncSovereignEngine:
                 log_sovereign(f"Evolution Worker Exception: {e}", "ERROR")
                 await asyncio.sleep(3600)
 
+    async def _prophet_research_worker(self):
+        """Phase 86: The Geometric Prophet. Scans market geometry every 10 mins."""
+        log_sovereign("🔮 [PROPHET] Geometric Research Agent active.", "SYSTEM")
+        while self.is_running:
+            try:
+                # 1. Fetch Candidates (Memes + Top Gainers)
+                candidates = await self.scanner.get_alpha_strike_candidates(limit=15)
+                # 2. Perform Mathematical Analysis
+                for symbol in candidates:
+                    try:
+                        # Fetch OHLCV (1h for regime detection, 5m for fine-tuning)
+                        ohlcv = await self._engine_fetch_with_proxy(self.scanner.bot.exchange, 'fetch_ohlcv', symbol, timeframe='1h', limit=100)
+                        if not ohlcv: continue
+                        
+                        df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+                        signal, score, metrics = get_geometric_signal(df)
+                        
+                        # Store prediction in bot's memory
+                        self.scanner.bot.prophet_predictions[symbol] = {
+                            "signal": signal,
+                            "score": 25, # Fixed bonus weight for Math confirmation
+                            "metrics": metrics
+                        }
+                    except Exception as sym_e:
+                        log_sovereign(f"Prophet Error on {symbol}: {sym_e}", "DEBUG")
+                
+                log_sovereign(f"🔮 [PROPHET] Research cycle complete. Predictions updated for {len(candidates)} symbols.", "SYSTEM")
+                await asyncio.sleep(600) # 10 minutes
+            except Exception as e:
+                log_sovereign(f"Prophet Worker Exception: {e}", "ERROR")
+                await asyncio.sleep(60)
+
     async def start(self):
         # Initialize background tasks
-        self.heartbeat_task = asyncio.create_task(self.update_heartbeat_loop())
-        self.watch_task = asyncio.create_task(self.watch_prices())
-        self.logic_task = asyncio.create_task(self.run_logic_cycle())
-        self.harvest_task = asyncio.create_task(self._harvest_worker()) # Phase 34
-        self.daily_lock_task = asyncio.create_task(self._daily_harvest_worker()) # Phase 37
-        self.evolution_task = asyncio.create_task(self._evolution_worker()) # Phase 75
+        self.heartbeat_task = asyncio.create_task(self.safe_task(self.update_heartbeat_loop(), "Heartbeat"))
+        self.watch_task = asyncio.create_task(self.safe_task(self.watch_prices(), "MarketWatch"))
+        self.logic_task = asyncio.create_task(self.safe_task(self.run_logic_cycle(), "LogicCycle"))
+        self.harvest_task = asyncio.create_task(self.safe_task(self._harvest_worker(), "HarvestWorker")) # Phase 34
+        self.daily_lock_task = asyncio.create_task(self.safe_task(self._daily_harvest_worker(), "DailyLock")) # Phase 37
+        self.evolution_task = asyncio.create_task(self.safe_task(self._evolution_worker(), "EvolutionWorker")) # Phase 75
+        self.prophet_task = asyncio.create_task(self.safe_task(self._prophet_research_worker(), "ProphetResearch")) # Phase 86
+        self.kill_switch_task = asyncio.create_task(self.safe_task(self._kill_switch_sentinel(), "KillSwitch")) # Phase 88
+        
+        # Send Start Notification (Moved from __init__)
+        if self.telegram.is_active:
+             asyncio.create_task(self.safe_task(self.telegram.send_message("🚀 *SOVEREIGN ENGINE STARTING* (Phase 64 - Fortress Resilience)"), "StartupMsg"))
         
         while self.is_running:
             try:
                 # Wait for any task to complete/fail
                 done, pending = await asyncio.wait(
-                    [self.heartbeat_task, self.watch_task, self.logic_task, self.harvest_task, self.daily_lock_task, self.evolution_task],
+                    [self.heartbeat_task, self.watch_task, self.logic_task, self.harvest_task, self.daily_lock_task, self.evolution_task, self.prophet_task, self.kill_switch_task],
                     return_when=asyncio.FIRST_COMPLETED
                 )
                 
@@ -1107,7 +1250,7 @@ class AsyncSovereignEngine:
                 if now - self.last_pulse_time > 300: # 5 Minutes
                     log_sovereign(f"💀 [WATCHDOG] Zombie Socket detected (Pulse: {now - self.last_pulse_time:.1f}s ago). Force Restarting Engine...", "CRITICAL")
                     if self.telegram.is_active:
-                         asyncio.create_task(self.telegram.send_message("💀 *ZOMBIE SOCKET DETECTED*: Pulse was lost for > 5 minutes. Force restarting the engine..."))
+                         asyncio.create_task(self.safe_task(self.telegram.send_message("💀 *ZOMBIE SOCKET DETECTED*: Pulse was lost for > 5 minutes. Force restarting the engine..."), "ZombieAlert"))
                     # Break to trigger a full system restart
                     break
 
@@ -1141,6 +1284,10 @@ class AsyncSovereignEngine:
                         restarted_any = True
                     if self.daily_lock_task in done: 
                         self.daily_lock_task = asyncio.create_task(self._daily_harvest_worker())
+                        restarted_any = True
+                    
+                    if self.prophet_task in done:
+                        self.prophet_task = asyncio.create_task(self._prophet_research_worker())
                         restarted_any = True
                     
                     if restarted_any:

@@ -15,6 +15,10 @@ from news_syndicate import NewsSyndicate
 from hindsight_researcher import HindsightResearcher
 # from telegram_bridge import TelegramBridge
 
+# Phase 88: Advanced Mathematical Filters
+from quantum_prophet_math import get_quantum_signal
+from geometric_prophet import get_geometric_signal as get_geo_signal
+
 class NewsSentimentScanner:
     """Sovereign V17.0 News Intelligence (Gemini-Powered)"""
     def __init__(self):
@@ -95,6 +99,7 @@ class UltimateV17Bot:
         self.cortex_multiplier = 1.0 # 0.8 to 1.5 based on performance
         self.dynamic_barrier = 55.0 # Phase 40: Aggressive Trading Mode
         self.liquidity_memory = {} # {symbol: {bids: [], asks: []}}
+        self.prophet_predictions = {} # Phase 86: The Geometric Prophet
         
         if self.is_live and self.api_key and self.api_secret:
             try:
@@ -164,17 +169,37 @@ class UltimateV17Bot:
             return self.config
 
         default_config = {
-            "rsi_oversold": 35,
-            "rsi_overbought": 70,
-            "min_score": 45,
-            "risk_factor": 0.1,
-            "leverage": 5,
-            "dca_enabled": True,
-            "dca_max_entries": 3,
-            "max_open_positions": 6,
-            "hedge_ratio": 0.5, # Phase 8.0
-            "crash_threshold": -0.02, # Phase 8.0: -2% in 5m
-            "compounding_ratio": 0.15 # Phase 10.0: Aggressive growth allocation
+            "risk_per_trade_pct": 3.0,
+            "dca_enabled": False,
+            "dca_max_entries": 1,
+            "magic_sensitivity": 0.85,
+            "max_open_positions": 10,
+            "evolution_enabled": True,
+            "risk_factor_pct": 0.03,
+            "macro_bias": "NEUTRAL",
+            "rsi_period": 14,
+            "bb_period": 20,
+            "bb_std_dev": 2.0,
+            "ma_period_fast": 12,
+            "ma_period_slow": 21,
+            "atr_multiplier": 1.0,
+            "stochastic_k_period": 14,
+            "stochastic_d_period": 3,
+            "max_leverage_turbo": 15,
+            "conviction_threshold": 100,
+            "turbo_scaling_factor": 1.2,
+            "max_loss_per_trade_pct": 2.0,
+            "take_profit_ratio": 5.0,
+            "trailing_stop_pct": 0.8,
+            "min_volume_24h": 5000000,
+            "pause_trading": False,
+            "ma_period": 21,
+            "max_risk_per_trade_percent": 0.3,
+            "take_profit_rr_minimum": 1.75,
+            "atomic_shield": True,
+            "liquidity_sentinel": True,
+            "max_slippage_pct": 0.005,
+            "liquidity_check_depth": 20
         }
 
         if os.path.exists(self.config_file):
@@ -237,7 +262,7 @@ class UltimateV17Bot:
             try:
                 with open(self.memory_file, 'r') as f:
                     self.memory = json.load(f)
-            except:
+            except Exception:
                 self.memory = {"performance": {}, "regimes": {}}
         else:
             self.memory = {"performance": {}, "regimes": {}}
@@ -382,7 +407,7 @@ class UltimateV17Bot:
             # Funding is only on futures. If banned, return 0.0001
             funding = self.exchange.fetch_funding_rate(symbol)
             return funding['fundingRate']
-        except:
+        except Exception:
             return 0.0001
 
     def _calculate_oi_momentum(self, symbol):
@@ -402,7 +427,7 @@ class UltimateV17Bot:
             
             self._cache[cache_key] = {'val': res, 'time': now}
             return res
-        except:
+        except Exception:
             return 0.0
 
     def _get_trade_based_metrics(self, symbol):
@@ -436,8 +461,44 @@ class UltimateV17Bot:
             res = {"whale_bias": whale_bias, "cvd": cvd, "block_trades": block_trades, "block_volume": block_volume}
             self._cache[cache_key] = {'val': res, 'time': now}
             return res
-        except:
+        except Exception:
             return {"whale_bias": "NEUTRAL", "cvd": 0.0, "block_trades": 0}
+
+    # Phase 88: Quantum Safety Shield scoring
+    def _get_quantum_shield_stats(self, df):
+        """
+        Calculates Quantum Safety (Lyapunov, Entropy, OU Drift).
+        Returns a score reduction or bonus based on market 'Stability'.
+        """
+        try:
+            # We use the existing research functions
+            q_sig, q_score, q_metrics = get_quantum_signal(df)
+            
+            # Extract core metrics for reasoning
+            lya = q_metrics.get('lyapunov', 0)
+            ent = q_metrics.get('entropy', 0)
+            drift = q_metrics.get('gap', 0)
+            math_dir = 1 if q_sig == "BUY" else (-1 if q_sig == "SELL" else 0)
+            
+            shield_penalty = 0
+            shield_reasons = []
+            
+            # 1. Chaos Guard (Lyapunov)
+            if lya > 0.08:
+                shield_penalty += 25
+                shield_reasons.append(f"⚛️ CHAOS GUARD: Lyapunov {lya:.3f} (High Chaos) (-25)")
+            elif lya < -0.1:
+                shield_penalty -= 5 # Minor stability bonus
+                shield_reasons.append("⚛️ STABILITY BONUS: Market is mathematically stable (+5)")
+                
+            # 2. Uncertainty Guard (Entropy)
+            if ent > 2.0:
+                shield_penalty += 20
+                shield_reasons.append(f"⚛️ ENTROPY GUARD: {ent:.2f} (High Noise) (-20)")
+
+            return shield_penalty, shield_reasons, math_dir
+        except Exception as e:
+            return 0, [f"Quantum Error: {e}"], 0
 
     def analyze_snapshot(self, df, symbol="UNKNOWN", fetch_callback=None, alpha_mode=False):
 
@@ -489,6 +550,22 @@ class UltimateV17Bot:
         df['Vol_Avg'] = df['Volume'].rolling(20).mean()
         vol_pulse = df['Volume'].iloc[-1] / (df['Vol_Avg'].iloc[-1] + 1e-6)
         
+        # 5. [PHASE 86] Geometric Prophet: The Math Prophecy
+        prophet_data = self.prophet_predictions.get(symbol, {"signal": "WAIT", "score": 0, "metrics": {}})
+        prophet_signal = prophet_data.get('signal', 'WAIT')
+        prophet_bonus = prophet_data.get('score', 0)
+        
+        if prophet_signal != "WAIT":
+            # If Math confirms the technical signal
+            if (score > 0 and prophet_signal == "BUY") or (score < 0 and prophet_signal == "SELL"):
+                score += prophet_bonus
+                reasons.append(f"⚛️ GEOMETRIC PROPHET: Math Formula Confirms Shift (+{prophet_bonus}) | H: {prophet_data['metrics'].get('hurst', 0):.3f}")
+            # If Math contradicts (The "Ghost Dampener")
+            elif (score > 0 and prophet_signal == "SELL") or (score < 0 and prophet_signal == "BUY"):
+                score -= (prophet_bonus * 0.5)
+                reasons.append(f"⚠️ GEOMETRIC FRICTION: Math Formula Suggests Reversal (-{prophet_bonus*0.5})")
+
+        # 6. Sentiment & Macro Integration
         # 3. Regime Detection (Enhanced for Phase 53)
         regime = "NEUTRAL"
         if adx > 28 and avg_quality > 0.45 and vol_pulse > 1.3:
@@ -806,6 +883,22 @@ class UltimateV17Bot:
             score -= 40
             reasons.append("📉 BREAKDOWN HUNTER: 24h Low Break + Volume Confirmation (-40)")
 
+        # Phase 88: The Quantum Safety Shield (Directional Friction & Chaos Guard)
+        q_penalty, q_reasons, q_math_dir = self._get_quantum_shield_stats(df)
+        
+        # A. Stability Shield (Internal Chaos/Entropy friction)
+        if score > 0:
+            score = max(0, score - q_penalty)
+        elif score < 0:
+            score = min(0, score + q_penalty)
+            
+        # B. Directional Friction (If math disagrees with technicals)
+        if (score > 12 and q_math_dir < 0) or (score < -12 and q_math_dir > 0):
+            score *= 0.6 # 40% conviction cut for discordance
+            reasons.append("⚛️ DIRECTIONAL FRICTION: Quantum Math contradicts Technicals (-40%)")
+
+        reasons.extend(q_reasons)
+
         # 7. Final Decision & Dynamic Barrier (Phase 23: Sovereign Ascension)
         signal = "WAIT"
         
@@ -820,11 +913,20 @@ class UltimateV17Bot:
         if regime == "TREND":
             min_score -= 5 # Slightly lower for trending markets
         
-        # Neural Decoupling: If AI is silent, we need HIGHER technical conviction
-        if neural_silence and not alpha_mode: # Alpha Mode relies on Alpha Technicals
-            penalty = 5 if self.config.get('risk_factor') == "AGGRESSIVE" else 15
-            min_score += penalty 
-            reasons.append(f"NEURAL DECOUPLING: Score requirement increased to {min_score} (Penalty: +{penalty})")
+        # Neural Decoupling Logic (Phase 89: Exponential Blitz Relaxation)
+        if neural_silence and not alpha_mode:
+            # If Math confirms (Prophet score > 0 or Quantum Shield is stable)
+            # We relax the penalty to allow Technicals to strike
+            math_confirmation = (prophet_bonus > 0 or q_penalty <= 0)
+            
+            if math_confirmation:
+                penalty = 5
+                min_score += penalty
+                reasons.append(f"NEURAL DECOUPLING (BLITZ): Math confirms signal. Low-penalty override enabled (+{penalty}). Requirements at {min_score}.")
+            else:
+                penalty = 15 if self.config.get('risk_factor') != "AGGRESSIVE" else 5
+                min_score += penalty 
+                reasons.append(f"NEURAL DECOUPLING: Score requirement increased to {min_score} (Penalty: +{penalty})")
 
         # Phase 29: Sentiment Aggressor & Quota-Hit Resilience
         if abs(news_bias) > 30:
@@ -869,19 +971,21 @@ class UltimateV17Bot:
                     score *= 0.5 # Slash conviction if a trap is suspected
                     reasons.append("⚠️ [CORTEX] LIQUIDITY TRAP SUSPECTED: Slicing conviction score by 50%")
 
-        # Final Signal Assignment (TIGHTENED TP/SL for realistic profit-taking)
-        # TP: ~5% target (1.2x ADR), SL: ~3% risk (0.7x ADR)
+        # Phase 85.2: Adaptive SL/TP Grid for Alphas (Relaxed SL for volatile memes)
+        sl_mult = 1.2 if alpha_mode else 0.7
+        tp_mult = 1.5 if alpha_mode else 1.2
+        
         if score >= min_score: 
             signal = "BUY"
-            tp = current_price + (adr * 1.2)  # ~5% target (was 2.5x)
-            sl = current_price - (adr * 0.7)  # ~3% risk (was 1.5x)
+            tp = current_price + (adr * tp_mult)
+            sl = current_price - (adr * sl_mult)
         elif score <= -min_score: 
             signal = "SELL"
-            tp = current_price - (adr * 1.2)  # ~5% target (was 2.5x)
-            sl = current_price + (adr * 0.7)  # ~3% risk (was 1.5x)
+            tp = current_price - (adr * tp_mult)
+            sl = current_price + (adr * sl_mult)
         else:
-            tp = current_price + (adr * 1.2)
-            sl = current_price - (adr * 0.7)
+            tp = current_price + (adr * tp_mult)
+            sl = current_price - (adr * sl_mult)
         
         # Phase 11.1: Adaptive TP Grid (Restored)
         tp_grid = self.calculate_tp_grid(current_price, signal, adr)
@@ -901,7 +1005,7 @@ class UltimateV17Bot:
             "tp": tp, "sl": sl, "tp_grid": tp_grid, "atr": adr, "regime": regime,
             "strategy": strategy, "turbo_scaling": turbo_scaling, "alpha_mode": alpha_mode,
             "funding": funding_rate, "oi_mom": 0.0, "tidal_roc": tidal_roc,
-            "whale_bias": "NEUTRAL", "narrative": narrative, "reasons": reasons
+            "whale_bias": trade_metrics.get('whale_bias', 'NEUTRAL'), "narrative": narrative, "reasons": reasons
         }
 
     def check_safeguards(self):
@@ -984,7 +1088,8 @@ class UltimateV17Bot:
                             'mark_price': float(p.get('markPrice', 0)),
                             'liquidation_price': float(p.get('liquidationPrice', 0)),
                             'unrealized_pnl': float(p.get('unrealizedProfit', 0)),
-                            'leverage': float(p.get('leverage', 1))
+                            'leverage': float(p.get('leverage', 1)),
+                            'updateTime': int(p.get('updateTime', 0))
                         })
                 return active
             except Exception as e:
@@ -1110,7 +1215,7 @@ class UltimateV17Bot:
             df = pd.DataFrame(ohlcv, columns=['timestamp', 'Open', 'High', 'Low', 'Close', 'Volume'])
             df['ATR'] = self._calculate_atr(df)
             return df['ATR'].iloc[-1]
-        except: return 0.0
+        except Exception: return 0.0
 
     def trail_liquidity_sl(self, symbol, current_price, current_sl, side, alpha_mode=False):
         """Phase 11.2: Trailing Profit Walls
@@ -1131,7 +1236,7 @@ class UltimateV17Bot:
                 potential_sl = current_price + (atr * multiplier)
                 if potential_sl < current_sl:
                     return potential_sl
-        except: pass
+        except Exception: pass
         return current_sl
 
 
@@ -1143,7 +1248,7 @@ class UltimateV17Bot:
             last = df.iloc[-1]
             if last['BB_UP'] < last['KC_UP'] and last['BB_LOW'] > last['KC_LOW']:
                 return True
-        except: pass
+        except Exception: pass
         return False
 
     def _detect_liquidity_vacuum(self, symbol, fetch_callback=None):
@@ -1167,11 +1272,11 @@ class UltimateV17Bot:
             near_bids = bids[:5]
             near_asks = asks[:5]
             
-            bid_thin = any(b[1] < avg_bid_depth * 0.2 for b in near_bids)
-            ask_thin = any(a[1] < avg_ask_depth * 0.2 for a in near_asks)
+            bid_thin = any(b[1] < avg_bid_depth * 0.4 for b in near_bids)
+            ask_thin = any(a[1] < avg_ask_depth * 0.4 for a in near_asks)
             
             return bid_thin or ask_thin
-        except:
+        except Exception:
             return False
 
     def _calculate_tidal_shift(self, symbol):
@@ -1207,7 +1312,7 @@ class UltimateV17Bot:
             
             roc = ((current_vol - old_vol) / old_vol) * 100
             return roc
-        except:
+        except Exception:
             return 0.0
 
     def execute_live_order(self, symbol, side, amount_usd, price, tp, sl, turbo_scaling=False):
@@ -1655,7 +1760,7 @@ class UltimateV17Bot:
                 correlations.append(self._calculate_correlation(df, s))
             
             return np.mean(correlations)
-        except:
+        except Exception:
             return 0.5
 
     def _verify_basket_sync(self, symbol, active_symbols):
@@ -1669,7 +1774,7 @@ class UltimateV17Bot:
             
             corr = self._calculate_basket_correlation(df, symbol)
             return corr < 0.85 # Tighter limit during hard-execution
-        except:
+        except Exception:
             return True
 
     def _get_orderbook_depth(self, symbol, signal, fetch_callback=None):
@@ -1693,7 +1798,7 @@ class UltimateV17Bot:
             elif signal == "SELL" or signal == "SHORT":
                 return ask_vol_usd / (bid_vol_usd + 1e-9)
             return 1.0
-        except:
+        except Exception:
             return 1.0
 
     def _detect_whale_exhaustion(self, symbol):
@@ -1703,7 +1808,7 @@ class UltimateV17Bot:
             if metrics['block_trades'] > 100 and abs(metrics['cvd']) > 0.3:
                 return True
             return False
-        except:
+        except Exception:
             return False
 
     def check_global_volatility(self, btc_df):
@@ -1793,7 +1898,7 @@ class UltimateV17Bot:
             depth_score = (bids_usd + asks_usd) / 20000 
             
             return {"depth": depth_score, "imbalance": imbalance}
-        except: 
+        except Exception: 
             return {"depth": 5.0, "imbalance": 0.0}
 
     def _detect_volatility_climax(self, df):
@@ -1823,7 +1928,7 @@ class UltimateV17Bot:
                 if symbol in latest.get('top_performing_assets', []):
                     return 15 # Significant boost for winning assets
             return 0
-        except: return 0
+        except Exception: return 0
 
     def _get_learned_constraints(self):
         """Phase 8.0: Load auto-generated constraints from the Evolution Sentinel"""
@@ -1831,7 +1936,7 @@ class UltimateV17Bot:
             if os.path.exists("learned_constraints.json"):
                 with open("learned_constraints.json", 'r') as f:
                     return json.load(f)
-        except: return {}
+        except Exception: return {}
 
     # --- Phase 34: Sovereign Harvest (Spot Optimization) ---
     def harvest_spot_profits(self):
@@ -1847,7 +1952,7 @@ class UltimateV17Bot:
                         last_harvest = float(f.read().strip())
                     if time.time() - last_harvest < 4 * 3600:
                         return {"status": "COOLDOWN", "msg": f"Harvest cooldown active. Next check in {int((4*3600 - (time.time() - last_harvest))/60)} mins."}
-                except: pass
+                except Exception: pass
             # 1. Fetch Spot BTC Balance
             bal = self.market_exch.fetch_balance()
             btc_total = bal['total'].get('BTC', 0)

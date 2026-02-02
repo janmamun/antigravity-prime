@@ -69,10 +69,14 @@ class EvolutionarySentinel:
             deaths.append(sym)
             self.log_to_bridge(f"CRITICAL LOSS detected on {sym} (< -{threshold}). Adding to toxic assets.")
 
-        # 2. Sequential Failures
-        MAJORS_WHITELIST = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'SOLUSDT', 'BTCUSDT', 'ETHUSDT', 'BNBUSDT']
+        # Phase 85.1: Alpha & Meme Whitelist (Never block the profit drivers)
+        MAJORS_WHITELIST = [
+            'BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT', 'ADA/USDT', 'DOGE/USDT', 'TRX/USDT', 'LINK/USDT', 'AVAX/USDT',
+            'SOLUSDT', 'BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'XRPUSDT', 'ADAUSDT', 'DOGEUSDT', 'TRXUSDT', 'LINKUSDT', 'AVAXUSDT',
+            'PEPE/USDT', 'SHIB/USDT', 'BONK/USDT', 'FLOKI/USDT', 'WIF/USDT', 'PEPEUSDT', 'SHIBUSDT', 'BONKUSDT', 'FLOKIUSDT', 'WIFUSDT'
+        ]
         for sym in df['Symbol'].unique():
-            if sym in MAJORS_WHITELIST: continue # Phase 77: Never block the Alpha Drivers
+            if sym in MAJORS_WHITELIST: continue # Never block the Alpha Drivers
             
             sym_df = df[df['Symbol'] == sym].tail(5)
             if len(sym_df) >= 3:

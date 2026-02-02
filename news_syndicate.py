@@ -42,13 +42,28 @@ class NewsSyndicate:
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
 
+    def fetch_with_retry(self, url, retries=3, delay=1):
+        """Fetch URL with exponential backoff retry logic"""
+        for i in range(retries):
+            try:
+                response = requests.get(url, headers=self.headers, timeout=20) # Increased timeout to 20s
+                if response.status_code == 200:
+                    return response
+            except requests.RequestException as e:
+                if i == retries - 1:
+                    print(f"⚠️ [SYNDICATE] Failed to fetch from {url} after {retries} attempts: {e}")
+                else:
+                    import time
+                    time.sleep(delay * (2 ** i)) # Exponential backoff
+        return None
+
     def fetch_latest_headlines(self):
         """Fetch headlines from primary crypto RSS feeds"""
         headlines = []
         for url in self.sources:
             try:
-                response = requests.get(url, headers=self.headers, timeout=10)
-                if response.status_code == 200:
+                response = self.fetch_with_retry(url)
+                if response:
                     try:
                         root = ET.fromstring(response.text)
                         for item in root.findall('./channel/item'):
@@ -65,7 +80,7 @@ class NewsSyndicate:
                         for t in titles[1:10]: # Skip feed title
                             headlines.append({"title": t, "date": "Unknown"})
             except Exception as e:
-                print(f"⚠️ [SYNDICATE] Failed to fetch from {url}: {e}")
+                print(f"⚠️ [SYNDICATE] Unexpected error fetching {url}: {e}")
         return headlines[:30]
 
     def _fallback_analysis(self, symbol, headlines):

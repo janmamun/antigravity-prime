@@ -8,6 +8,9 @@ import random
 from datetime import datetime
 from trading_bot_v17 import UltimateV17Bot
 
+# Phase 88: The Forbidden Zone
+GLOBAL_BLACKLIST = ['ROSE/USDT', 'ARPA/USDT', 'ZEC/USDT', 'LUNC/USDT', 'SUI/USDT']
+
 class MarketScanner:
     def __init__(self):
         self.exchange = ccxt.binance({
@@ -147,15 +150,32 @@ class MarketScanner:
             print(f"Scanner Note: Proxy-Fetch Failed, using Major Pairs fallback: {e}")
             return ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'XRP/USDT', 'DOGE/USDT', 'ADA/USDT', 'BNB/USDT', 'TRX/USDT', 'LINK/USDT', 'AVAX/USDT']
 
-    async def get_alpha_strike_candidates(self, limit=10):
-        """Fetch Low-Cap Moonshots (24h Gainer + Volume Spike)"""
+    async def get_alpha_strike_candidates(self, limit=12):
+        """Phase 85: Fetch Low-Cap Moonshots (24h Gainer + Volume Spike + Meme Heatmap)"""
         try:
             spot_config = {'options': {'defaultType': 'spot'}}
             tickers = await self._fetch_with_proxy(spot_config, 'fetch_tickers')
 
+            # Phase 85: Meme Heatmap (Hard-coded high-interest memes)
+            MEME_HEATMAP = ['PEPE/USDT', 'SHIB/USDT', 'DOGE/USDT', 'BONK/USDT', 'FLOKI/USDT', 'WIF/USDT']
+            
             candidates = []
+            seen = set()
+            
+            # 1. First, prioritize the Meme Heatmap
+            for s in MEME_HEATMAP:
+                if s in tickers:
+                    t = tickers[s]
+                    candidates.append({
+                        'symbol': s,
+                        'pct': float(t['percentage'] or 0),
+                        'vol': float(t['quoteVolume'] or 0)
+                    })
+                    seen.add(s)
+
+            # 2. Then add other top gainers
             for s, t in tickers.items():
-                if '/USDT' not in s: continue
+                if '/USDT' not in s or s in seen: continue
                 base = s.split('/')[0]
                 if base in ['BTC', 'ETH', 'SOL', 'XRP', 'ADA', 'BNB', 'USDC', 'FDUSD', 'TUSD']:
                     continue
@@ -172,7 +192,7 @@ class MarketScanner:
             # Sort by percentage change
             sorted_alpha = sorted(candidates, key=lambda x: x['pct'], reverse=True)
             res_symbols = [c['symbol'] for c in sorted_alpha[:limit]]
-            print(f"🔥 [ALPHA SCANNER] Found {len(candidates)} candidates > 5%. Top: {res_symbols}")
+            print(f"🔥 [ALPHA SCANNER] Meme Heatmap & Gainers active. Found {len(candidates)} candidates. Top: {res_symbols}")
             return res_symbols
         except Exception as e:
             print(f"Alpha Scanner Note: {e}")
@@ -243,11 +263,15 @@ class MarketScanner:
         seen = set()
         
         for sym in alpha_coins:
+            if sym in GLOBAL_BLACKLIST:
+                continue
             if sym not in seen:
                 tasks.append(self._analyze_symbol(sym, alpha_mode=True))
                 seen.add(sym)
 
         for sym in top_coins:
+            if sym in GLOBAL_BLACKLIST:
+                continue
             if sym not in seen:
                 tasks.append(self._analyze_symbol(sym, alpha_mode=False))
                 seen.add(sym)
